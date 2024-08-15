@@ -1,0 +1,63 @@
+:root {
+  --colour-1: #eeeeee;
+  --colour-1a: #eeeeee80;
+  --colour-2: #686d76;
+  --colour-2a: #686d7680;
+  --colour-3: #373a40;
+  --colour-3a: #373a4080;
+  --colour-4: #dc5f00;
+  --colour-4a:#dc5f0080;
+
+  --statics-height: 25px;
+}
+
+/* GENERAL */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+  font-weight: normal;
+  color: var(--colour-3a);
+  background-color: var(--colour-1);
+}
+
+si-header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--statics-height);
+  background-color: var(--colour-4);
+}
+
+si-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--statics-height);
+  background-color: var(--colour-3);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
+}
+
+main {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--statics-height);
+  bottom: var(--statics-height);
+}
+
+@media print {
+  * {
+    background-color: none;
+  }
+
+  si-header, si-footer {
+    display: none;
+  }
+}
