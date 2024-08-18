@@ -101,7 +101,11 @@ article {
 }
 #magic {
   grid-column: 11 / 26;
-  grid-row: 1 / 24;
+  grid-row: 28 / 51;
+}
+#perks {
+  grid-column: 11 / 26;
+  grid-row: 1 / 28;
 }
 /* PAGE 4 */
 

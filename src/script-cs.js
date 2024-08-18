@@ -1,3 +1,4 @@
+import './components/cs-perk-entry.js';
 import './components/cs-simple-entry-line.js';
 import './components/cs-simple-entry-multiline.js';
 import './components/cs-skill-level-entry-line.js';
