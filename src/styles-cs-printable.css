@@ -1,0 +1,126 @@
+:root {
+  --colour-1: #eeeeee;
+  --colour-1a: #eeeeee80;
+  --colour-2: #686d76;
+  --colour-2a: #686d7680;
+  --colour-3: #373a40;
+  --colour-3a: #373a4080;
+  --colour-4: #dc5f00;
+  --colour-4a:#dc5f0080;
+
+  --statics-height: 25px;
+  --base-gap: 8px;
+  --small-gap: 4px;
+
+  --border-dark: 1px solid var(--colour-3);
+  --border-light: 1px solid var(--colour-2);
+}
+
+/* GENERAL */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+  font-weight: normal;
+  font-size: 16px;
+  color: var(--colour-3);
+  background: none;
+  user-select: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
+  font-weight: bold;
+}
+h1 {
+  font-size: 1.5em;
+  color: var(--colour-4);
+}
+h2 {
+  font-size: 1.4em;
+}
+h3 {
+  font-size: 1.3em;
+}
+h4 {
+  font-size: 1.2em;
+}
+h5 {
+  font-size: 1.1em;
+}
+h6 {
+  font-size: 1em;
+}
+
+.flex-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-content: stretch;
+  gap: var(--base-gap);
+}
+.flex-column {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: start;
+  align-content: stretch;
+}
+.flex-item-resizable {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.flex-item-static {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+#left-column {
+  width: 48%;
+}
+#right-column {
+  width: 48%;
+}
+
+article {
+  margin-bottom: var(--base-gap);
+  border-radius: var(--base-gap);
+  border: var(--border-dark);
+  padding: var(--base-gap);
+}
+
+.entry-line {
+  flex-grow: 1;
+  flex-shrink: 1;
+  border-bottom: var(--border-light);
+  min-height: 2em;
+}
+.entry-line-medium {
+  flex-grow: 0.5;
+  flex-shrink: 2;
+  border-bottom: var(--border-light);
+}
+.entry-line-small {
+  width: 25px;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+hr {
+  margin-top: var(--small-gap);
+  border-bottom: var(--border-dark);
+}
+
+table, thead, tbody, th, td {
+  border: var(--border-light);
+  border-collapse: collapse;
+}
+th {
+  font-size: 1.1em;
+  font-weight: bold;
+  padding: 5px;
+}
+td {
+  height: 30px;
+  min-width: 50px;
+}
