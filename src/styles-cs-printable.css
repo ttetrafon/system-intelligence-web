@@ -15,7 +15,7 @@
   --border-dark: 1px solid var(--colour-3);
   --border-light: 1px solid var(--colour-2);
 
-  --number-of-pages: 2;
+  --number-of-pages: 4;
 }
 
 * {
@@ -24,7 +24,7 @@
   box-sizing: border-box;
   font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
   font-weight: normal;
-  font-size: 12pt;
+  font-size: 10pt;
   color: var(--colour-3);
   background: none;
   user-select: none;
@@ -32,7 +32,7 @@
 
 body {
   width: 210mm;
-  height: calc(var(--number-of-pages) * 270mm);
+  height: calc(var(--number-of-pages) * 293mm);
   margin: 0;
   padding: 0;
 }
@@ -57,10 +57,16 @@ section {
   align-items: stretch;
 }
 #page-1 {
-  background-color: rgba(255, 0, 0, 0.105);
+  background-color: rgba(0, 128, 0, 0.103);
 }
 #page-2 {
-  background-color: rgba(0, 128, 0, 0.103);
+  background-color: rgba(255, 0, 0, 0.105);
+}
+#page-3 {
+  background-color: rgba(124, 128, 0, 0.103);
+}
+#page-4 {
+  background-color: rgba(0, 4, 128, 0.103);
 }
 
 article {
@@ -70,14 +76,25 @@ article {
   padding: var(--base-gap);
 }
 
+/* PAGE 1 */
 #general-info {
   grid-column: 1 / 12;
-  grid-row: 1 / 20;
+  grid-row: 1 / 16;
 }
 #attributes {
   grid-column: 12 / 26;
-  grid-row: 1 / 16;
+  grid-row: 1 / 13;
 }
+#magic {
+  grid-column: 12 / 26;
+  grid-row: 13 / 36;
+}
+#languages {
+  grid-column: 18 / 26;
+  grid-row: 36 / 51;
+}
+/* PAGE 2 */
+/* PAGE 3 */
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
@@ -98,9 +115,14 @@ h4 {
 }
 h5 {
   font-size: 1.1em;
+  font-style: italic;
+  color: var(--colour-4);
 }
 h6 {
   font-size: 1em;
+}
+.complex:after {
+  content: "*";
 }
 
 .flex-row {
@@ -171,6 +193,14 @@ th {
   padding: 5px;
 }
 #attributes td {
-  height: 40px;
+  height: 37px;
   min-width: 69px;
+}
+
+.invisible {
+  opacity: 0;
+}
+
+.hidden {
+  display: none;
 }
