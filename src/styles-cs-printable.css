@@ -53,6 +53,8 @@ section {
   display: grid;
   grid-template-columns: repeat(25, 4%);
   grid-template-rows: repeat(50, 2%);
+  justify-items: stretch;
+  align-items: stretch;
 }
 #page-1 {
   background-color: rgba(255, 0, 0, 0.105);
