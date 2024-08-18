@@ -54,7 +54,7 @@ class Component extends HTMLElement {
         if (this.label == "_") {
           this.$label.classList.add("entry-line");
           this.$span.classList.remove("entry-line");
-          this.$span.classList.add("entry-line-medium");
+          this.$span.classList.add("entry-line-small");
         }
         else {
           this.$label.innerText = this.label;

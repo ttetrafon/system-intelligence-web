@@ -85,10 +85,6 @@ article {
   grid-column: 12 / 26;
   grid-row: 1 / 13;
 }
-#magic {
-  grid-column: 12 / 26;
-  grid-row: 13 / 36;
-}
 /* PAGE 2 */
 #self {
   grid-column: 1 / 18;
@@ -99,6 +95,15 @@ article {
   grid-row: 1 / 12;
 }
 /* PAGE 3 */
+#skills {
+  grid-column: 1 / 11;
+  grid-row: 1 / 51;
+}
+#magic {
+  grid-column: 11 / 26;
+  grid-row: 1 / 24;
+}
+/* PAGE 4 */
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
