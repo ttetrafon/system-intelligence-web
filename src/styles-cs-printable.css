@@ -33,7 +33,7 @@
 body {
   width: 210mm;
   height: calc(var(--number-of-pages) * 293mm);
-  margin: 0;
+  margin: auto;
   padding: 0;
 }
 
@@ -92,22 +92,26 @@ article {
 }
 #languages {
   grid-column: 18 / 26;
-  grid-row: 1 / 12;
+  grid-row: 1 / 16;
 }
 /* PAGE 3 */
 #skills {
-  grid-column: 1 / 11;
+  grid-column: 1 / 13;
   grid-row: 1 / 51;
 }
-#magic {
-  grid-column: 11 / 26;
-  grid-row: 28 / 51;
-}
 #perks {
-  grid-column: 11 / 26;
+  grid-column: 13 / 26;
   grid-row: 1 / 28;
 }
 /* PAGE 4 */
+#magic {
+  grid-column: 1 / 13;
+  grid-row: 1 / 24;
+}
+#magic-second {
+  grid-column: 13 / 26;
+  grid-row: 1 / 45;
+}
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
@@ -218,6 +222,19 @@ td {
 }
 #self td {
   min-width: 75px;
+}
+
+.details-list {
+  list-style: none;
+  text-align: center;
+  width: 100%;
+}
+.details-list li {
+  font-style: italic;
+}
+
+.border-bottom {
+  border-bottom: var(--border-light);
 }
 
 .centred {
