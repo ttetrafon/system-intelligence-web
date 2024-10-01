@@ -10,8 +10,8 @@ template.innerHTML = /*html*/`
 class Component extends HTMLElement {
   constructor() {
     super();
-    this._shadowRoot = this.attachShadow({ mode: 'closed' });
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadow = this.attachShadow({ mode: 'closed' });
+    this._shadow.appendChild(template.content.cloneNode(true));
 
 
   }

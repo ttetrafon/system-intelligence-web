@@ -4,20 +4,25 @@ template.innerHTML = /*html*/`
 <style>
   @import './styles.css';
 
+  div {
+    height: 100%;
+    align-items: center;
+    padding: 0 10px;
+  }
+
   #copyright {
     color: var(--colour-1);
   }
 
   #version {
-    margin-left: 5px;
     color: var(--colour-1a);
   }
 </style>
 
 <div class="flex-line">
+  <span id="version"></span>
   <span class="flex-separator-horizontal"></span>
   <span id="copyright"></span>
-  <span id="version"></span>
 </div>
 `;
 
@@ -31,7 +36,7 @@ class Component extends HTMLElement {
     this.$version = this._shadow.getElementById("version");
 
     this.$copyright.innerHTML = `Copyright &#169; ${new Date().getFullYear()}`;
-    this.$version.innerText = `(v. 0.0.1)`;
+    this.$version.innerText = `v. 0.0.2`;
   }
 
   static get observedAttributes() { return ['label']; }

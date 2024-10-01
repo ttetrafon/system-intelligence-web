@@ -15,12 +15,12 @@ template.innerHTML = /*html*/`
 class Component extends HTMLElement {
   constructor() {
     super();
-    this._shadowRoot = this.attachShadow({ mode: 'closed' });
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadow = this.attachShadow({ mode: 'closed' });
+    this._shadow.appendChild(template.content.cloneNode(true));
 
-    this.$label = this._shadowRoot.querySelector("h6");
-    this.$span = this._shadowRoot.querySelector("span");
-    this.$checkbox = this._shadowRoot.querySelector("input");
+    this.$label = this._shadow.querySelector("h6");
+    this.$span = this._shadow.querySelector("span");
+    this.$checkbox = this._shadow.querySelector("input");
   }
 
   static get observedAttributes() { return ['label', 'checkbox', 'skill']; }

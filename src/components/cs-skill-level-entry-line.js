@@ -23,15 +23,15 @@ template.innerHTML = /*html*/`
 class Component extends HTMLElement {
   constructor() {
     super();
-    this._shadowRoot = this.attachShadow({ mode: 'closed' });
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadow = this.attachShadow({ mode: 'closed' });
+    this._shadow.appendChild(template.content.cloneNode(true));
 
-    this.$label = this._shadowRoot.querySelector("h6");
-    this.$checkbox = this._shadowRoot.querySelector("input");
-    this.$span = this._shadowRoot.getElementById("value");
-    this.$leftBracket = this._shadowRoot.getElementById("left-bracket");
-    this.$rightBracket = this._shadowRoot.getElementById("right-bracket");
-    this.$note = this._shadowRoot.getElementById("note");
+    this.$label = this._shadow.querySelector("h6");
+    this.$checkbox = this._shadow.querySelector("input");
+    this.$span = this._shadow.getElementById("value");
+    this.$leftBracket = this._shadow.getElementById("left-bracket");
+    this.$rightBracket = this._shadow.getElementById("right-bracket");
+    this.$note = this._shadow.getElementById("note");
   }
 
   static get observedAttributes() { return ['label', 'checkbox', 'note', 'skill']; }

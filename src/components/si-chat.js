@@ -3,20 +3,8 @@ const template = document.createElement('template');
 template.innerHTML = /*html*/`
 <style>
   @import './styles.css';
-
-  div {
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: space-between;
-  }
 </style>
 
-<div class="flex-line">
-  <span id="flex-separator-horizontal"></span>
-  <si-search-bar></si-search-bar>
-  <span id="flex-separator-horizontal"></span>
-</div>
 `;
 
 class Component extends HTMLElement {
@@ -24,6 +12,8 @@ class Component extends HTMLElement {
     super();
     this._shadow = this.attachShadow({ mode: 'closed' });
     this._shadow.appendChild(template.content.cloneNode(true));
+
+
   }
 
   static get observedAttributes() { return ['label']; }
@@ -35,10 +25,8 @@ class Component extends HTMLElement {
   attributeChangedCallback(name, oldVal, newVal) {
     if (oldVal == newVal) return;
     switch(name) {
-      default:
-        break;
     }
   }
 }
 
-window.customElements.define('si-header', Component);
+window.customElements.define('si-chat', Component);

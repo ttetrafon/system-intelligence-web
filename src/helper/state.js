@@ -6,9 +6,8 @@ class State {
     if (!State.instance) {
       State.instance = this;
     }
-    this.user = new User(userRole.OBSERVER);
-    this.testValue = Math.random();
-    console.log("...", this.testValue);
+    this.user = new User(userRole.DM);
+
     return State.instance;
   }
 }

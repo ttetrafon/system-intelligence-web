@@ -1,5 +1,5 @@
 :root {
-  --colour-1: #eeeeee;
+  --colour-1: #f5f5f5;
   --colour-1a: #eeeeee80;
   --colour-2: #686d76;
   --colour-2a: #686d7680;
@@ -7,9 +7,14 @@
   --colour-3a: #373a4080;
   --colour-4: #dc5f00;
   --colour-4a:#dc5f0080;
+  --colour-5: #000000;
 
-  --statics-height-header: 35px;
-  --statics-height-footer: 20px;
+  --statics-height-header: 3rem;
+  --statics-height-footer: 2rem;
+  --statics-height-nav: 2rem;
+  --statics-width-side: 250px;
+
+  --font-base-size: 18px;
 
   --border-dark: 1px solid var(--colour-3);
 }
@@ -22,10 +27,18 @@
   font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
   font-weight: normal;
   color: var(--colour-3a);
+  font-size: 1rem;
 }
 
 body {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
   background-color: var(--colour-1);
+  font-size: var(--font-base-size);
+  container: full-page / size;
 }
 
 si-header {
@@ -50,18 +63,37 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
 }
 
+nav {
+  top: var(--statics-height-header);
+  position: fixed;
+  left: var(--statics-width-side);
+  right: 0;
+  height: var(--statics-height-nav);
+  background-color: var(--colour-2a);
+}
+
 main {
   position: fixed;
-  left: 0;
+  left: var(--statics-width-side);
   right: 0;
-  top: calc(var(--statics-height-header) + 5px);
-  bottom: calc(var(--statics-height-footer) + 5px);
+  top: calc(var(--statics-height-header) + var(--statics-height-nav));
+  bottom: var(--statics-height-footer);
   padding: 15px;
+}
+
+aside {
+  position: fixed;
+  left: 0;
+  width: var(--statics-width-side);
+  top: var(--statics-height-header);
+  bottom: var(--statics-height-footer);
+  padding: 5px;
+  background-color: var(--colour-3);
 }
 
 .flex-line {
   display: flex;
-  flex-flow: ro nowrap;
+  flex-flow: row nowrap;
 }
 .flex-column {
   display: flex;
@@ -70,6 +102,16 @@ main {
 .flex-separator-horizontal {
   flex-grow: 1;
   flex-shrink: 1;
+}
+
+@container full-page (max-width: 1024px) {
+  main {
+    left: 50px;
+  }
+
+  aside {
+    width: 50px;
+  }
 }
 
 @media print {
