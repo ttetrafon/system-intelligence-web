@@ -8,7 +8,8 @@
   --colour-4: #dc5f00;
   --colour-4a:#dc5f0080;
 
-  --statics-height: 25px;
+  --statics-height-header: 35px;
+  --statics-height-footer: 20px;
 
   --border-dark: 1px solid var(--colour-3);
 }
@@ -21,6 +22,9 @@
   font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
   font-weight: normal;
   color: var(--colour-3a);
+}
+
+body {
   background-color: var(--colour-1);
 }
 
@@ -29,7 +33,7 @@ si-header {
   left: 0;
   right: 0;
   top: 0;
-  height: var(--statics-height);
+  height: var(--statics-height-header);
   background-color: var(--colour-4);
 }
 
@@ -38,7 +42,7 @@ si-footer {
   left: 0;
   right: 0;
   bottom: 0;
-  height: var(--statics-height);
+  height: var(--statics-height-footer);
   background-color: var(--colour-3);
 }
 
@@ -50,8 +54,22 @@ main {
   position: fixed;
   left: 0;
   right: 0;
-  top: var(--statics-height);
-  bottom: var(--statics-height);
+  top: calc(var(--statics-height-header) + 5px);
+  bottom: calc(var(--statics-height-footer) + 5px);
+  padding: 15px;
+}
+
+.flex-line {
+  display: flex;
+  flex-flow: ro nowrap;
+}
+.flex-column {
+  display: flex;
+  flex-flow: column nowrap;
+}
+.flex-separator-horizontal {
+  flex-grow: 1;
+  flex-shrink: 1;
 }
 
 @media print {
@@ -62,13 +80,4 @@ main {
   si-header, si-footer {
     display: none;
   }
-
 }
-
-main {
-  margin: 0 10px;
-  padding: 15px;
-  border-radius: 10px;
-  border: var(--border-dark);
-}
-

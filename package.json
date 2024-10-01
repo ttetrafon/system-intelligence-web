@@ -4,19 +4,24 @@
   "description": "",
   "main": "./src/index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update-version": "replace '0.0.1' '0.0.2' ./src/components/si-footer.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ttetrafon/system-intelligence-web.git"
   },
   "keywords": [
-    "ttrpg"
+    "TTRPG",
+    "d20"
   ],
   "author": "ttetrafon",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ttetrafon/system-intelligence-web/issues"
   },
-  "homepage": "https://github.com/ttetrafon/system-intelligence-web#readme"
+  "homepage": "https://github.com/ttetrafon/system-intelligence-web#readme",
+  "devDependencies": {
+    "replace": "^1.2.2"
+  }
 }

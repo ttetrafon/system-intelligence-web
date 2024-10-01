@@ -1,0 +1,32 @@
+{
+  "Game System": [
+    {
+      "name": "checks-and-dice",
+      "display": "Checks & dice",
+      "sub": [
+        {
+          "name": "resources",
+          "display": "Resources"
+        },
+        {
+          "name": "descriptors-tags",
+          "display": "Descriptors (tags)"
+        }
+      ]
+    },
+    {
+      "name": "gameplay-timekeeping",
+      "display": "Gameplay & Timekeeping",
+      "sub": [
+        {
+          "name": "planning-flashbacks",
+          "display": "Planning & Flashbacks"
+        },
+        {
+          "name": "tasks-long-term-activities",
+          "display": "Tasks (Long-Term Activities)"
+        }
+      ]
+    }
+  ]
+}

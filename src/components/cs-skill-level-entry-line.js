@@ -1,9 +1,9 @@
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
-  <style>
-    @import './styles-cs-printable.css';
-  </style>
+<style>
+  @import './styles-cs-printable.css';
+</style>
 
 <div class="flex-row">
   <input type="checkbox" class="hidden" />

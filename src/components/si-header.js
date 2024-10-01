@@ -1,8 +1,11 @@
+import state from "../state/state.js";
+
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
-  <style>
-  </style>
+<style>
+  @import './styles.css';
+</style>
 
 `;
 
@@ -11,8 +14,6 @@ class Component extends HTMLElement {
     super();
     this._shadowRoot = this.attachShadow({ mode: 'closed' });
     this._shadowRoot.appendChild(template.content.cloneNode(true));
-
-
   }
 
   static get observedAttributes() { return ['label']; }

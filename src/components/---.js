@@ -1,8 +1,9 @@
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
-  <style>
-  </style>
+<style>
+  @import './styles.css';
+</style>
 
 `;
 
