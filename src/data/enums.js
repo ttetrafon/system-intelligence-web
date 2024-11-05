@@ -3,3 +3,8 @@ export const userRole = Object.freeze({
   PLAYER: Symbol("player"),
   OBSERVER: Symbol("observer")
 });
+
+export const pages = Object.freeze({
+  ATTRIBUTES: Symbol("attributes"),
+  HOME: Symbol("dashboard")
+});
