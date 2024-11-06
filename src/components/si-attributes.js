@@ -1,3 +1,5 @@
+import { buildHtmlFromStructure } from '../helper/dom.js';
+
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
@@ -5,18 +7,7 @@ template.innerHTML = /*html*/`
   @import './styles.css';
 </style>
 
-<section>
-  <p>A number of attributes describes your overall prowess with any type of action. Each of them is used to perform different actions and features its own % score. Attributes are what you usually roll when making checks.</p>
-  <p>Attributes are divided in three categories called attribute traits, <b>Body</b>, <b>Mind</b>, <b>Spirit</b>. Each trait is assigned its relevant <a href="#category-score">category score</a> (<i>body</i>, <i>mind</i>, <i>spirit</i>).</p>
-
-  <h2>Mod</h2>
-  <p>An attribute's mod is equal to the attribute's score divided by 10, rounded down. Mods are noted with lower case in the test (e.g.: <b>APP's</b> mod is written as <b>App</b>).</p>
-
-  <h2 id="category-score">Category/Trait Score</h2>
-  <p>Each category also has its own score, equal to double the sum of its attributes mods, increased again by double the respective defensive attribute in that category (END, WIL, RES).</p>
-  <p class="quote">For example, your Mind score is equal to 2*Ima + 2*Mem + 2*Per + 2*Rea + 4*Wil.</p>
-  <p>A trait score is updated immediately when any of its attributes changes.</p>
-</section>
+<section></section>
 `;
 
 class Component extends HTMLElement {
@@ -25,7 +16,7 @@ class Component extends HTMLElement {
     this._shadow = this.attachShadow({ mode: 'closed' });
     this._shadow.appendChild(template.content.cloneNode(true));
 
-
+    this.$container = this._shadow.querySelector("section");
   }
 
   static get observedAttributes() { return ['label']; }
@@ -41,7 +32,11 @@ class Component extends HTMLElement {
     }
   }
   connectedCallback() {
-    // Triggered when the component is added to the DOM.
+    fetch("./data/attributes.json")
+      .then(res => res.json())
+      .then((json) => {
+        buildHtmlFromStructure(json.structure, this.$container);
+      });
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.

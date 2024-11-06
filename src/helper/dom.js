@@ -28,3 +28,38 @@ export function emitNavigationEvent(that, type, target) {
 export function toggleSpinningCircle(that, state) {
   emitCustomEvent(that, "toggle-spinning-circle", { state: state });
 }
+
+function createElement(node) {
+  // Create text nodes
+  if (node.element === "#text") {
+    return document.createTextNode(node.contents);
+  }
+
+  // Create the main element
+  const el = document.createElement(node.element);
+
+  // Add attributes
+  if (node.attributes) {
+    node.attributes.forEach(attr => el.setAttribute(attr.attribute, attr.value));
+  }
+
+  // Handle contents (recursively if necessary)
+  if (Array.isArray(node.contents)) {
+    node.contents.forEach(childNode => el.appendChild(createElement(childNode)));
+  }
+  else if (typeof node.contents === "string") {
+    el.textContent = node.contents;
+  }
+
+  return el;
+}
+
+/**
+ *
+ * @param {json} tree
+ * @param {Node} parent
+ */
+export function buildHtmlFromStructure(tree, parent) {
+  clearChildren(parent);
+  tree.forEach(node => parent.appendChild(createElement(node)));
+}
