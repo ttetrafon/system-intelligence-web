@@ -7,8 +7,16 @@ class State {
       State.instance = this;
     }
     this.user = new User(userRole.DM);
+    this.data = {};
 
     return State.instance;
+  }
+
+  async fetchData(type) {
+    let res = await fetch(`./data/${type}.json`);
+    let data = await res.json();
+    this.data[type] = data;
+    return data;
   }
 }
 

@@ -27,6 +27,8 @@
   font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
   color: var(--colour-3);
   font-size: 1rem;
+  cursor: default;
+  user-select: none;
 }
 
 body {

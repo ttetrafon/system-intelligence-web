@@ -1,14 +1,16 @@
-import { buildHtmlFromStructure } from '../helper/dom.js';
-import state from '../helper/state.js';
-
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
   @import './styles.css';
+
+  span {
+    font-weight: bold;
+    font-style: italic;
+  }
 </style>
 
-<section></section>
+<span></span>
 `;
 
 class Component extends HTMLElement {
@@ -17,7 +19,7 @@ class Component extends HTMLElement {
     this._shadow = this.attachShadow({ mode: 'closed' });
     this._shadow.appendChild(template.content.cloneNode(true));
 
-    this.$container = this._shadow.querySelector("section");
+    this.$label = this._shadow.querySelector("span");
   }
 
   static get observedAttributes() { return ['label']; }
@@ -30,10 +32,13 @@ class Component extends HTMLElement {
   attributeChangedCallback(name, oldVal, newVal) {
     if (oldVal == newVal) return;
     switch (name) {
+      case "label":
+        this.$label.innerText = this.label;
+        break;
     }
   }
   connectedCallback() {
-    this.initialiseAttributes();
+    // Triggered when the component is added to the DOM.
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
@@ -45,11 +50,6 @@ class Component extends HTMLElement {
     // Note that adoption does not trigger the constructor again.
   }
 
-  async initialiseAttributes() {
-    let attributes = await state.fetchData("attributes");
-    console.log("attributes", attributes);
-    buildHtmlFromStructure(attributes.structure, this.$container);
-  }
 }
 
-window.customElements.define('si-attributes', Component);
+window.customElements.define('si-info', Component);

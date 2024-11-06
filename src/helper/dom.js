@@ -47,7 +47,7 @@ function createElement(node) {
   if (Array.isArray(node.contents)) {
     node.contents.forEach(childNode => el.appendChild(createElement(childNode)));
   }
-  else if (typeof node.contents === "string") {
+  else if (node.contents && typeof node.contents === "string") {
     el.textContent = node.contents;
   }
 

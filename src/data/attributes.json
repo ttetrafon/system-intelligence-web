@@ -106,13 +106,93 @@
     },
     {
       "element": "h2",
-      "contents": "Category/Trait Score",
-      "attributes": [
+      "contents": "Attribute Checks"
+    },
+    {
+      "element": "p",
+      "contents": [
         {
-          "attribute": "id",
-          "value": "category-score"
+          "element": "#text",
+          "contents": "The vast majority of checks during the game use your attributes. Attribute checks, depending on the action at hand, with a "
+        },
+        {
+          "element": "si-info",
+          "attributes": [
+            {
+              "attribute": "class",
+              "value": "info"
+            },
+            {
+              "attribute": "info",
+              "value": ""
+            },
+            {
+              "attribute": "label",
+              "value": "competence"
+            }
+          ]
+        },
+        {
+          "element": "#text",
+          "contents": " bonus/penalty on your final result ("
+        },
+        {
+          "element": "si-info",
+          "attributes": [
+            {
+              "attribute": "class",
+              "value": "info"
+            },
+            {
+              "attribute": "info",
+              "value": ""
+            },
+            {
+              "attribute": "label",
+              "value": "resource check"
+            }
+          ]
+        },
+        {
+          "element": "#text",
+          "contents": ") from the appropriate "
+        },
+        {
+          "element": "si-info",
+          "attributes": [
+            {
+              "attribute": "class",
+              "value": "info"
+            },
+            {
+              "attribute": "info",
+              "value": ""
+            },
+            {
+              "attribute": "label",
+              "value": "morality score"
+            }
+          ]
+        },
+        {
+          "element": "#text",
+          "contents": "."
         }
       ]
+    },
+    {
+      "element": "p",
+      "attributes": [
+        {
+          "attribute": "class",
+          "value": "quote"
+        }
+      ],
+      "contents": "For example, you make a Sneak check with DEX 75 while trying to hide from an monster which is prowling the city streets while you hear echoes of a party luring the creature in. You have a Valorous (75) - Cowardly (50) trait, so may suffer a penalty on your degree of success because of your current Valorous score. If the same situation repeated in the woods, where nobody would be in direct danger, you would instead gain a bonus of because of your current Cowardly score."
+    },
+    {
+      "element": "h2",
+      "contents": "Category/Trait Score"
     },
     {
       "element": "p",
