@@ -36,7 +36,7 @@ class Component extends HTMLElement {
     this.$version = this._shadow.getElementById("version");
 
     this.$copyright.innerHTML = `Copyright &#169; ${new Date().getFullYear()}`;
-    this.$version.innerText = `v. 0.0.3`;
+    this.$version.innerText = `v. 0.0.4`;
   }
 
   static get observedAttributes() { return ['label']; }

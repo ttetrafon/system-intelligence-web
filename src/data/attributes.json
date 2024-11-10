@@ -2,10 +2,12 @@
   "structure": [
     {
       "element": "p",
+      "id": "827f0ced-dda1-425d-a660-7b5ed43610a4",
       "contents": "A number of attributes describes your overall prowess with any type of action. Each of them is used to perform different actions and features its own % score. Attributes are what you usually roll when making checks."
     },
     {
       "element": "p",
+      "id": "4ede0edb-8a19-416c-830a-6428ae7c728f",
       "contents": [
         {
           "element": "#text",
@@ -77,10 +79,12 @@
     },
     {
       "element": "h2",
+      "id": "e424d97d-eb81-4725-ad79-c5943a2a3176",
       "contents": "Mod"
     },
     {
       "element": "p",
+      "id": "beb6ad5b-e0e2-4c43-971b-34c4aff50726",
       "contents": [
         {
           "element": "#text",
@@ -106,10 +110,12 @@
     },
     {
       "element": "h2",
+      "id": "08a71df6-6a93-4140-89a8-db6be55aa8ce",
       "contents": "Attribute Checks"
     },
     {
       "element": "p",
+      "id": "3057e54d-bc73-4e13-8c37-762cd5ad264d",
       "contents": [
         {
           "element": "#text",
@@ -182,6 +188,7 @@
     },
     {
       "element": "p",
+      "id": "8f25eab9-24e6-4751-acb8-d239ba4b3925",
       "attributes": [
         {
           "attribute": "class",
@@ -192,14 +199,47 @@
     },
     {
       "element": "h2",
+      "id": "00a2c3e0-f327-4fef-ab0a-2ffff19423f6",
       "contents": "Category/Trait Score"
     },
     {
       "element": "p",
-      "contents": "Each category also has its own score, equal to double the sum of its attributes mods, increased again by double the respective defensive attribute in that category (END, WIL, RES)."
+      "id": "3413807b-0097-4241-9017-826ce3a40db9",
+      "contents": [
+        {
+          "element": "#text",
+          "contents": "Each category also has its own score, equal to double the sum of its "
+        },
+        {
+          "element": "si-info",
+          "attributes": [
+            {
+              "attribute": "class",
+              "value": "info"
+            },
+            {
+              "attribute": "info",
+              "value": ""
+            },
+            {
+              "attribute": "label",
+              "value": "attributes' mods"
+            },
+            {
+              "attribute": "target",
+              "value": "attributes.e424d97d-eb81-4725-ad79-c5943a2a3176"
+            }
+          ]
+        },
+        {
+          "element": "#text",
+          "contents": ", increased again by double the respective defensive attribute in that category (END, WIL, RES)."
+        }
+      ]
     },
     {
       "element": "p",
+      "id": "7d0307a4-fd3c-41d5-8c81-e99085d2c5a2",
       "attributes": [
         {
           "attribute": "class",
@@ -210,6 +250,7 @@
     },
     {
       "element": "p",
+      "id": "b6d0807b-9993-4cb9-90bf-8d4f0575ee3c",
       "contents": "A trait score is updated immediately when any of its attributes changes."
     }
   ]

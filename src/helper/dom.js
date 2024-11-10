@@ -3,7 +3,6 @@ export function clearChildren(parent) {
     parent.removeChild(parent.lastChild);
   }
 }
-
 export function clearChildrenOfType(parent, tag) {
   for (let i = parent.children.length - 1; i >= 0; i--) {
     if ((parent.children[i].nodeName).toLowerCase() === tag) parent.children[i].remove();
@@ -17,10 +16,14 @@ export function emitCustomEvent(that, eventName, eventDetails) {
     detail: eventDetails
   }));
 };
-
 export function emitNavigationEvent(that, type, target) {
   emitCustomEvent(that, "navigation", {
     type: type,
+    target: target
+  });
+}
+export function emitSideInfoEvent(target) {
+  emitCustomEvent(document, "toggle-info", {
     target: target
   });
 }
@@ -39,8 +42,11 @@ function createElement(node) {
   const el = document.createElement(node.element);
 
   // Add attributes
+  if (node.id) {
+    el.id = node.id;
+  }
   if (node.attributes) {
-    node.attributes.forEach(attr => el.setAttribute(attr.attribute, attr.value));
+    node.attributes.forEach(attr => el.setAttribute(attr.attribute, (typeof attr.value == "object" ? JSON.stringify(attr.value) : attr.value)));
   }
 
   // Handle contents (recursively if necessary)
@@ -53,7 +59,6 @@ function createElement(node) {
 
   return el;
 }
-
 /**
  *
  * @param {json} tree

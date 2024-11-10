@@ -108,6 +108,30 @@ main {
   bottom: var(--statics-height-footer);
   padding: 15px;
 }
+#main-container {
+  max-width: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+si-side-panel {
+  max-width: 25%;
+  flex-grow: 0.25;
+  flex-shrink: 1;
+}
+#chat-container {
+  min-width: 33%;
+  max-width: 50%;
+  flex-grow: 0.5;
+  flex-shrink: 0.5;
+  max-height: 25%;
+}
+#dice-roller {
+  min-width: 33%;
+  max-width: 50%;
+  flex-grow: 0.5;
+  flex-shrink: 0.5;
+  max-height: 25%;
+}
 
 aside {
   position: fixed;
@@ -123,6 +147,10 @@ aside {
   display: flex;
   flex-flow: row nowrap;
 }
+.flex-line-multi {
+  display: flex;
+  flex-flow: row wrap;
+}
 .flex-column {
   display: flex;
   flex-flow: column nowrap;
@@ -130,6 +158,24 @@ aside {
 .flex-separator-horizontal {
   flex-grow: 1;
   flex-shrink: 1;
+}
+
+.border-dark {
+  border-radius: 10px;
+  border: 1px solid var(--colour-3);
+}
+
+button {
+  border: none;
+  border-radius: 5px;
+  background: none;
+  cursor: pointer;
+}
+button > img {
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }
 
 @container full-page (max-width: 1024px) {
@@ -150,4 +196,8 @@ aside {
   si-header, si-footer {
     display: none;
   }
+}
+
+.hidden {
+  display: none;
 }
