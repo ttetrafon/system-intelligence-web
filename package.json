@@ -5,7 +5,9 @@
   "main": "./src/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "update-version-ui": "replace '0.0.4' '0.0.4' ./website/package.json ./website/components/si-footer.js"
+    "update-version-ui": "replace '0.0.4' '0.0.4' ./website/package.json ./website/components/si-footer.js",
+    "local-compose-run": "docker compose -f compose-local.yaml up --force-recreate --build -d",
+    "local-compose-down": "docker compose -f compose-local.yaml down"
   },
   "repository": {
     "type": "git",

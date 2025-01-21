@@ -2,5 +2,7 @@
   "name": "system-intelligence-web",
   "version": "0.0.4",
   "description": "",
-  "main": "./index.html"
+  "main": "./src/index.html",
+  "scripts": {
+  }
 }

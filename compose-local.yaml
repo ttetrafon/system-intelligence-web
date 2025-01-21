@@ -1,0 +1,5 @@
+services:
+  service-game-data:
+    build: ./service-game-data/
+    ports:
+    - "9000:8080"
