@@ -1,5 +1,6 @@
 {
-  "app": "node bin/cdk.js",
+  "app": "node bin/si.js",
+  "profile": "ttetrafon",
   "watch": {
     "include": [
       "**"
