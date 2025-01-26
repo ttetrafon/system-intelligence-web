@@ -3,6 +3,13 @@
   "version": "0.0.4",
   "description": "",
   "main": "./src/index.html",
-  "scripts": {
-  }
+  "scripts": {},
+  "dependencies": {
+    "@vendia/serverless-express": "^4.12.6",
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "type": "module"
 }
