@@ -1,10 +1,6 @@
 version: '3.9'
 
 services:
-  # si-service-game-data:
-  #   build: ./service-game-data/
-  #   ports:
-  #   - "9000:8080"
   si-mongodb:
     image: mongo:6.0
     ports:
@@ -13,7 +9,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin-pass
     volumes:
-    - si-volume:/data/mongo
+    - mongo-db-data:/data/db
+    - mongo-config-data:/data/configdb
 
 volumes:
-  si-volume:
+  mongo-db-data:
+  mongo-config-data:
