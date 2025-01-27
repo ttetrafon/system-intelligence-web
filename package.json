@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "update-version-ui": "replace '0.0.4' '0.0.4' ./website/package.json ./website/components/si-footer.js",
     "local-compose-run": "docker compose -f compose-local.yaml up --force-recreate --build -d",
-    "local-compose-down": "docker compose -f compose-local.yaml down"
+    "local-compose-down": "docker compose -f compose-local.yaml down",
+    "local-compose-start": "docker compose -f compose-local.yaml start",
+    "local-compose-stop": "docker compose -f compose-local.yaml stop"
   },
   "repository": {
     "type": "git",
