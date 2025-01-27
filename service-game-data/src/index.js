@@ -6,10 +6,12 @@ import { fileURLToPath } from 'url';
 
 import dataRoutes from './routes/data.js';
 import indexRoutes from './routes/root.js';
+import { FileDB } from './services/FileDB.js';
 import { Logger } from './services/Logger.js';
 
 // Initial setup
 const logger = new Logger();
+const fileDB = new FileDB(logger);
 
 // Create the Express app
 const app = express();
