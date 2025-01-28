@@ -1,11 +1,9 @@
 import express from 'express';
 import { requestHandler } from '../helper/handler.js';
 import { Gameplay } from '../modules/gameplay.js';
-import { CompletionServices } from '../services/Completion.js';
 import { FileDB } from '../services/FileDB.js';
 
 // services
-const completion = new CompletionServices();
 const fileDb = new FileDB();
 // modules
 const gameplay = new Gameplay();
