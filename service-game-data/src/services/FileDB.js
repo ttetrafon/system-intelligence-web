@@ -1,39 +1,25 @@
 import { MongoClient } from 'mongodb';
-import { v4 as uuidV4 } from 'uuid';
+import { Logger } from './Logger.js';
 
 export class FileDB {
-  /**
-   *
-   * @param {Logger} logger
-   */
-  constructor(logger) {
-    this.logger = logger;
+  constructor() {
+    if (FileDB._instance) {
+      return FileDB._instance;
+    }
+    FileDB._instance = this;
+
+    this.logger = new Logger();
     this.logger.info(`---> FileDB`);
 
     this.fileDbClient;
-    this.dataDb;
-    this.siDataCollection
+
+    this.gameplayDb;
+    this.gameplayCollection;
+
+    this.testDb;
+    this.testCollection;
 
     this.connectToFileDb();
-
-    // setTimeout(() => {
-    //   this.storeDataFile(
-    //     "gameplay",
-    //     {
-    //       "structure": [
-    //         {
-    //           "element": "p",
-    //           "id": "",
-    //           "contents": "Whenever you want to do something non-trivial, a check is required. Actions are performed by rolling a check and comparing the result with the target difficulty."
-    //         }
-    //       ]
-    //     }
-    //   );
-    // }, 3000);
-
-    // setTimeout(() => {
-    //   this.retrieveDataFile("gameplay");
-    // }, 5000);
   }
 
   client() {
@@ -44,15 +30,37 @@ export class FileDB {
 
   async connectToFileDb() {
     this.logger.debug(`---> connectToFileDb()`);
+    if (this.fileDbClient && this.fileDbClient.topology.isConnected()) {
+      this.logger.debug('... FileDB is already connected');
+      return
+    };
+
     try {
       this.client();
       console.log(this.fileDbClient);
       await this.fileDbClient.connect();
-      this.dataDb = this.fileDbClient.db('test-data');
-      console.log("this.dataDb:", this.dataDb);
-      this.siDataCollection = this.dataDb.collection('si-data');
-      console.log("this.siDataCollection:", this.siDataCollection);
+
+      // this.testDb = this.fileDbClient.db('test-db');
+      // this.testCollection = this.testDb.collection('test-collection');
+
       this.logger.debug("... connected to FileDB");
+      this.getGameplayDb();
+    }
+    catch(err) {
+      this.logger.error(err);
+    }
+  }
+  async getGameplayDb() {
+    this.logger.debug(`---> getGameplayDb()`);
+    if (this.gameplayDb && this.gameplayCollection) {
+      this.logger.debug('... gameplay-db is already accessible');
+      return
+    };
+
+    try {
+      this.gameplayDb = this.fileDbClient.db('gameplay-data');
+      this.gameplayCollection = this.gameplayDb.collection('general-gameplay');
+      this.logger.debug("... successfully accessing gameplay-db");
     }
     catch(err) {
       this.logger.error(err);
@@ -60,29 +68,29 @@ export class FileDB {
   }
 
   async retrieveDataFile(key) {
-    this.logger.debug(`--> storeDataFile(${key})`);
-    try {
-      const query = { _id: "12345" };
-      const document = await this.siDataCollection.findOne(query);
-      console.log("document:", document);
-    }
-    catch(err) {
-      this.logger.error(err);
-    }
+    this.logger.debug(`--> retrieveDataFile(${key})`);
+    // try {
+    //   const query = { _id: "12345" };
+    //   const document = await this.siDataCollection.findOne(query);
+    //   console.log("document:", document);
+    // }
+    // catch(err) {
+    //   this.logger.error(err);
+    // }
   }
 
   async storeDataFile(key, json) {
     this.logger.debug(`--> storeDataFile(${key}, ${JSON.stringify(json)})`);
-    try {
-      let document = {
-        _id: key,
-        ...json
-      };
-      let result = await this.siDataCollection.insertOne(document);
-      this.logger.debug(`Data inserted with custom key (_id): ${result.insertedId}`);
-    }
-    catch(err) {
-      this.logger.error(err);
-    }
+    // try {
+    //   let document = {
+    //     _id: key,
+    //     ...json
+    //   };
+    //   let result = await this.siDataCollection.insertOne(document);
+    //   this.logger.debug(`Data inserted with custom key (_id): ${result.insertedId}`);
+    // }
+    // catch(err) {
+    //   this.logger.error(err);
+    // }
   }
 }

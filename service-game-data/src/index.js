@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser';
 import express from 'express';
 import serverlessExpress from '@vendia/serverless-express';
 import { dirname } from 'path';
@@ -6,17 +5,14 @@ import { fileURLToPath } from 'url';
 
 import dataRoutes from './routes/data.js';
 import indexRoutes from './routes/root.js';
-import { FileDB } from './services/FileDB.js';
 import { Logger } from './services/Logger.js';
 
 // Initial setup
 const logger = new Logger();
-const fileDB = new FileDB(logger);
 
 // Create the Express app
 const app = express();
 app.use(express.json());
-app.use(bodyParser.json());
 
 // Global middleware
 app.use((req, res, next) => {
