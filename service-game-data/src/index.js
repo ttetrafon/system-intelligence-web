@@ -6,9 +6,11 @@ import { fileURLToPath } from 'url';
 import dataRoutes from './routes/data.js';
 import indexRoutes from './routes/root.js';
 import { Logger } from './services/Logger.js';
+import { SqlDB } from './services/SqlDB.js';
 
 // Initial setup
 const logger = new Logger();
+const sql = new SqlDB();
 
 // Create the Express app
 const app = express();

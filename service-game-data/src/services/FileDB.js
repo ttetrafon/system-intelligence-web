@@ -37,7 +37,6 @@ export class FileDB {
 
     try {
       this.client();
-      console.log(this.fileDbClient);
       await this.fileDbClient.connect();
 
       // this.testDb = this.fileDbClient.db('test-db');

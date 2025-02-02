@@ -18,8 +18,8 @@ router.use((req, res, next) => {
 });
 
 // POST /data
-router.post('/', (req, res) => {
-  requestHandler(req, res, gameplay.test);
+router.post('/', async (req, res) => {
+  await requestHandler(req, res, gameplay.test, true);
 });
 
 export default router;

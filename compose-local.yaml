@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   si-mongodb:
-    image: mongo:6.0
+    image: mongo:latest
     ports:
     - '27017:27017'
     environment:
@@ -11,7 +11,19 @@ services:
     volumes:
     - mongo-db-data:/data/db
     - mongo-config-data:/data/configdb
+  si-mariadb:
+    image: mariadb:latest
+    environment:
+      MARIADB_ROOT_PASSWORD: si-root-pass
+      MARIADB_DATABASE: si-database
+      MARIADB_USER: si-user
+      MARIADB_PASSWORD: si-user-pass
+    ports:
+    - "3306:3306"
+    volumes:
+    - mariadb_data:/var/lib/mysql
 
 volumes:
   mongo-db-data:
   mongo-config-data:
+  mariadb_data:
