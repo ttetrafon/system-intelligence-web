@@ -6,7 +6,6 @@ import { SqlDB } from '../services/SqlDB.js';
 const logger = new Logger();
 const completion = new CompletionServices();
 const sqlDB = new SqlDB();
-const fileDB = new FileDB();
 
 /**
  *

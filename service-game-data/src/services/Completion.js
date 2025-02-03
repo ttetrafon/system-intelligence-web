@@ -19,8 +19,9 @@ export class CompletionServices {
     this.PROTECTED_PROPERTIES = [
     ];
 
-    // If any of the following properties is found in a response, they will be removed.
+    // If any of the following properties is found in a response, it will be removed.
     this.REDACTED_PROPERTIES = [
+      '_id'
     ];
   }
 
@@ -81,22 +82,23 @@ export class CompletionServices {
    * Sanitise outgoing data based on property names
    * @param {Object} responseObj
    */
-  async checkProperties(responseObj) {
-    // TODO ...
-
-    // if ((typeof obj != 'object') || (obj === null) || (obj instanceof Array)) {
-    //   return;
-    // }
-    // var properties = Object.keys(obj);
-    // properties.forEach((prop) => {
-    //   if (this.PROTECTED_PROPERTIES.includes(prop)) {
-    //     throw new Error('Protected property ' + prop + ' found in response!');
-    //   }
-    //   else {
-    //     if (typeof obj[prop] === 'object') {
-    //       this.checkProperties(obj[prop]);
-    //     }
-    //   }
-    // });
+  async checkProperties(obj) {
+    if ((typeof obj != 'object') || (obj === null) || (obj instanceof Array)) {
+      return;
+    }
+    var properties = Object.keys(obj);
+    properties.forEach((prop) => {
+      if (this.PROTECTED_PROPERTIES.includes(prop)) {
+        throw new Error('Protected property ' + prop + ' found in response!');
+      }
+      else if (this.REDACTED_PROPERTIES.includes(prop)) {
+        delete obj[prop];
+      }
+      else {
+        if (typeof obj[prop] === 'object') {
+          this.checkProperties(obj[prop]);
+        }
+      }
+    });
   }
 }
