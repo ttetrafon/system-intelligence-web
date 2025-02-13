@@ -1,4 +1,6 @@
-import { userRole } from "../data/enums.js";
+import { urls } from '../data/config.js';
+import { userRole } from '../data/enums.js';
+import { htmlMethods, jsonRequest } from '../helper/requests.js';
 
 class State {
   constructor() {
@@ -7,7 +9,9 @@ class State {
       State.instance = this;
     }
     this.user = new User(userRole.DM);
-    this.data = {};
+    this.data = {
+
+    }; // TODO: if data is empty, get data from storage
     this.elementHierarchy = [
       "h1",
       "h2",
@@ -16,23 +20,27 @@ class State {
       "h5",
       "h6",
       "p"
-    ]
-
-    // TODO: if data is empty, get data from storage
+    ];
+    this.$runningRequests = {};
 
     return State.instance;
   }
 
   async fetchData(type) {
     if (this.data[type]) return this.data[type];
-    let res = await fetch(`./data/${type}.json`);
-    let data = await res.json();
-    this.data[type] = data;
+
+    if (this.$runningRequests[type]) return; // TODO: make this rerun in a second or so if this is true, so that the requester gets the data back when the same call has finished!
+    this.$runningRequests[type] = true;
+
+    let res = await jsonRequest(`${urls.gameDataService}/${type}`, htmlMethods.GET);
+    this.data[type] = res;
     // TODO: send to browser storage
-    return data;
+
+    this.$runningRequests[type] = false;
+    return res;
   }
 
-  buildInfoCardStructure(elementList, target) {
+  buildInfoCardStructure(elementList, target, isEditorEnabled = false) {
     // console.log("---> buildInfoCardStructure()", elementList, target);
     let res = [];
     let targetElementType;

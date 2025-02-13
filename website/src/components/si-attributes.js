@@ -1,5 +1,5 @@
 import { buildHtmlFromStructure } from '../helper/dom.js';
-import state from '../helper/state.js';
+import state from '../service/state.js';
 
 const template = document.createElement('template');
 

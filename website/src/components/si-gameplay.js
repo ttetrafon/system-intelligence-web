@@ -1,5 +1,4 @@
-import { buildHtmlFromStructure } from '../helper/dom.js';
-import state from '../helper/state.js';
+import state from '../service/state.js';
 
 const template = document.createElement('template');
 
@@ -24,7 +23,6 @@ class Component extends HTMLElement {
     this._shadow.appendChild(template.content.cloneNode(true));
 
     this.$editor = this._shadow.querySelector("html-editor");
-    this.$container = this._shadow.querySelector("section");
   }
 
   static get observedAttributes() { return ['label']; }
@@ -54,11 +52,11 @@ class Component extends HTMLElement {
   }
 
   async initialiseGameplay() {
-    let gameplay = await state.fetchData("gameplay");
-    console.log("gameplay", gameplay);
-    buildHtmlFromStructure(gameplay.structure, this.$container);
+    let gameplay = await state.fetchData("data/gameplay-data/gameplay");
+    // console.log("gameplay", gameplay);
 
-    this.$editor.setAttribute("data", JSON.stringify(gameplay.structure));
+    // this.$editor.setAttribute("enabled", false);
+    // this.$editor.setAttribute("data", JSON.stringify(gameplay.structure));
   }
 }
 
