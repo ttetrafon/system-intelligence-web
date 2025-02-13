@@ -98,6 +98,7 @@ export class FileDB {
   async retrieveDataFile(collection, key) {
     this.logger.debug(`--> retrieveDataFile(${ key })`);
     const query = { _id: key };
+    console.log("collection:", collection, "query:", query);
     const document = await this[collection].findOne(query);
     console.log("retrieved document:", document);
     return document;
@@ -116,7 +117,7 @@ export class FileDB {
       _id: key,
       ...json
     };
-    let result = await this.siDataCollection.insertOne(document);
+    let result = await this[collection].insertOne(document);
     this.logger.debug(`Data inserted with key (_id): ${ result.insertedId }`);
     return result;
   }

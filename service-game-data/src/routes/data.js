@@ -31,4 +31,9 @@ router.get('/web-app-menus/', async (req, res) => {
   await requestHandler(req, res, webApp.menus.bind(webApp));
 });
 
+// GET /data/gameplay
+router.get('/gameplay-data', async (req, res) => {
+  await requestHandler(req, res, webApp.gameplayData.bind(webApp));
+});
+
 export default router;

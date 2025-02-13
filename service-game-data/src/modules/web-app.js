@@ -26,9 +26,24 @@ export class WebApp {
 
     let menus = await this.fileDB.retrieveDataFile(
       fileDbNames.COL_APP_STRUCTURE.description,
-      fileDbNames.ID_APP_MENUS.description);
+      fileDbNames.ID_APP_MENUS.description
+    );
     return {
       'app-menus': menus
+    };
+  }
+
+  async gameplayData(request) {
+    this.logger.info(`---> WebApp.gameplayData()`);
+
+    await this.fileDB.getGameplayDb();
+
+    let gameplayData = await this.fileDB.retrieveDataFile(
+      fileDbNames.COL_GENERAL_GAMEPLAY.description,
+      fileDbNames.ID_GAMEPLAY.description
+    );
+    return {
+      'gameplay-data': gameplayData
     };
   }
 }
