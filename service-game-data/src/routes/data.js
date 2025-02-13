@@ -10,7 +10,7 @@ const fileDb = new FileDB();
 const gameplay = new Gameplay();
 const webApp = new WebApp();
 
-// TODO: store data in cache, so we don't retrieve them all the time...
+// TODO: store data in cache, so we don't hit the DB all the time...
 
 const router = express.Router();
 
@@ -32,7 +32,7 @@ router.get('/web-app-menus/', async (req, res) => {
 });
 
 // GET /data/gameplay
-router.get('/gameplay-data', async (req, res) => {
+router.get('/gameplay-data/gameplay', async (req, res) => {
   await requestHandler(req, res, webApp.gameplayData.bind(webApp));
 });
 
