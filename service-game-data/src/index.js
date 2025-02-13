@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import serverlessExpress from '@vendia/serverless-express';
 import { dirname } from 'path';
@@ -14,6 +15,20 @@ const sql = new SqlDB();
 
 // Create the Express app
 const app = express();
+const allowedOrigins = [
+  'http://127.0.0.1:5500',
+  'https://system-intelligence.com'];
+app.use(cors({
+  origin: function (origin, callback) {
+    logger.debug(`request origin: ${origin}`);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // Global middleware
