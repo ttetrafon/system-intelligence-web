@@ -24,6 +24,7 @@ class Component extends HTMLElement {
 
   // A web component implements the following lifecycle methods.
   attributeChangedCallback(name, oldVal, newVal) {
+    // console.log(`---> attributeChangedCallback(${name}, ${JSON.stringify(oldVal)}, ${JSON.stringify(newVal)})`);
     if (oldVal == newVal) return;
     switch (name) {
     }

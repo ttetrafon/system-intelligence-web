@@ -1,19 +1,48 @@
-import state from '../service/state.js';
-
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
   @import './styles.css';
 
-  section {
-    margin-top: 25px;
+  div {
+    width: 100%;
+    justify-content: center;
+    gap: 7px;
   }
+
+  button {
+    background-color: var(--colour-2);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-grow: 0;
+    flex-shrink: 0;
+    padding: 2px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: var(--colour-3);
+  }
+
+  svg-wrapper {
+    display: block;
+    width: 25px;
+    aspect-ratio: 1;
+    cursor: pointer;
+  }
+
 </style>
 
-<html-editor></html-editor>
+<div class="flex-line">
+  <button id="heading1"><svg-wrapper
+    colour="var(--colour-1)"
+    image="format_h1.svg"
+    label="Heading 1"
+    pointer="true"
+  ></svg-wrapper></button>
 
-<section></section>
+  <span class="flex-separator-horizontal"></span>
+</div>
 `;
 
 class Component extends HTMLElement {
@@ -22,7 +51,7 @@ class Component extends HTMLElement {
     this._shadow = this.attachShadow({ mode: 'closed' });
     this._shadow.appendChild(template.content.cloneNode(true));
 
-    this.$editor = this._shadow.querySelector("html-editor");
+
   }
 
   static get observedAttributes() { return ['label']; }
@@ -39,7 +68,6 @@ class Component extends HTMLElement {
   }
   connectedCallback() {
     // Triggered when the component is added to the DOM.
-    this.initialiseGameplay();
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
@@ -51,13 +79,6 @@ class Component extends HTMLElement {
     // Note that adoption does not trigger the constructor again.
   }
 
-  async initialiseGameplay() {
-    let gameplay = await state.fetchData("data/gameplay-data/gameplay");
-    // console.log("gameplay", gameplay);
-
-    // this.$editor.setAttribute("enabled", false);
-    // this.$editor.setAttribute("data", JSON.stringify(gameplay.structure));
-  }
 }
 
-window.customElements.define('si-gameplay', Component);
+window.customElements.define('si-editing-header', Component);

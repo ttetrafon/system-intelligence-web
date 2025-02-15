@@ -9,9 +9,7 @@ class State {
       State.instance = this;
     }
     this.user = new User(userRole.DM);
-    this.data = {
-
-    }; // TODO: if data is empty, get data from storage
+    this.data = {}; // TODO: if data is empty, get data from storage
     this.elementHierarchy = [
       "h1",
       "h2",
@@ -23,6 +21,19 @@ class State {
     ];
     this.$runningRequests = {};
 
+    this.dataCategories = [
+      "app-data",
+      "gameplay-data"
+    ];
+    this.dataPages = {
+      "app-data": [
+        "app-structure"
+      ],
+      "gameplay-data": [
+        "general-gameplay"
+      ]
+    };
+
     return State.instance;
   }
 
@@ -33,8 +44,7 @@ class State {
     this.$runningRequests[type] = true;
 
     let res = await jsonRequest(`${urls.gameDataService}/${type}`, htmlMethods.GET);
-    this.data[type] = res;
-    // TODO: send to browser storage
+    this.data[type] = res; // TODO: send to browser storage too; maybe this a secondary function!
 
     this.$runningRequests[type] = false;
     return res;

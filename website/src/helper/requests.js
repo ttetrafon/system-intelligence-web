@@ -28,16 +28,22 @@ export async function jsonRequest(url, method, body) {
   if (body) {
     requestData.body = JSON.stringify(body);
   }
-  console.log("requestData", requestData);
+  // console.log("requestData", requestData);
   let request = new Request(url, requestData);
   let response = await fetch(request);
   let status = response.status;
   if (status != 200) return null;
 
   let res = await response.json();
+  // console.log("requestResponse", res);
   return res;
 }
-
+/**
+ *
+ * @param {*} url
+ * @param {*} formData
+ * @returns
+ */
 export async function formDataRequest(url, formData) {
   let request = new Request(url, {
     method: 'POST',
@@ -53,7 +59,11 @@ export async function formDataRequest(url, formData) {
   let response = await fetch(request);
   return await response.json();
 }
-
+/**
+ *
+ * @param {*} url
+ * @returns
+ */
 export async function fetchJsonData(url) {
   let res = await fetch(url);
   console.log(res);
