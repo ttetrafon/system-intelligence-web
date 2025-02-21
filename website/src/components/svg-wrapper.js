@@ -114,7 +114,6 @@ class Component extends HTMLElement {
   }
 
   setPointer() {
-    console.log(`setPointer()`, this.pointer, this.$svg, this.pointer != null, this.pointer != undefined);
     if (this.$svg && this.pointer != null && this.pointer != undefined) {
       this.$svg.classList.toggle("pointer", this.pointer);
       this.$path.classList.toggle("pointer", this.pointer);

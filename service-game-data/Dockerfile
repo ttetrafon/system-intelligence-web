@@ -1,4 +1,6 @@
 FROM public.ecr.aws/lambda/nodejs:18
-COPY src/ ${LAMBDA_TASK_ROOT}
-# RUN npm install
+WORKDIR ${LAMBDA_TASK_ROOT}
+COPY package*.json ./
+RUN npm install --omit=dev
+COPY src/ ./
 CMD ["index.handler"]

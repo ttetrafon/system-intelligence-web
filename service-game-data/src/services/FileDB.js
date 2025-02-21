@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb';
 import { Logger } from './Logger.js';
 import { fileDbNames } from '../data/enums.js';
+import { fileDbClientFromEnv } from '../helper/configuration.js';
 
 export class FileDB {
   constructor() {
@@ -38,7 +39,7 @@ export class FileDB {
   }
   client() {
     if (!this.fileDbClient) {
-      this.fileDbClient = new MongoClient('mongodb://admin:admin-pass@localhost://si-mongodb:27017/?authSource=admin');
+      this.fileDbClient = new MongoClient(fileDbClientFromEnv());
     }
   }
 

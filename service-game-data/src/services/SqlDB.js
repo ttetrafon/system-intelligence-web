@@ -1,5 +1,6 @@
 import mariadb from 'mariadb';
 import { Logger } from './Logger.js';
+import { sqlDbClientFromEnv } from '../helper/configuration.js';
 
 export class SqlDB {
   constructor() {
@@ -11,19 +12,11 @@ export class SqlDB {
     this.logger = new Logger();
     this.logger.info(`---> SqlDB`);
 
-    this.dbParams = {
-      // https://mariadb.com/docs/server/connect/programming-languages/nodejs/promise/connection-pools/
-      host: "127.0.0.1",
-      port: 3306,
-      user: "si-user",
-      password: "si-user-pass",
-      database: "si-database",
-      connectionLimit: 50
-    };
+    // https://mariadb.com/docs/server/connect/programming-languages/nodejs/promise/connection-pools/
+    this.dbParams = sqlDbClientFromEnv();
 
     this.pool = null;
   }
-
 
   /**
    * Connects to the DB by creating a connection pool and tests by retrieving a connection from the pool.

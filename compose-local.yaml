@@ -22,6 +22,22 @@ services:
     - "3306:3306"
     volumes:
     - mariadb_data:/var/lib/mysql
+  # si-service-game-data:
+  #   build: ./service-game-data/
+  #   environment:
+  #     NODE_ENV: development
+  #     FILES_DB: "mongodb://admin:admin-pass@si-mongodb://si-mongodb:27017/?authSource=admin"
+  #     SQL_HOST: "si-mariadb"
+  #     SQL_PORT: 3306
+  #     SQL_USER: si-user
+  #     SQL_PASSWORD: si-user-pass
+  #     SQL_DATABASE: si-database
+  #     SQL_CONNECTION_LIMIT: 50
+  #   ports:
+  #   - "9000:8080"
+  #   depends_on:
+  #   - si-mongodb
+  #   - si-mariadb
 
 volumes:
   mongo-db-data:

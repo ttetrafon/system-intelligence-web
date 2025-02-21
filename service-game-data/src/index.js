@@ -7,11 +7,9 @@ import { fileURLToPath } from 'url';
 import dataRoutes from './routes/data.js';
 import indexRoutes from './routes/root.js';
 import { Logger } from './services/Logger.js';
-import { SqlDB } from './services/SqlDB.js';
 
 // Initial setup
 const logger = new Logger();
-const sql = new SqlDB();
 
 // Create the Express app
 const app = express();
@@ -53,14 +51,12 @@ export const handler = async (event, context) => {
 
 // Utility to check if this module is the main entry point
 const isMain = () => {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-  return process.argv[1] === __filename;
+  return process.env.AWS_LAMBDA_RUNTIME_API === undefined;
 };
 
 // Run locally if this file is the main entry point
 if (isMain()) {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 8080;
   app.listen(PORT, () => {
     logger.info(`Server running locally on http://localhost:${PORT}`);
   });
