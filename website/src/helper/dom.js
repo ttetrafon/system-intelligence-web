@@ -1,3 +1,5 @@
+import { eventNames } from "../data/enums.js";
+
 export async function clearChildren(parent) {
   while(parent.firstChild) {
     parent.removeChild(parent.lastChild);
@@ -68,5 +70,30 @@ export async function emitCustomEvent(that, eventName, eventDetails) {
   }));
 };
 export async function toggleSpinningCircle(that, state) {
-  emitCustomEvent(that, "toggle-spinning-circle", { state: state });
+  emitCustomEvent(that, eventNames.TOGGLE_SPINNING_CIRCLE.description, {
+    bubbles: true,
+    composed: true,
+    state: state
+  });
+}
+export async function emitNavigationEvent(that, target) {
+  emitCustomEvent(that, eventNames.NAVIGATE.description, {
+    bubbles: true,
+    composed: true,
+    target: target
+  });
+}
+/**
+ * @param {HTMLElement} that
+ * @param {String} route
+ */
+export async function emitSubPageContainerEvent(that, route) {
+  setTimeout(() => {
+    emitCustomEvent(that, eventNames.SUB_PAGE_CONTAINER.description, {
+      bubbles: true,
+      composed: true,
+        container: that,
+      route: route
+    });
+  }, 0);
 }
