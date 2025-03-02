@@ -1,25 +1,32 @@
+import styles from '../style.css?inline';
+
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  @import './styles.css';
+  ${styles}
 
-  div {
-    width: 300px;
+  h3 {
+    color: var(--colour-1);
+    text-align: center;
+    font-size: 1rem;
   }
 
-  input {
-    padding: 5px;
-    text-align: center;
-    color: var(--colour-5);
+  hr {
+    color: var(--colour-1);
+  }
+
+  div {
     width: 100%;
-    border-radius: 10px;
+    overflow-y: auto;
+    overflow-x: clip;
+    padding: 10px;
   }
 </style>
 
-<div>
-  <input type="text" placeholder="Start typing to search..."/>
-</div>
+<h3>Table of Contents</h3>
+<hr>
+<div container></div>
 `;
 
 class Component extends HTMLElement {
@@ -44,4 +51,4 @@ class Component extends HTMLElement {
   }
 }
 
-window.customElements.define('si-search-bar', Component);
+window.customElements.define('si-contents', Component);

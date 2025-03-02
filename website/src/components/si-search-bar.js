@@ -1,21 +1,26 @@
+import styles from '../style.css?inline';
+
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  @import './styles.css';
+  ${styles}
 
   div {
+    width: 300px;
+  }
+
+  input {
+    padding: 5px;
+    text-align: center;
+    color: var(--colour-5);
     width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: space-between;
+    border-radius: 10px;
   }
 </style>
 
-<div class="flex-line">
-  <span id="flex-separator-horizontal"></span>
-  <si-search-bar></si-search-bar>
-  <span id="flex-separator-horizontal"></span>
+<div>
+  <input type="text" placeholder="Start typing to search..."/>
 </div>
 `;
 
@@ -24,6 +29,8 @@ class Component extends HTMLElement {
     super();
     this._shadow = this.attachShadow({ mode: 'closed' });
     this._shadow.appendChild(template.content.cloneNode(true));
+
+
   }
 
   static get observedAttributes() { return ['label']; }
@@ -35,10 +42,8 @@ class Component extends HTMLElement {
   attributeChangedCallback(name, oldVal, newVal) {
     if (oldVal == newVal) return;
     switch(name) {
-      default:
-        break;
     }
   }
 }
 
-window.customElements.define('si-header', Component);
+window.customElements.define('si-search-bar', Component);

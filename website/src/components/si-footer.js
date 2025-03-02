@@ -1,8 +1,10 @@
+import styles from '../style.css?inline';
+
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  @import './styles.css';
+  ${styles}
 
   div {
     height: 100%;
@@ -21,7 +23,7 @@ template.innerHTML = /*html*/`
 
 <div class="flex-line">
   <span id="version"></span>
-  <span class="flex-separator-horizontal"></span>
+  <span class="flex-separator"></span>
   <span id="copyright"></span>
 </div>
 `;
@@ -35,8 +37,8 @@ class Component extends HTMLElement {
     this.$copyright = this._shadow.getElementById("copyright");
     this.$version = this._shadow.getElementById("version");
 
-    this.$copyright.innerHTML = `Copyright &#169; ${new Date().getFullYear()}`;
-    this.$version.innerText = `v. 0.0.4`;
+    this.$copyright.innerHTML = `Copyright &#169; 2024 - ${new Date().getFullYear()}`;
+    this.$version.innerText = `v. 0.0.5`;
   }
 
   static get observedAttributes() { return ['label']; }

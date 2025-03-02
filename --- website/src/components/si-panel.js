@@ -1,10 +1,11 @@
+import styles from '../style.css?inline';
 import state from '../service/state.js';
 
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  @import './styles.css';
+  ${styles}
 
   si-editor-header {
     width: 100%;

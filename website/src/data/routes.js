@@ -1,33 +1,10 @@
 export const routes = {
-  '/page-one': {
-    content: 'page-one',
-    title: "Page 1",
-    description: "This is page one!",
-    path: "/page-one",
+  '/': {
+    content: "si-main-container",
+    title: "System Intelligence",
+    description: "System Intelligence Web App",
+    path: "/",
     pathType: "WebPage"
-  },
-  '/page-two': {
-    content: "page-two",
-    title: "Page 2",
-    description: "This is page two!",
-    path: "/page-two",
-    pathType: "WebPage"
-  },
-  '/tab-one': {
-    content: "tab-one",
-    title: "Tab 1",
-    description: "This is tab one!",
-    path: "/page-two/tab-one",
-    pathType: "WebPage",
-    subroute: true
-  },
-  '/tab-two': {
-    content: "tab-two",
-    title: "Tab 2",
-    description: "This is tab two!",
-    path: "/page-two/tab-two",
-    pathType: "WebPage",
-    subroute: true
   },
   '/404': {
     content: "page-404",
@@ -39,7 +16,4 @@ export const routes = {
 }
 
 export const aliases = {
-  '/': '/page-one',
-  '/page-two/tab-one': '/tab-one',
-  '/page-two/tab-two': '/tab-two'
 }

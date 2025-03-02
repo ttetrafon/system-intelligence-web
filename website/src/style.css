@@ -1,17 +1,17 @@
 :root {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 1.5;
 
-  --colour-primary: #000000;
-  --colour-primary-a: #00000070;
-  --colour-secondary: #854836;
-  --colour-secondary-a: #85483670;
-  --colour-tertiary: #FFB22C;
-  --colour-tertiary-a: #FFB22C70;
-  --colour-quaternary: #F7F7F7;
-  --colour-quaternary-a: #F7F7F770;
+  --colour-primary: #100600;
+  --colour-primary-a: #10060070;
+  --colour-secondary: #dc5f00;
+  --colour-secondary-a: #dc5f0070;
+  --colour-tertiary: #686d76;
+  --colour-tertiary-a: #686d7670;
+  --colour-quaternary: #f5f5f5;
+  --colour-quaternary-a: #f5f5f570;
 
   color-scheme: light dark;
   color: var(--colour-quaternary);
@@ -21,6 +21,17 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  cursor: default;
+  user-select: none;
+
+  --statics-height-header: 3rem;
+  --statics-height-footer: 2rem;
+  --statics-height-nav: 2rem;
+  --statics-width-side: 250px;
+
+  --border-dark: 1px solid var(--colour-secondary);
+  --border-light: 1px solid var(--colour-tertiary);
 }
 
 * {
@@ -31,17 +42,81 @@
 }
 
 body {
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
 }
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+si-header {
+  position: fixed;
+  left: var(--statics-width-side);
+  right: 0;
+  top: 0;
+  height: var(--statics-height-header);
+  border-bottom: var(--border-light);
+}
+
+si-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--statics-height-footer);
+  border-top: var(--border-light);
+}
+
+nav {
+  top: var(--statics-height-header);
+  position: fixed;
+  left: var(--statics-width-side);
+  right: 0;
+  height: var(--statics-height-nav);
+  background-color: var(--colour-2a);
+}
+
+main {
+  position: fixed;
+  left: var(--statics-width-side);
+  right: 0;
+  top: calc(var(--statics-height-header) + var(--statics-height-nav));
+  bottom: var(--statics-height-footer);
+  padding: 15px;
+}
+#main-container {
+  max-width: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+si-side-panel {
+  max-width: 25%;
+  flex-grow: 0.25;
+  flex-shrink: 1;
+}
+#chat-container {
+  min-width: 33%;
+  max-width: 50%;
+  flex-grow: 0.5;
+  flex-shrink: 0.5;
+  max-height: 25%;
+}
+#dice-roller {
+  min-width: 33%;
+  max-width: 50%;
+  flex-grow: 0.5;
+  flex-shrink: 0.5;
+  max-height: 25%;
+}
+
+aside {
+  position: fixed;
+  left: 0;
+  width: var(--statics-width-side);
+  top: 0;
+  bottom: var(--statics-height-footer);
+  padding: 5px;
+  border-right: var(--border-light);
 }
 
 .flex-line {
@@ -65,7 +140,41 @@ body {
   flex-shrink: 1;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
+  margin-top: 15px;
+}
+h1 {
+  font-size: 1.5rem;
+}
+h2 {
+  font-size: 1.4rem;
+}
+h3 {
+  font-size: 1.3rem;
+}
+h4 {
+  font-size: 1.2rem;
+}
+h5 {
+  font-size: 1.1rem;
+}
+h6 {
+  font-size: 1.05rem;
+}
+p {
+  margin-bottom: 5px;
+}
+p.quote {
+  padding-left: 35px;
+  font-style: italic;
+  color: var(--colour-tertiary);
+}
+
 button {
+  border: none;
+  border-radius: 5px;
+  background: none;
   cursor: pointer;
   padding: 5px 20px;
 }
@@ -74,5 +183,32 @@ button {
   :root {
     color: var(--colour-primary);
     background-color: var(--colour-quaternary);
+
+    --border-dark: 1px solid var(--colour-tertiary);
+    --border-light: 1px solid var(--colour-secondary);
   }
+}
+
+@container full-page (max-width: 1024px) {
+  main {
+    left: 50px;
+  }
+
+  aside {
+    width: 50px;
+  }
+}
+
+@media print {
+  * {
+    background-color: none;
+  }
+
+  si-header, si-footer {
+    display: none;
+  }
+}
+
+.hidden {
+  display: none;
 }

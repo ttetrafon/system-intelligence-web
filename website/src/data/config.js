@@ -1,1 +1,1 @@
-export const domainRoot = "https://myapp.com";
+export const domainRoot = "https://system-intelligence.com";

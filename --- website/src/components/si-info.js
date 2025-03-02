@@ -1,10 +1,11 @@
+import styles from '../style.css?inline';
 import { emitSideInfoEvent } from "../helper/dom.js";
 
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  @import './styles.css';
+  ${styles}
 
   span {
     font-weight: bold;

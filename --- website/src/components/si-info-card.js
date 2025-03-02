@@ -1,11 +1,12 @@
-import { buildHtmlFromStructure, clearChildren } from '../helper/dom.js';
+import styles from '../style.css?inline';
 import state from '../service/state.js';
+import { buildHtmlFromStructure, clearChildren } from '../helper/dom.js';
 
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  @import './styles.css';
+  ${styles}
 
   article {
     width: 100%;

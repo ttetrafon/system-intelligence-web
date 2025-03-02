@@ -11,7 +11,18 @@ template.innerHTML = /*html*/`
   }
 </style>
 
-<div>...</div>
+<article class="flex-line">
+  <!-- The main-container holds all open tabs/panels -->
+  <section id="main-container">
+    <si-panel data-path="data/gameplay-data/gameplay"></si-panel>
+  </section>
+
+  <si-side-panel></si-side-panel>
+
+  <!-- <section id="chat-container"></section> -->
+
+  <!-- <section id="dice-roller"></section> -->
+</article>
 `;
 
 class Component extends HTMLElement {
@@ -56,4 +67,4 @@ class Component extends HTMLElement {
   }
 }
 
-window.customElements.define('my-component', Component);
+window.customElements.define('si-main-container', Component);

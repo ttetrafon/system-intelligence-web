@@ -1,30 +1,24 @@
+import styles from '../style.css?inline';
+
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  @import './styles.css';
-
-  h3 {
-    color: var(--colour-1);
-    text-align: center;
-    font-size: 1rem;
-  }
-
-  hr {
-    color: var(--colour-1);
-  }
+  ${styles}
 
   div {
     width: 100%;
-    overflow-y: auto;
-    overflow-x: clip;
-    padding: 10px;
+    height: 100%;
+    align-items: center;
+    justify-content: space-between;
   }
 </style>
 
-<h3>Table of Contents</h3>
-<hr>
-<div container></div>
+<div class="flex-line">
+  <span id="flex-separator"></span>
+  <si-search-bar></si-search-bar>
+  <span id="flex-separator"></span>
+</div>
 `;
 
 class Component extends HTMLElement {
@@ -32,8 +26,6 @@ class Component extends HTMLElement {
     super();
     this._shadow = this.attachShadow({ mode: 'closed' });
     this._shadow.appendChild(template.content.cloneNode(true));
-
-
   }
 
   static get observedAttributes() { return ['label']; }
@@ -45,8 +37,10 @@ class Component extends HTMLElement {
   attributeChangedCallback(name, oldVal, newVal) {
     if (oldVal == newVal) return;
     switch(name) {
+      default:
+        break;
     }
   }
 }
 
-window.customElements.define('si-contents', Component);
+window.customElements.define('si-header', Component);
