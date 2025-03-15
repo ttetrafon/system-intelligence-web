@@ -1,8 +1,6 @@
 import cors from 'cors';
 import express from 'express';
 import serverlessExpress from '@vendia/serverless-express';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 
 import dataRoutes from './routes/data.js';
 import indexRoutes from './routes/root.js';
@@ -15,10 +13,11 @@ const logger = new Logger();
 const app = express();
 const allowedOrigins = [
   'http://127.0.0.1:5500',
-  'https://system-intelligence.com'];
+  'https://system-intelligence.com'
+];
 app.use(cors({
   origin: function (origin, callback) {
-    logger.debug(`request origin: ${origin}`);
+    logger.debug(`request origin: ${ origin }`);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -31,7 +30,7 @@ app.use(express.json());
 
 // Global middleware
 app.use((req, res, next) => {
-  logger.debug(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  logger.debug(`[${ new Date().toISOString() }] ${ req.method } ${ req.originalUrl }`);
   next();
 });
 
@@ -58,6 +57,6 @@ const isMain = () => {
 if (isMain()) {
   const PORT = process.env.PORT || 8080;
   app.listen(PORT, () => {
-    logger.info(`Server running locally on http://localhost:${PORT}`);
+    logger.info(`Server running locally on http://localhost:${ PORT }`);
   });
 }

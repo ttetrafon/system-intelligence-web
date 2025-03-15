@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { Logger } from './Logger.js';
+import { templateFileDbData } from '../data/db-seed.js';
 import { fileDbNames } from '../data/enums.js';
 import { fileDbClientFromEnv } from '../helper/configuration.js';
 
@@ -32,6 +33,7 @@ export class FileDB {
 
       this.logger.debug("... connected to FileDB");
       this.getAppDataDb();
+      this.getGameplayDb();
     }
     catch (err) {
       this.logger.error(err);
@@ -48,8 +50,8 @@ export class FileDB {
    * @param {Symbol} db: The name of the DB.
    * @param {Array[Symbol]} collections: The names of the collections in the given DB.
    */
-  async getDdAndCollections(db, collections) {
-    this.logger.debug(`---> connectToFileDb()`);
+  async getDbAndCollections(db, collections) {
+    this.logger.debug(`---> getDbAndCollections()`);
     if (this[db.description] && collections.every(col => this[col.description] != null && this[col.description] != undefined)) {
       this.logger.debug(`... ${ db.description } is already accessible`);
     }
@@ -70,7 +72,7 @@ export class FileDB {
    */
   async getAppDataDb() {
     this.logger.debug(`---> getAppDataDb()`);
-    await this.getDdAndCollections(
+    await this.getDbAndCollections(
       fileDbNames.DB_APP_DATA,
       [
         fileDbNames.COL_APP_STRUCTURE
@@ -82,7 +84,7 @@ export class FileDB {
    */
   async getGameplayDb() {
     this.logger.debug(`---> getGameplayDb()`);
-    await this.getDdAndCollections(
+    await this.getDbAndCollections(
       fileDbNames.DB_GAME_DATA,
       [
         fileDbNames.COL_GENERAL_GAMEPLAY
@@ -92,16 +94,23 @@ export class FileDB {
 
   /**
    *
-   * @param {String} collection
-   * @param {String} key
+   * @param {Symbol} db
+   * @param {Symbol} collection
+   * @param {Symbol} key
    * @returns {JSON}
    */
   async retrieveDataFile(collection, key) {
-    this.logger.debug(`--> retrieveDataFile(${ key })`);
-    const query = { _id: key };
-    console.log("collection:", collection, "query:", query);
-    const document = await this[collection].findOne(query);
-    console.log("retrieved document:", document);
+    this.logger.debug(`--> retrieveDataFile(${ db.description }, ${ collection.description }, ${ key.description })`);
+    const query = { _id: key.description };
+    let document = await this[collection.description].findOne(query);
+
+    if (!document) {
+      this.logger.warn("document non-existent: creating from template");
+      document = templateFileDbData[collection][id];
+      await this.storeDataFile(collection, key, document);
+    }
+
+    this.logger.debug(`retrieved document: ${JSON.stringify(document)}`);
     return document;
   }
 

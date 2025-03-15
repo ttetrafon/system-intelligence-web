@@ -12,6 +12,11 @@ const webApp = new WebApp();
 
 // TODO: store data in cache, so we don't hit the DB all the time...
 
+// TODO: data updates should be done with commands
+// - when a command comes, it should have the document's current version and action
+// - overlapping commands should fail and ask the writer for 'merge', while non-overlapping commands should
+// - successful commands should also be send back through the notification service to everyone connected
+
 const router = express.Router();
 
 // Middleware specific to this route
