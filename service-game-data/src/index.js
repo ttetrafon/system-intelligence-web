@@ -9,10 +9,15 @@ import { Logger } from './services/Logger.js';
 // Initial setup
 const logger = new Logger();
 
+// Utility to check if this module is the main entry point
+const isMain = () => {
+  return process.env.AWS_LAMBDA_RUNTIME_API === undefined;
+};
+
 // Create the Express app
 const app = express();
 const allowedOrigins = [
-  'http://127.0.0.1:5500',
+  'http://localhost:5173',
   'https://system-intelligence.com'
 ];
 app.use(cors({
@@ -46,11 +51,6 @@ export const handler = async (event, context) => {
     serverlessExpressInstance = serverlessExpress({ app });
   }
   return serverlessExpressInstance(event, context);
-};
-
-// Utility to check if this module is the main entry point
-const isMain = () => {
-  return process.env.AWS_LAMBDA_RUNTIME_API === undefined;
 };
 
 // Run locally if this file is the main entry point

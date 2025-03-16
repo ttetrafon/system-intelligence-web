@@ -21,7 +21,8 @@ export class CompletionServices {
 
     // If any of the following properties is found in a response, it will be removed.
     this.REDACTED_PROPERTIES = [
-      '_id'
+      '_id',
+      'schemaVersion'
     ];
   }
 
@@ -74,7 +75,7 @@ export class CompletionServices {
       await this.checkProperties(additionalProperties);
       Object.assign(responseObj, additionalProperties);
     }
-    this.logger.info('request responseObj: ', responseObj);
+    this.logger.info(`request responseObj: ${JSON.stringify(responseObj)}`);
     return responseObj;
   }
 

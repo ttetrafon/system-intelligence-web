@@ -1,3 +1,6 @@
+import { gameServiceUrl, routeTableOfContents } from "../data/config.js";
+import { jsonRequest, requestSymbols } from "../helper/requests.js";
+
 class State {
   constructor() {
     console.log("---> State()");
@@ -7,6 +10,11 @@ class State {
     this.user = new User();
 
     return State.instance;
+  }
+
+  async getAppMenus() {
+    // TODO: cache...
+    return await jsonRequest(gameServiceUrl + routeTableOfContents, {}, requestSymbols.GET);
   }
 }
 

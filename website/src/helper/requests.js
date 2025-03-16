@@ -1,22 +1,39 @@
-export async function jsonRequest(url, body) {
+export const requestSymbols = Object.freeze({
+  GET: Symbol("GET"),
+  POST: Symbol("POST"),
+  PUT: Symbol("PUT")
+});
+
+/**
+ *
+ * @param {String} url
+ * @param {JSON} body
+ * @param {Symbol} method
+ * @returns
+ */
+export async function jsonRequest(url, body, method = requestSymbols.GET) {
   // console.log(`---> request(${url}, ${JSON.stringify(body)})`);
   let headers = {
     "Accept": "*/*",
     "Connection": "keep-alive",
     "Content-Type": "application/json"
   };
-  let request = new Request(url, {
-    method: 'POST',
+  let requestData = {
+    method: method.description,
     headers: headers,
-    body: JSON.stringify(body),
     mode: "cors",
     cache: "no-cache"
-  });
+  };
+  if (method === requestSymbols.POST || method === requestSymbols.PUT) {
+    request.body = JSON.stringify(body);
+  };
+  let request = new Request(url, requestData);
   let response = await fetch(request);
   let status = response.status;
   if (status != 200) return null;
 
   let res = await response.json();
+  console.log("res:", res);
   return res;
 }
 

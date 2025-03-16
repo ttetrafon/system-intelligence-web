@@ -4,21 +4,21 @@ const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  ${styles}
+  ${ styles }
 
   :host {
     display: block;
-    width: 3em;
+    height: 100%;
   }
 
   #svg-container {
-    width: 100%;
+    height: 100%;
     aspect-ratio: 1;
-    border-radius: 50%;
+    border-radius: 25%;
     justify-content: center;
   }
   svg {
-    width: 100%;
+    height: 100%;
     aspect-ratio: 1;
   }
 
@@ -69,7 +69,7 @@ class Component extends HTMLElement {
     if (oldVal == newVal) return;
     switch (name) {
       case "image":
-        this.createSvg(`./img/ui/${this.image}`);
+        this.createSvg(`./img/ui/${ this.image }`);
         break;
       case "label":
         this.$svgContainer.setAttribute("title", this.label);
@@ -100,7 +100,7 @@ class Component extends HTMLElement {
   }
 
   async createSvg(url) {
-    let svg = await import(`../assets/ui/${this.image}.svg?raw`);
+    let svg = await import(`../assets/ui/${ this.image }.svg?raw`);
     this.$svgContainer.innerHTML = svg.default;
     this.$svg = this._shadow.querySelector("svg");
     this.$svg.removeAttribute("height");

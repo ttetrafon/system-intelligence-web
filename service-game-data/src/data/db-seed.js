@@ -6,7 +6,7 @@ export const templateFileDbData = {
       schemaVersion: 1,
       version: 0,
       order: [],
-      items: []
+      items: {}
     }
   }
 };

@@ -52,14 +52,14 @@ export class FileDB {
    */
   async getDbAndCollections(db, collections) {
     this.logger.debug(`---> getDbAndCollections()`);
-    if (this[db.description] && collections.every(col => this[col.description] != null && this[col.description] != undefined)) {
+    if (this[db] && collections.every(col => this[col.description] != null && this[col.description] != undefined)) {
       this.logger.debug(`... ${ db.description } is already accessible`);
     }
 
     try {
-      this[db.description] = this.fileDbClient.db(db.description);
+      this[db] = this.fileDbClient.db(db.description);
       collections.forEach(col => {
-        this[col.description] = this[db.description].collection(col.description);
+        this[col] = this[db].collection(col.description);
       });
       this.logger.debug(`... successfully established access to ${ db.description }`);
     }
@@ -100,17 +100,17 @@ export class FileDB {
    * @returns {JSON}
    */
   async retrieveDataFile(collection, key) {
-    this.logger.debug(`--> retrieveDataFile(${ db.description }, ${ collection.description }, ${ key.description })`);
+    this.logger.debug(`--> retrieveDataFile(${ collection.description }, ${ key.description })`);
     const query = { _id: key.description };
-    let document = await this[collection.description].findOne(query);
+    let document = await this[collection].findOne(query);
 
     if (!document) {
       this.logger.warn("document non-existent: creating from template");
-      document = templateFileDbData[collection][id];
+      document = templateFileDbData[collection][key];
       await this.storeDataFile(collection, key, document);
     }
 
-    this.logger.debug(`retrieved document: ${JSON.stringify(document)}`);
+    this.logger.debug(`retrieved document: ${ JSON.stringify(document) }`);
     return document;
   }
 
@@ -122,9 +122,9 @@ export class FileDB {
    * @returns {String}
    */
   async storeDataFile(collection, key, json) {
-    this.logger.debug(`--> storeDataFile(${ key }, ${ JSON.stringify(json) })`);
+    this.logger.debug(`--> storeDataFile(${ collection.description }, ${ key.description }, ${ JSON.stringify(json) })`);
     let document = {
-      _id: key,
+      _id: key.description,
       ...json
     };
     let result = await this[collection].insertOne(document);
