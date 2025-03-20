@@ -1,5 +1,4 @@
 import { CompletionServices } from '../services/Completion.js';
-import { FileDB } from '../services/FileDB.js';
 import { Logger } from '../services/Logger.js';
 import { SqlDB } from '../services/SqlDB.js';
 
@@ -17,11 +16,17 @@ export async function requestHandler(request, response, func, withSql = false) {
   logger.info(`---> requestHandler(${withSql})`);
   try {
     let res = await (withSql ? sqlDbTransactionWrapper(request, func) : func(request));
-    completion.sendOkResponse(request, response, res);
+    if (res) completion.sendOkResponse(request, response, res);
   }
   catch(err) {
+    console.log(err);
     logger.error(err);
-    completion.sendFailResponse(request, response, completion.completionCodes.UNKNOWN_ERROR);
+    if (completion.completionCodes.hasOwnProperty(err)) {
+
+    }
+    else {
+     completion.sendFailResponse(request, response, completion.completionCodes.UNKNOWN_ERROR);
+    }
   }
 }
 

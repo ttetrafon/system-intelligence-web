@@ -11,8 +11,10 @@ export class CompletionServices {
     this.logger.info(`---> CompletionServices`);
 
     this.completionCodes = {
-      OK: {code: 0, message: "Ok"},
-      UNKNOWN_ERROR: {code: 9999, message: "Unknown error!"}
+      OK: { code: 0, message: "Ok", htmlStatus: 200 },
+      COMMAND_NOT_FOUND: { code: 5000, message: "Command not found", htmlStatus: 400 },
+      COMMAND_DOCUMENT_VERSION_MISMATCH: { code: 5001, message: "Document version mismatch on command", htmlStatus: 200 },
+      UNKNOWN_ERROR: { code: 9999, message: "Unknown error", htmlStatus: 500 }
     };
 
     // If any of these properties is found in a response, it will be blocked and an error will be thrown.
@@ -48,8 +50,7 @@ export class CompletionServices {
   async sendFailResponse(request, response, completionCode, additionalProperties) {
     this.logger.info('---> sendFailResponse()');
     let responseObj = await this.buildResponseObj(request, completionCode, additionalProperties);
-    // TODO: map internal errors to actual html error codes
-    let status = 500;
+    let status = completionCode.htmlStatus;
     response.status(status).json(responseObj);
   }
 
@@ -75,7 +76,7 @@ export class CompletionServices {
       await this.checkProperties(additionalProperties);
       Object.assign(responseObj, additionalProperties);
     }
-    this.logger.info(`request responseObj: ${JSON.stringify(responseObj)}`);
+    this.logger.info(`request responseObj: ${ JSON.stringify(responseObj) }`);
     return responseObj;
   }
 

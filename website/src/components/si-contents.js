@@ -1,5 +1,6 @@
-import { eventNames } from '../data/enums.js';
+import { commandNames, eventNames } from '../data/enums.js';
 import { deepCopy } from '../helper/data.js';
+import { Command, Command_AppMenu_AddItem } from '../model/command.js';
 import styles from '../style.css?inline';
 import state from '../services/state.js';
 
@@ -77,7 +78,7 @@ class Component extends HTMLElement {
       order: [],
       items: {}
     };
-    this.$locallyExecutedCommands = [];
+    this.$contentItems = {}; // String (UUID), HTMLElement
   }
 
   // Attributes need to be observed to be tied to the lifecycle change callback.
@@ -115,10 +116,10 @@ class Component extends HTMLElement {
    *
    * @param {HTMLElement} after
    * @param {Number} indentation
-   * @param {Event} event
    */
-  addItem(after, indentation, event) {
+  addItem(after, indentation) {
     let item = document.createElement("si-contents-item");
+    item.setAttribute("indentation", indentation);
 
     if (after) {
       after.insertAdjacentElement('afterend', item);
@@ -126,6 +127,7 @@ class Component extends HTMLElement {
     else {
       this.$container.appendChild(item);
     }
+    this.toggleBtnAddOnEmptyContents();
   }
 
   /**
@@ -134,23 +136,59 @@ class Component extends HTMLElement {
    * @param {Number} indentation
    * @param {Event} event
    */
-  createAddItemCommand(after, indentation, event) {
-
+  async createAddItemCommand(after, indentation, event) {
+    event.stopPropagation();
+    const addItemCommand = new Command_AppMenu_AddItem(this.$appMenus.version, indentation, after);
+    const res = await state.publishCommand(addItemCommand);
+    this.executeCommands(res);
   }
 
   /**
    *
-   * @param {JSON} command
+   * @param {JSON} commands
    */
-  executeCommand(command) {
-    if (this.$locallyExecutedCommands.includes(command.id)) {
-      let index = this.$locallyExecutedCommands.indexOf(command.id);
-      this.$locallyExecutedCommands.slice()
+  async executeCommands(data) {
+    for (let i = 0; i < data.commands.length; i++) {
+      const command = data.commands[i];
+      console.log("... executing command:", command);
+      switch (command.$type) {
+        case commandNames.COMMAND_APP_MENUS_ADD_ITEM.description:
+          // items
+          this.$appMenus.items[command.$identifier] = {
+            id: command.$identifier,
+            indentation: command.$indentation,
+            label: "..."
+          };
 
-      return;
+          // order
+          let afterElement = null;
+          if (command.$after) {
+            let afterIndex = this.$appMenus.order.indexOf(command.$after);
+            afterElement = this.$contentItems[command.$after];
+            if (afterIndex >= 0) {
+              if (this.$appMenus.order.length > afterIndex) {
+                this.$appMenus.order.splice(afterIndex + 1, 0, command.$identifier);
+              }
+              else {
+                this.$appMenus.order.push(command.$identifier);
+              }
+            }
+          }
+          else {
+            this.$appMenus.order.unshift(command.$identifier);
+          }
+
+          // version
+          this.$appMenus.version = data.info.newVersion;
+          console.log("this.$appMenus:", this.$appMenus);
+
+          // execution
+          this.addItem(afterElement, command.$indentation);
+          break;
+        case commandNames.COMMAND_APP_MENUS_MOVE_ITEM.description:
+          break;
+      }
     }
-
-    // TODO: execute command as appropriate
   }
 
   toggleBtnAddOnEmptyContents() {

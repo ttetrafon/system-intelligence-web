@@ -25,7 +25,7 @@ export async function jsonRequest(url, body, method = requestSymbols.GET) {
     cache: "no-cache"
   };
   if (method === requestSymbols.POST || method === requestSymbols.PUT) {
-    request.body = JSON.stringify(body);
+    requestData.body = JSON.stringify(body);
   };
   let request = new Request(url, requestData);
   let response = await fetch(request);

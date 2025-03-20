@@ -35,7 +35,7 @@ app.use(express.json());
 
 // Global middleware
 app.use((req, res, next) => {
-  logger.debug(`[${ new Date().toISOString() }] ${ req.method } ${ req.originalUrl }`);
+  logger.debug(`[${ new Date().toISOString() }] ${ req.method } ${ req.originalUrl }: body=${JSON.stringify(req.body)}`);
   next();
 });
 

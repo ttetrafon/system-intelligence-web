@@ -1,3 +1,10 @@
+export const commandNames = Object.freeze({
+  CATEGORY_APP_MENUS: Symbol("command-app-menus"),
+  COMMAND_APP_MENUS_ADD_ITEM: Symbol("app-menus-add-item"),
+  COMMAND_APP_MENUS_MOVE_ITEM: Symbol("app-menus-move-item"),
+  COMMAND_APP_MENUS_RENAME_ITEM: Symbol("app-menus-rename-item")
+});
+
 export const fileDbNames = Object.freeze({
   DB_CONFIG: Symbol("config"),
   COL_SETTINGS: Symbol("settings"),

@@ -1,10 +1,13 @@
 import express from 'express';
+import { commandNames } from '../data/enums.js';
 import { requestHandler } from '../helper/handler.js';
 import { Gameplay } from '../modules/gameplay.js';
 import { WebApp } from '../modules/web-app.js';
+import { CompletionServices } from '../services/Completion.js';
 import { FileDB } from '../services/FileDB.js';
 
 // services
+const completion = new CompletionServices();
 const fileDb = new FileDB();
 // modules
 const gameplay = new Gameplay();
@@ -28,17 +31,33 @@ router.use((req, res, next) => {
 
 // POST /data
 router.post('/', async (req, res) => {
-  await requestHandler(req, res, gameplay.test, true);
+  await requestHandler(req, res, gameplay.test.bind(webApp, req, res), true);
+});
+
+// POST /command
+router.post('/command/', async (req, res) => {
+  let data = req.body;
+  let commandType = data.$type;
+  // TODO: move the command category & type into the request url as params; i.e.: /command/{command-category}/{command-type}/
+
+  switch (commandType) {
+    case commandNames.COMMAND_APP_MENUS_ADD_ITEM.description:
+      await requestHandler(req, res, webApp.commandAppMenusAddItem.bind(webApp, req, res));
+      break;
+    default:
+      await completion.sendFailResponse(req, res, completion.completionCodes.COMMAND_NOT_FOUND, data);
+      break;
+  }
 });
 
 // GET /data/app-menus
 router.get('/web-app-menus/', async (req, res) => {
-  await requestHandler(req, res, webApp.menus.bind(webApp));
+  await requestHandler(req, res, webApp.menus.bind(webApp, req, res));
 });
 
 // GET /data/gameplay
 router.get('/gameplay-data/gameplay', async (req, res) => {
-  await requestHandler(req, res, webApp.gameplayData.bind(webApp));
+  await requestHandler(req, res, webApp.gameplayData.bind(webApp, req, res));
 });
 
 export default router;
