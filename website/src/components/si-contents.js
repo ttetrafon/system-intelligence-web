@@ -1,6 +1,6 @@
 import { commandNames, eventNames } from '../data/enums.js';
 import { deepCopy } from '../helper/data.js';
-import { Command, Command_AppMenu_AddItem } from '../model/command.js';
+import { Command_AppMenu_AddItem } from '../model/command.js';
 import styles from '../style.css?inline';
 import state from '../services/state.js';
 
@@ -9,6 +9,14 @@ const template = document.createElement('template');
 template.innerHTML = /*html*/`
 <style>
   ${ styles }
+
+  :host {
+    display: block;
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 5px;
+  }
 
   h3 {
     text-align: center;
@@ -25,10 +33,7 @@ template.innerHTML = /*html*/`
     overflow-y: auto;
     overflow-x: auto;
     padding: 10px;
-  }
-
-  #container {
-
+    flex-grow: 1;
   }
 
   #controls {
@@ -49,17 +54,17 @@ template.innerHTML = /*html*/`
 
 <h3>Table of Contents</h3>
 <hr>
-<section>
-  <div id="container" class="flex-column"></div>
-  <div id="controls" class="flex-line">
-    <button-text-image id="add-contents-item-empty"
-      label="Add Page"
-      hide-text=true,
-      image="add"
-      event-name=${ eventNames.ADD_CONTENTS_ITEM.description }
-    ></button-text-image>
-  </div>
+<section id="container">
 </section>
+<div id="controls" class="flex-line">
+  <button-text-image id="add-contents-item-empty"
+    label="Add Page"
+    hide-text=true,
+    image="add"
+    event-name=${ eventNames.ADD_CONTENTS_ITEM.description }
+  ></button-text-image>
+</div>
+<hr>
 `;
 
 class Component extends HTMLElement {
@@ -102,6 +107,10 @@ class Component extends HTMLElement {
     // Note that adoption does not trigger the constructor again.
   }
 
+  /**
+   *
+   * @returns
+   */
   async buildTableOfContents() {
     let res = await state.getAppMenus();
     if (res.version == this.$appMenus.version) return;
@@ -127,7 +136,6 @@ class Component extends HTMLElement {
     else {
       this.$container.appendChild(item);
     }
-    this.toggleBtnAddOnEmptyContents();
   }
 
   /**
@@ -185,14 +193,12 @@ class Component extends HTMLElement {
           // execution
           this.addItem(afterElement, command.$indentation);
           break;
+        case commandNames.COMMAND_APP_MENUS_INDENT_ITEM.description:
+          break;
         case commandNames.COMMAND_APP_MENUS_MOVE_ITEM.description:
           break;
       }
     }
-  }
-
-  toggleBtnAddOnEmptyContents() {
-    this.$btnAddItemOnEmptyContents.classList.toggle("hidden", this.$appMenus.order.length != 0);
   }
 }
 

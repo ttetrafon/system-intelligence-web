@@ -5,7 +5,7 @@
   "main": "./src/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "update-version": "replace '0.0.7' '0.0.7' ./website/package.json ./website/src/components/si-footer.js ./service-game-data/package.json ./package.json",
+    "update-version": "replace '0.0.8' '0.0.8' ./website/package.json ./website/src/components/si-footer.js ./service-game-data/package.json ./package.json",
     "local-compose-run": "docker compose -f compose-local.yaml up --force-recreate --build -d",
     "local-compose-down": "docker compose -f compose-local.yaml down",
     "local-compose-start": "docker compose -f compose-local.yaml start",
