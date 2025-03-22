@@ -83,6 +83,28 @@ export async function emitNavigationEvent(that, target) {
     target: target
   });
 }
+export async function emitDialogEvent(that, webComponent, confirmCb, cancelCb) {
+  emitCustomEvent(that, eventNames.DIALOG_OPEN.description, {
+    bubbles: true,
+    composed: true,
+    element: webComponent,
+    confirmCb: confirmCb,
+    cancelCb: cancelCb
+  });
+}
+export async function emitDialogConfirmEvent(that, data) {
+  emitCustomEvent(that, eventNames.DIALOG_CONFIRM.description, {
+    bubbles: true,
+    composed: true,
+    data: data
+  });
+}
+export async function emitDialogCancelEvent(that) {
+  emitCustomEvent(that, eventNames.DIALOG_CANCEL.description, {
+    bubbles: true,
+    composed: true
+  });
+}
 /**
  * @param {HTMLElement} that
  * @param {String} route

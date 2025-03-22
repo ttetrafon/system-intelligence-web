@@ -8,6 +8,9 @@ export const commandNames = Object.freeze({
 
 export const eventNames = Object.freeze({
   ADD_CONTENTS_ITEM: Symbol("add-contents-item"),
+  DIALOG_OPEN: Symbol("open-dialog"),
+  DIALOG_CANCEL: Symbol("cancel-dialog"),
+  DIALOG_CONFIRM: Symbol("confirm-dialog"),
   INPUT_CONTROL: Symbol("input-control"),
   NAVIGATE: Symbol("navigate"),
   SUB_PAGE_CONTAINER: Symbol("sub-page-container"),

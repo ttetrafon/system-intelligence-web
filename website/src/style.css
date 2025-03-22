@@ -181,6 +181,22 @@ button {
   padding: 0.1em 1em;
 }
 
+dialog {
+  padding: 20px;
+  border-radius: 10px;
+  margin: auto;
+}
+dialog::backdrop {
+  background-image: linear-gradient(
+    45deg,
+    magenta,
+    rebeccapurple,
+    dodgerblue,
+    green
+  );
+  opacity: 0.75;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: var(--colour-primary);

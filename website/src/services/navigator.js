@@ -1,7 +1,8 @@
 import { domainRoot } from '../data/config.js';
-import { checkStringForExistence, checkStringForNonExistence } from '../helper/data.js';
 import { eventNames } from '../data/enums.js';
 import { routes, aliases } from '../data/routes.js';
+import { checkStringForExistence, checkStringForNonExistence } from '../helper/data.js';
+import { clearChildren } from '../helper/dom.js';
 
 export class Navigator {
   constructor(containerId) {
@@ -28,8 +29,53 @@ export class Navigator {
     });
 
     window.addEventListener(eventNames.SUB_PAGE_CONTAINER.description, (e) => {
+      e.stopPropagation();
       // console.log(eventNames.SUB_PAGE_CONTAINER.description, e.detail);
       this.$subPageContainers[e.detail.route] = e.detail.container;
+    });
+
+    this.dialog = document.createElement('dialog');
+    const body = document.querySelector("body");
+    body.appendChild(this.dialog);
+
+    window.addEventListener(eventNames.DIALOG_OPEN.description, (e) => {
+      e.stopPropagation();
+      clearChildren(this.dialog);
+
+      this.$dialogConfirmCallback = e.detail.confirmCb ? e.detail.confirmCb : () => {};
+      this.$dialogCancelCallback = e.detail.cancelCb ? e.detail.cancelCb : () => {};
+
+      let el = document.createElement(e.detail.element);
+      this.dialog.appendChild(el);
+
+      this.dialog.showModal();
+    });
+    this.dialog.addEventListener(eventNames.DIALOG_CONFIRM.description, async (event) => {
+      console.log("dialog event:", eventNames.DIALOG_CONFIRM.description)
+      event.stopPropagation();
+      this.dialog.close();
+      await this.$dialogConfirmCallback(event.detail.data);
+
+      this.$dialogCancelCallback = () => {};
+      this.$dialogConfirmCallback = () => {};
+    });
+    this.dialog.addEventListener(eventNames.DIALOG_CANCEL.description, async (event) => {
+      console.log("dialog event:", eventNames.DIALOG_CANCEL.description)
+      event.stopPropagation();
+      this.dialog.close();
+      await this.$dialogCancelCallback();
+
+      this.$dialogCancelCallback = () => {};
+      this.$dialogConfirmCallback = () => {};
+    });
+    this.dialog.addEventListener('cancel', async (event) => {
+      console.log("dialog event: cancel");
+      event.stopPropagation();
+      this.dialog.close();
+      await this.$dialogCancelCallback();
+
+      this.$dialogCancelCallback = () => {};
+      this.$dialogConfirmCallback = () => {};
     });
   }
 
@@ -90,9 +136,10 @@ export class Navigator {
     // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel
     if (checkStringForNonExistence(value)) return;
 
-    const link = document.querySelector('link[rel="canonical"]');
+    let link = document.querySelector('link[rel="canonical"]');
     if (!link) {
       link = document.createElement('link');
+      link.setAttribute("rel", "canonical");
       document.head.appendChild(link);
     }
     link.setAttribute("href", value);
