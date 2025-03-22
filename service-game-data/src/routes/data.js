@@ -29,11 +29,6 @@ router.use((req, res, next) => {
   next();
 });
 
-// POST /data
-router.post('/', async (req, res) => {
-  await requestHandler(req, res, gameplay.test.bind(webApp, req, res), true);
-});
-
 // POST /command
 router.post('/command/', async (req, res) => {
   let data = req.body;
@@ -49,6 +44,13 @@ router.post('/command/', async (req, res) => {
       break;
   }
 });
+
+// POST /data
+router.post('/', async (req, res) => {
+  await requestHandler(req, res, gameplay.test.bind(webApp, req, res), true);
+});
+
+// TODO: when retrieving data, filter out what the request user should not see!
 
 // GET /data/app-menus
 router.get('/web-app-menus/', async (req, res) => {

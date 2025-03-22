@@ -3,6 +3,7 @@ import { Logger } from '../services/Logger.js';
 import { fileDbNames } from '../data/enums.js';
 import { Command_AppMenu_AddItem } from '../model/command.js';
 import { CompletionServices } from '../services/Completion.js';
+import { ContentsMenuItem } from '../model/db-data.js';
 
 export class WebApp {
   constructor() {
@@ -61,14 +62,15 @@ export class WebApp {
     }
 
     // - items
-    menus.items[command.$identifier] = {
-      id: command.$identifier,
-      indentation: command.$indentation,
-      label: "...",
-      type: "",
-      tags: [],
-      viewers: []
-    };
+    menus.items[command.$identifier] = new ContentsMenuItem(
+      command.$identifier,
+      command.$indentation,
+      "",
+      "",
+      [],
+      [],
+      []
+    );
 
     // - version
     menus.version += 1;
