@@ -64,7 +64,10 @@ export class WebApp {
     menus.items[command.$identifier] = {
       id: command.$identifier,
       indentation: command.$indentation,
-      label: "..."
+      label: "...",
+      type: "",
+      tags: [],
+      viewers: []
     };
 
     // - version

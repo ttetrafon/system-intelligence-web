@@ -14,7 +14,7 @@ export const templateFileDbData = {
 export const fileDbSchemaOperations = {
   [fileDbNames.COL_APP_STRUCTURE]: {
     [fileDbNames.ID_APP_MENUS]: {
-      "0::1": []
+      "1::2": []
     }
   }
 };

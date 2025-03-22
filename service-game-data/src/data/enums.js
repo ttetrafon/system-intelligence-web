@@ -18,3 +18,7 @@ export const fileDbNames = Object.freeze({
   ID_ATTRIBUTES: Symbol("attributes"),
   ID_GAMEPLAY: Symbol("gameplay")
 });
+
+export const schemaUpdates = Object.freeze({
+  ADD_PROPERTY: Symbol("add-property")
+});

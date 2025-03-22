@@ -14,14 +14,6 @@ class State {
   }
 
   /**
-   * Accepts commands (other clients produced) from the server and executes them.
-   * @param {Command} command
-   */
-  async consumeCommand(command) {
-
-  }
-
-  /**
    * Sends commands created on this client to the server.
    * @param {Command} command
    * // TODO:
