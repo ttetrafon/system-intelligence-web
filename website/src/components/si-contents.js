@@ -1,6 +1,6 @@
 import { commandNames, eventNames, generalNames } from '../data/enums.js';
 import { deepCopy } from '../helper/data.js';
-import { emitDialogEvent } from '../helper/dom.js';
+import { clearChildren, emitDialogEvent } from '../helper/dom.js';
 import { Command_AppMenu_AddItem } from '../model/command.js';
 import state from '../services/state.js';
 import styles from '../style.css?inline';
@@ -96,10 +96,6 @@ class Component extends HTMLElement {
     this.$AddItemBtn.addEventListener(eventNames.ADD_CONTENTS_ITEM.description, this.triggerItemDialog.bind(this, generalNames.PAGE_NEW.description, 0));
 
     this.buildTableOfContents();
-
-    setTimeout(() => {
-      this.triggerItemDialog(generalNames.PAGE_NEW.description, 0);
-    }, 500);
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
@@ -120,9 +116,16 @@ class Component extends HTMLElement {
     let res = await state.getAppMenus();
     if (res.version == this.$appMenus.version) return;
 
+    clearChildren(this.$container);
+
     this.$appMenus = deepCopy(res["app-menus"]);
     for (let i = 0; i < this.$appMenus.order.length; i++) {
+      let data = this.$appMenus.items[this.$appMenus.order[i]];
 
+      let item = document.createElement("si-contents-item");
+      item.setAttribute("label", data.label);
+      item.setAttribute("indentation", data.indentation);
+      this.$container.appendChild(item);
     }
   }
 

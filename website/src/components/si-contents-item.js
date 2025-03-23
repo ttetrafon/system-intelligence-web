@@ -12,6 +12,7 @@ template.innerHTML = /*html*/`
 
   div {
     white-space: nowrap;
+    cursor: pointer;
   }
 </style>
 
