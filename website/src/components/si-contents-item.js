@@ -1,3 +1,4 @@
+import { eventNames } from '../data/enums';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');
@@ -8,15 +9,56 @@ template.innerHTML = /*html*/`
 
   :host {
     display: block;
+    border-radius: 5px;
   }
 
-  div {
+  #container {
+    border-radius: 10px;
+    padding: 0 10px;
+    white-space: nowrap;
+    align-items: center;
+    height: 1.25em;
+  }
+  #container:hover {
+    z-index: 10;
+  }
+
+  #drag-handle {
+    cursor: move;
+  }
+
+  span {
     white-space: nowrap;
     cursor: pointer;
   }
+
+  .contents-item-controls {
+    display: none;
+  }
+  #container:hover .contents-item-controls {
+    display: block;
+  }
 </style>
 
-<div id="page"></div>
+<div id="container" class="flex-line">
+  <span id="page"></span>
+  <button-text-image class="contents-item-controls" id="edit-button"
+    label="Edit Page"
+    image="edit"
+    hide-text=true
+    event-name=${ eventNames.CONTENTS_ITEM_EDIT.description }
+  ></button-text-image>
+  <button-text-image class="contents-item-controls" id="delete-button"
+    label="Delete Page"
+    image="delete"
+    hide-text=true
+    event-name=${ eventNames.CONTENTS_ITEM_DELETE.description }
+  ></button-text-image>
+  <svg-wrapper class="contents-item-controls" id="drag-handle"
+    label="Move Page"
+    image="drag_indicator"
+  ></svg-wrapper>
+</div>
 `;
 
 class Component extends HTMLElement {
@@ -27,7 +69,11 @@ class Component extends HTMLElement {
     // Access happens through ths `shadowroot` property in the host.
     this._shadow.appendChild(template.content.cloneNode(true));
 
+    this.$container = this._shadow.getElementById("container")
     this.$page = this._shadow.getElementById("page");
+    this.$dragger = this._shadow.getElementById("drag-handle");
+    this.$editBtn = this._shadow.getElementById("edit-button");
+    this.$deleteBtn = this._shadow.getElementById("delete-button");
   }
 
   // Attributes need to be observed to be tied to the lifecycle change callback.
@@ -55,15 +101,37 @@ class Component extends HTMLElement {
   }
   connectedCallback() {
     // Triggered when the component is added to the DOM.
+    this.$editBtn.addEventListener(eventNames.CONTENTS_ITEM_EDIT.description, this.editBtnClicked.bind(this));
+    this.$deleteBtn.addEventListener(eventNames.CONTENTS_ITEM_DELETE.description, this.deleteBtnClicked.bind(this));
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
     // Ideal place for cleanup code.
     // Note that when destroying a component, it is good to also release any listeners.
+    this.$editBtn.removeEventListener(eventNames.CONTENTS_ITEM_EDIT.description, this.editBtnClicked);
+    this.$deleteBtn.removeEventListener(eventNames.CONTENTS_ITEM_DELETE.description, this.deleteBtnClicked);
   }
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
     // Note that adoption does not trigger the constructor again.
+  }
+
+  /**
+  *
+  * @param {Event} event
+  */
+  deleteBtnClicked(event) {
+    event.stopPropagation();
+    console.log("... delete item!");
+  }
+
+  /**
+   *
+   * @param {Event} event
+   */
+  editBtnClicked(event) {
+    event.stopPropagation();
+    console.log("... edit item!");
   }
 }
 

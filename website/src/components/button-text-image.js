@@ -1,5 +1,5 @@
-import styles from '../style.css?inline';
 import { emitCustomEvent } from '../helper/dom.js';
+import styles from '../style.css?inline';
 
 const template = document.createElement('template');
 

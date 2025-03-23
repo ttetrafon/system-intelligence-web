@@ -178,7 +178,7 @@ button {
   border-radius: 5px;
   background: none;
   cursor: pointer;
-  padding: 0.1em 1em;
+  padding: 0 5px;
 }
 
 dialog {

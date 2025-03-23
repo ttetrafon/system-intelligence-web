@@ -62,7 +62,7 @@ template.innerHTML = /*html*/`
     label="Add Page"
     hide-text=true,
     image="add"
-    event-name=${ eventNames.ADD_CONTENTS_ITEM.description }
+    event-name=${ eventNames.CONTENTS_ITEM_ADD.description }
   ></button-text-image>
 </div>
 <hr>
@@ -93,7 +93,7 @@ class Component extends HTMLElement {
   // A web component implements the following lifecycle methods.
   connectedCallback() {
     // Triggered when the component is added to the DOM.
-    this.$AddItemBtn.addEventListener(eventNames.ADD_CONTENTS_ITEM.description, this.triggerItemDialog.bind(this, generalNames.PAGE_NEW.description, 0));
+    this.$AddItemBtn.addEventListener(eventNames.CONTENTS_ITEM_ADD.description, this.triggerItemDialog.bind(this, generalNames.PAGE_NEW.description, 0));
 
     this.buildTableOfContents();
   }
@@ -101,7 +101,7 @@ class Component extends HTMLElement {
     // Triggered when the component is removed from the DOM.
     // Ideal place for cleanup code.
     // Note that when destroying a component, it is good to also release any listeners.
-    this.$AddItemBtn.removeEventListener(eventNames.ADD_CONTENTS_ITEM.description, this.triggerItemDialog);
+    this.$AddItemBtn.removeEventListener(eventNames.CONTENTS_ITEM_ADD.description, this.triggerItemDialog);
   }
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
