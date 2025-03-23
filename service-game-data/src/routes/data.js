@@ -15,10 +15,12 @@ const webApp = new WebApp();
 
 // TODO: store data in cache, so we don't hit the DB all the time...
 
-// TODO: data updates should be done with commands
-// - when a command comes, it should have the document's current version and action
-// - overlapping commands should fail and ask the writer for 'merge', while non-overlapping commands should
-// - successful commands should also be send back through the notification service to everyone connected
+// TODO: when retrieving data, filter out what the request user should not see!
+
+// Data updates are done with commands
+// - when a command comes, it should have the document's current version and action data
+// TODO - overlapping commands should fail and ask the writer for 'merge', while non-overlapping commands should
+// TODO - successful commands should also be send back through the notification service to everyone connected
 
 const router = express.Router();
 
@@ -29,7 +31,7 @@ router.use((req, res, next) => {
   next();
 });
 
-// POST /command
+// POST /data//command
 router.post('/command/', async (req, res) => {
   let data = req.body;
   let commandType = data.$type;
@@ -37,7 +39,7 @@ router.post('/command/', async (req, res) => {
 
   switch (commandType) {
     case commandNames.COMMAND_APP_MENUS_ADD_ITEM.description:
-      await requestHandler(req, res, webApp.commandAppMenusAddItem.bind(webApp, req, res));
+      await requestHandler(req, res, gameplay.commandAppMenusAddItem.bind(gameplay, req, res));
       break;
     default:
       await completion.sendFailResponse(req, res, completion.completionCodes.COMMAND_NOT_FOUND, data);
@@ -45,21 +47,14 @@ router.post('/command/', async (req, res) => {
   }
 });
 
-// POST /data
-router.post('/', async (req, res) => {
-  await requestHandler(req, res, gameplay.test.bind(webApp, req, res), true);
-});
-
-// TODO: when retrieving data, filter out what the request user should not see!
-
 // GET /data/app-menus
 router.get('/web-app-menus/', async (req, res) => {
-  await requestHandler(req, res, webApp.menus.bind(webApp, req, res));
+  await requestHandler(req, res, gameplay.menus.bind(gameplay, req, res));
 });
 
 // GET /data/gameplay
 router.get('/gameplay-data/gameplay', async (req, res) => {
-  await requestHandler(req, res, webApp.gameplayData.bind(webApp, req, res));
+  await requestHandler(req, res, gameplay.gameplayData.bind(gameplay, req, res));
 });
 
 export default router;
