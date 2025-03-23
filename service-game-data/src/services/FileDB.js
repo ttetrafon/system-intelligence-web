@@ -131,4 +131,18 @@ export class FileDB {
     this.logger.debug(`Data inserted with key (_id): ${ result.insertedId }`);
     return result;
   }
+
+  /**
+   *
+   * @param {String} collection
+   * @param {String} key
+   * @param {JSON} documentId
+   * @param {JSON} updateJson
+   * @returns
+   */
+  async updateDataFile(collection, key, documentId, updateJson) {
+    this.logger.debug(`--> updateDataFile(${ collection.description }, ${ key.description }, ${ JSON.stringify(documentId) }, ${ JSON.stringify(updateJson) })`);
+    let result = await this[collection].updateOne(documentId, updateJson, { upsert: true });
+    return result;
+  }
 }

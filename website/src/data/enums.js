@@ -17,8 +17,14 @@ export const eventNames = Object.freeze({
   TOGGLE_SPINNING_CIRCLE: Symbol("toggle-spinning-circle")
 });
 
+export const generalNames = Object.freeze({
+  PAGE_EDIT: Symbol("Edit Page"),
+  PAGE_NEW: Symbol("New Page")
+});
+
 export const userRoles = Object.freeze({
-  GM: Symbol("gm"),
+  SYSTEM_EDITOR: Symbol("system-editor"),
+  GM: Symbol("game-master"),
   PLAYER: Symbol("player"),
   OBSERVER: Symbol("observer")
 });

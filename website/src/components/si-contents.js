@@ -1,8 +1,9 @@
-import { commandNames, eventNames } from '../data/enums.js';
+import { commandNames, eventNames, generalNames } from '../data/enums.js';
 import { deepCopy } from '../helper/data.js';
+import { emitDialogEvent } from '../helper/dom.js';
 import { Command_AppMenu_AddItem } from '../model/command.js';
-import styles from '../style.css?inline';
 import state from '../services/state.js';
+import styles from '../style.css?inline';
 
 const template = document.createElement('template');
 
@@ -75,7 +76,7 @@ class Component extends HTMLElement {
     // Access happens through ths `shadowroot` property in the host.
     this._shadow.appendChild(template.content.cloneNode(true));
 
-    this.$btnAddItemOnEmptyContents = this._shadow.getElementById("add-contents-item-empty");
+    this.$AddItemBtn = this._shadow.getElementById("add-contents-item-empty");
     this.$container = this._shadow.getElementById("container");
 
     this.$appMenus = {
@@ -92,15 +93,19 @@ class Component extends HTMLElement {
   // A web component implements the following lifecycle methods.
   connectedCallback() {
     // Triggered when the component is added to the DOM.
-    this.$btnAddItemOnEmptyContents.addEventListener(eventNames.ADD_CONTENTS_ITEM.description, this.createAddItemCommand.bind(this, null, 0));
+    this.$AddItemBtn.addEventListener(eventNames.ADD_CONTENTS_ITEM.description, this.triggerItemDialog.bind(this, generalNames.PAGE_NEW.description, 0));
 
     this.buildTableOfContents();
+
+    setTimeout(() => {
+      this.triggerItemDialog(generalNames.PAGE_NEW.description, 0);
+    }, 500);
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
     // Ideal place for cleanup code.
     // Note that when destroying a component, it is good to also release any listeners.
-    this.$btnAddItemOnEmptyContents.removeEventListener(eventNames.ADD_CONTENTS_ITEM.description, this.createAddItemCommand);
+    this.$AddItemBtn.removeEventListener(eventNames.ADD_CONTENTS_ITEM.description, this.triggerItemDialog);
   }
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
@@ -126,27 +131,31 @@ class Component extends HTMLElement {
    * @param {HTMLElement} after
    * @param {Number} indentation
    */
-  addItem(after, indentation) {
+  addItem(after, label, indentation) {
     let item = document.createElement("si-contents-item");
+    item.setAttribute("label", label);
     item.setAttribute("indentation", indentation);
 
     if (after) {
       after.insertAdjacentElement('afterend', item);
     }
     else {
-      this.$container.appendChild(item);
+      this.$container.prepend(item);
     }
   }
 
   /**
    *
-   * @param {HTMLElement} after
-   * @param {Number} indentation
-   * @param {Event} event
+   * @param {JSON} data
    */
-  async createAddItemCommand(after, indentation, event) {
-    event.stopPropagation();
-    const addItemCommand = new Command_AppMenu_AddItem(this.$appMenus.version, indentation, after);
+  async createAddItemCommand(data) {
+    const addItemCommand = new Command_AppMenu_AddItem(
+      this.$appMenus.version,
+      data.label,
+      data.indentation,
+      data.after != "-" ? data.after : null
+    );
+    console.log("addItemCommand:", addItemCommand);
     const res = await state.publishCommand(addItemCommand);
     this.executeCommands(res);
   }
@@ -159,31 +168,31 @@ class Component extends HTMLElement {
     for (let i = 0; i < data.commands.length; i++) {
       const command = data.commands[i];
       console.log("... executing command:", command);
-      switch (command.$type) {
+      switch (command.type) {
         case commandNames.COMMAND_APP_MENUS_ADD_ITEM.description:
           // items
-          this.$appMenus.items[command.$identifier] = {
-            id: command.$identifier,
-            indentation: command.$indentation,
-            label: "..."
+          this.$appMenus.items[command.identifier] = {
+            id: command.identifier,
+            label: command.label,
+            indentation: command.indentation
           };
 
           // order
           let afterElement = null;
-          if (command.$after) {
-            let afterIndex = this.$appMenus.order.indexOf(command.$after);
-            afterElement = this.$contentItems[command.$after];
+          if (command.after) {
+            let afterIndex = this.$appMenus.order.indexOf(command.after);
+            afterElement = this.$contentItems[command.after];
             if (afterIndex >= 0) {
               if (this.$appMenus.order.length > afterIndex) {
-                this.$appMenus.order.splice(afterIndex + 1, 0, command.$identifier);
+                this.$appMenus.order.splice(afterIndex + 1, 0, command.identifier);
               }
               else {
-                this.$appMenus.order.push(command.$identifier);
+                this.$appMenus.order.push(command.identifier);
               }
             }
           }
           else {
-            this.$appMenus.order.unshift(command.$identifier);
+            this.$appMenus.order.unshift(command.identifier);
           }
 
           // version
@@ -191,14 +200,33 @@ class Component extends HTMLElement {
           console.log("this.$appMenus:", this.$appMenus);
 
           // execution
-          this.addItem(afterElement, command.$indentation);
+          this.addItem(afterElement, command.label, command.indentation);
           break;
         case commandNames.COMMAND_APP_MENUS_INDENT_ITEM.description:
           break;
         case commandNames.COMMAND_APP_MENUS_MOVE_ITEM.description:
           break;
+        default:
+          console.warn(`"No command matched: ${JSON.stringify(command)}"`);
+          break;
       }
     }
+  }
+
+  /**
+   *
+   * @param {Number} indentation
+   */
+  async triggerItemDialog(title, indentation) {
+    emitDialogEvent(
+      this.$AddItemBtn,
+      "si-contents-item-modal",
+      {
+        "title": title,
+        "indentation": indentation
+      },
+      this.createAddItemCommand.bind(this)
+    );
   }
 }
 

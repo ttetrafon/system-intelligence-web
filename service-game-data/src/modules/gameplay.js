@@ -18,75 +18,86 @@ export class Gameplay {
     this.completion = new CompletionServices();
     this.fileDB = new FileDB();
   }
-    /**
-   *
-   * @param {Request} request
-   * @param {Response} response
-   * @returns
-   */
-    async commandAppMenusAddItem(request, response) {
-      this.logger.info(`---> WebApp.command()`);
-      let data = request.body;
-      let documentVersion = data.$documentVersion;
-      let command = new Command_AppMenu_AddItem(data.$id, data.$identifier, data.$indentation, data.$after);
 
-      await this.fileDB.getAppDataDb();
+  /**
+ *
+ * @param {Request} request
+ * @param {Response} response
+ * @returns
+ */
+  async commandAppMenusAddItem(request, response) {
+    this.logger.info(`---> WebApp.command()`);
+    let data = request.body;
+    let documentVersion = data.documentVersion;
+    let command = new Command_AppMenu_AddItem(data.id, data.identifier, data.label, data.indentation, data.after);
 
-      let menus = await this.fileDB.retrieveDataFile(
-        fileDbNames.COL_APP_STRUCTURE,
-        fileDbNames.ID_APP_MENUS
-      );
+    await this.fileDB.getAppDataDb();
 
-      // check document version
-      if (menus.version != documentVersion) {
-        this.completion.sendFailResponse(request, response, this.completion.completionCodes.COMMAND_DOCUMENT_VERSION_MISMATCH);
-        return;
-      };
+    let menus = await this.fileDB.retrieveDataFile(
+      fileDbNames.COL_APP_STRUCTURE,
+      fileDbNames.ID_APP_MENUS
+    );
 
-      // update the document
-      // - order
-      if (command.$after) { // TODO: move this to a helper function - it will be needed a lot!
-        let afterIndex = menus.order.indexOf(command.$after);
-        if (afterIndex >= 0) {
-          if (menus.order.length > afterIndex) {
-            menus.order.splice(afterIndex + 1, 0, command.$identifier);
-          }
-          else {
-            menus.order.push(command.$identifier);
-          }
+    // check document version
+    if (menus.version != documentVersion) {
+      this.completion.sendFailResponse(request, response, this.completion.completionCodes.COMMAND_DOCUMENT_VERSION_MISMATCH);
+      return;
+    };
+
+    // update the document
+    // - order
+    if (command.after) { // TODO: move this to a helper function - it will be needed a lot!
+      let afterIndex = menus.order.indexOf(command.after);
+      if (afterIndex >= 0) {
+        if (menus.order.length > afterIndex) {
+          menus.order.splice(afterIndex + 1, 0, command.identifier);
+        }
+        else {
+          menus.order.push(command.identifier);
         }
       }
-      else {
-        menus.order.unshift(command.$identifier);
-      }
-
-      // - items
-      menus.items[command.$identifier] = new ContentsMenuItem(
-        command.$identifier,
-        command.$indentation,
-        "",
-        "",
-        [],
-        [],
-        []
-      );
-
-      // - version
-      menus.version += 1;
-
-      // store the document
-      // await this.fileDB.storeDataFile(fileDbNames.COL_APP_STRUCTURE, fileDbNames.ID_APP_MENUS, menus);
-
-      return {
-        'commands': [ // TODO: will send previous commands also if needed!
-          command
-        ],
-        'info': {
-          newVersion: menus.version
-        },
-        'menus': menus
-      };
     }
+    else {
+      menus.order.unshift(command.identifier);
+    }
+
+    // - items
+    let newItem =  new ContentsMenuItem(
+      command.identifier,
+      command.label,
+      command.indentation,
+      [],
+      [],
+      []
+    );
+
+    // - version
+    menus.version += 1;
+
+    // store the document
+    console.log("updated menus:", menus);
+    let res = await this.fileDB.updateDataFile(fileDbNames.COL_APP_STRUCTURE, fileDbNames.ID_APP_MENUS,
+      { _id: "menus" },
+      {
+        $set: {
+          'version': menus.version,
+          'order': menus.order,
+          ['items.' + newItem.id]: newItem
+        }
+      }
+    );
+    console.log("... fileDb result", res); // TODO: return a failure if the update fails!
+
+    return {
+      'commands': [ // TODO: will send previous commands also if needed!
+        command
+      ],
+      'info': {
+        newVersion: menus.version
+      },
+      'menus': menus
+    };
+  }
 
   /**
   *

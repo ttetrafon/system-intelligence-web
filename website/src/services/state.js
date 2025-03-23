@@ -10,6 +10,9 @@ class State {
       State.instance = this;
     }
 
+    this.cache = {}; // TODO: put cache in the browser storage, and retrieve it when loading state!
+    this.commands = []; // TODO: store executed commands for undo functionality
+
     return State.instance;
   }
 
@@ -29,7 +32,16 @@ class State {
 
   async getAppMenus() {
     // TODO: cache...
-    return await jsonRequest(gameServiceUrl + routeTableOfContents, {}, requestSymbols.GET);
+    if (this.cache.appMenus) {
+      return this.cache.appMenus;
+    }
+
+    this.cache.appMenus = await jsonRequest(gameServiceUrl + routeTableOfContents, {}, requestSymbols.GET);
+    return this.cache.appMenus;
+  }
+
+  async updateAppMenus(appMenus) {
+    this.cache.appMenus = appMenus;
   }
 }
 

@@ -1,4 +1,5 @@
 import { emitDialogCancelEvent, emitDialogConfirmEvent } from '../helper/dom';
+import state from '../services/state.js';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');
@@ -8,11 +9,37 @@ template.innerHTML = /*html*/`
   ${ styles }
 
   :host {
-    display: block;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: stretch;
+    gap: 10px;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  div.flex-line {
+    margin: auto;
+    gap: 25px;
   }
 </style>
 
-<p>...</p>
+<h1>Page</h1>
+<input-field id="label-input"
+  label="Label"
+  direction="line"
+></input-field>
+<input-field id="indentation-input"
+  label="Indentation"
+  type="number"
+  direction="line"
+></input-field>
+<selector-field id="after-selector"
+  label="After"
+  direction="line"
+></selector-field>
+<hr>
 <div class="flex-line">
   <button id="ok">Ok</button>
   <button id="cancel">Cancel</button>
@@ -27,26 +54,35 @@ class Component extends HTMLElement {
     // Access happens through ths `shadowroot` property in the host.
     this._shadow.appendChild(template.content.cloneNode(true));
 
+    this.$labelInput = this._shadow.getElementById("label-input");
+    this.$indentationInput = this._shadow.getElementById("indentation-input");
+    this.$afterSelector = this._shadow.getElementById("after-selector");
+
+    this.$title = this._shadow.querySelector("h1");
     this.$okBtn = this._shadow.getElementById("ok");
     this.$cancelBtn = this._shadow.getElementById("cancel");
   }
 
   // Attributes need to be observed to be tied to the lifecycle change callback.
-  static get observedAttributes() { return ['label', 'data']; }
+  static get observedAttributes() { return ['indentation', 'title']; }
 
   // Attribute values are always strings, so we need to convert them in their getter/setters as appropriate.
-  get data() { return JSON.parse(this.getAttribute('data')); }
-  get label() { return this.getAttribute('label'); }
+  get indentation() { return this.getAttribute('indentation'); }
+  get title() { return JSON.parse(this.getAttribute('title')); }
 
-  set data(value) { this.setAttribute('data', value); }
-  set label(value) { this.setAttribute('label', value); }
+  set indentation(value) { this.setAttribute('indentation', value); }
+  set title(value) { this.setAttribute('title', value); }
 
   // A web component implements the following lifecycle methods.
   attributeChangedCallback(name, oldVal, newVal) {
     // Attribute value changes can be tied to any type of functionality through the lifecycle methods.
     if (oldVal == newVal) return;
     switch (name) {
-      default:
+      case "indentation":
+        this.$indentationInput.setAttribute('initial-value', this.indentation);
+        break;
+      case "title":
+        this.$title.innerText = this.title;
         break;
     }
   }
@@ -54,6 +90,28 @@ class Component extends HTMLElement {
     // Triggered when the component is added to the DOM.
     this.$okBtn.addEventListener('click', this.confirmDialog.bind(this));
     this.$cancelBtn.addEventListener('click', this.cancelDialog.bind(this));
+
+    let appMenus = state.getAppMenus();
+    let afterSelectorOptions = {
+      valueKey: 'value',
+      textKey: 'text',
+      options: [
+        {
+          value: "-",
+          text: "--- FIRST ---"
+        }
+      ]
+    };
+    for (let i = 0; i < appMenus.order; i++) {
+      let itemId = appMenus.order[i];
+      let label = appMenus.items[itemId].label;
+
+      options.push({
+        value: itemId,
+        text: label
+      });
+    }
+    this.$afterSelector.setAttribute("options", JSON.stringify(afterSelectorOptions));
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
@@ -69,18 +127,26 @@ class Component extends HTMLElement {
 
   cancelDialog(event) {
     event.stopPropagation();
-    console.log("... clicked cancel button!")
     emitDialogCancelEvent(this.$cancelBtn);
   }
 
   confirmDialog(event) {
     event.stopPropagation();
-    console.log("... clicked ok button!")
+
+    let label = this.$labelInput.getValue();
+    if (!label || label == "") label = "Untitled page";
+
+    let indentation = Number(this.$indentationInput.getValue());
+    if (!indentation) indentation = 0;
+
+    let afterElement = this.$afterSelector.getValue();
+
     emitDialogConfirmEvent(this.$okBtn, {
-      prop: 'this is something',
-      value: 15
+      label: label,
+      indentation: indentation,
+      after: afterElement
     });
   }
 }
 
-window.customElements.define('modal-dialog', Component);
+window.customElements.define('si-contents-item-modal', Component);

@@ -38,8 +38,6 @@ class Component extends HTMLElement {
     // Attribute value changes can be tied to any type of functionality through the lifecycle methods.
     if (oldVal == newVal) return;
     switch(name) {
-      default:
-        break;
     }
   }
   connectedCallback() {

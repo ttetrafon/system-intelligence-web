@@ -33,9 +33,9 @@ router.use((req, res, next) => {
 
 // POST /data//command
 router.post('/command/', async (req, res) => {
+  // TODO: maybe move the command category & type into the request url as params; i.e.: /command/{command-category}/{command-type}/
   let data = req.body;
-  let commandType = data.$type;
-  // TODO: move the command category & type into the request url as params; i.e.: /command/{command-category}/{command-type}/
+  let commandType = data.type;
 
   switch (commandType) {
     case commandNames.COMMAND_APP_MENUS_ADD_ITEM.description:

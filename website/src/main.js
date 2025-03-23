@@ -1,7 +1,10 @@
 import './style.css'
 import './components/button-text-image.js';
+import './components/input-field.js';
+import './components/selector-field.js';
 import './components/si-contents.js';
 import './components/si-contents-item.js';
+import './components/si-contents-item-modal.js';
 import './components/si-footer.js';
 import './components/si-header.js';
 import './components/si-main-container.js';

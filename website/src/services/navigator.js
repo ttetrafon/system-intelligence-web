@@ -46,6 +46,9 @@ export class Navigator {
       this.$dialogCancelCallback = e.detail.cancelCb ? e.detail.cancelCb : () => {};
 
       let el = document.createElement(e.detail.element);
+      for (const [key, value] of Object.entries(e.detail.data)) {
+        el.setAttribute(key, JSON.stringify(value));
+      }
       this.dialog.appendChild(el);
 
       this.dialog.showModal();
