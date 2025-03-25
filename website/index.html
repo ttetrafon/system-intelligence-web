@@ -10,18 +10,16 @@
     <script type="module" src="/src/main.js" defer></script>
   </head>
 
-  <body>
-    <si-header></si-header>
-
-    <nav></nav>
-
-    <aside>
+  <body class="flex-line">
+    <nav>
       <si-contents></si-contents>
-    </aside>
+    </nav>
 
-    <main id="app" class="flex-line">
+    <main class="flex-column">
+      <si-header></si-header>
+      <section id="app">
+      </section>
+      <si-footer></si-footer>
     </main>
-
-    <si-footer></si-footer>
   </body>
 </html>

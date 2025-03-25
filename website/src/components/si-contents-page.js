@@ -43,6 +43,7 @@ template.innerHTML = /*html*/`
 </style>
 
 <div id="container" class="flex-line">
+  <svg-wrapper id="page-image"></svg-wrapper>
   <span id="page"></span>
   <button-text-image class="contents-item-controls" id="edit-button"
     label="Edit Page"
@@ -56,7 +57,7 @@ template.innerHTML = /*html*/`
     hide-text=true
     event-name=${ eventNames.CONTENTS_ITEM_DELETE_PLAIN.description }
   ></button-text-image>
-  <svg-wrapper class="contents-item-controls" id="drag-handle"
+  <svg-wrapper class="contents-item-controls hidden" id="drag-handle"
     label="Move Page"
     image="drag_indicator"
   ></svg-wrapper>
@@ -71,7 +72,8 @@ class Component extends HTMLElement {
     // Access happens through ths `shadowroot` property in the host.
     this._shadow.appendChild(template.content.cloneNode(true));
 
-    this.$container = this._shadow.getElementById("container")
+    this.$container = this._shadow.getElementById("container");
+    this.$pageImage = this._shadow.getElementById("page-image");
     this.$page = this._shadow.getElementById("page");
     this.$dragger = this._shadow.getElementById("drag-handle");
     this.$editBtn = this._shadow.getElementById("edit-button");
@@ -79,7 +81,7 @@ class Component extends HTMLElement {
   }
 
   // Attributes need to be observed to be tied to the lifecycle change callback.
-  static get observedAttributes() { return ['label', 'indentation']; }
+  static get observedAttributes() { return ['label', 'image', 'indentation']; }
 
   // Attribute values are always strings, so we need to convert them in their getter/setters as appropriate.
   get indentation() { return JSON.parse(this.getAttribute('indentation')); }

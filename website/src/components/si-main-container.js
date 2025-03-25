@@ -13,9 +13,7 @@ template.innerHTML = /*html*/`
 
 <article class="flex-line">
   <!-- The main-container holds all open tabs/panels -->
-  <section id="main-container">
-    <si-panel data-path="data/gameplay-data/gameplay"></si-panel>
-  </section>
+  <section id="main-container"></section>
 
   <si-side-panel></si-side-panel>
 

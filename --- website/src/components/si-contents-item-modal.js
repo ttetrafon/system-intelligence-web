@@ -1,5 +1,5 @@
-import { emitDialogCancelEvent, emitDialogConfirmEvent } from '../helper/dom';
-import state from '../services/state.js';
+import { emitDialogCancelEvent, emitDialogConfirmEvent } from '../../../website/src/helper/dom.js';
+import state from '../../../website/src/services/state.js';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');

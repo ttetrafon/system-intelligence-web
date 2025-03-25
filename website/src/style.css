@@ -51,51 +51,32 @@ body {
   left: 0;
 }
 
-si-header {
-  position: fixed;
-  left: var(--statics-width-side);
-  right: 0;
-  top: 0;
-  height: var(--statics-height-header);
-  border-bottom: var(--border-light);
-}
-
-si-footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: var(--statics-height-footer);
-  border-top: var(--border-light);
-}
-
 nav {
-  top: var(--statics-height-header);
-  position: fixed;
-  left: var(--statics-width-side);
-  right: 0;
-  height: var(--statics-height-nav);
+  width: 100px;
   background-color: var(--colour-2a);
+  border-right: var(--border-light);
+  padding: 5px 10px;
 }
 
 main {
-  position: fixed;
-  left: var(--statics-width-side);
-  right: 0;
-  top: calc(var(--statics-height-header) + var(--statics-height-nav));
-  bottom: var(--statics-height-footer);
-  padding: 15px;
-}
-#main-container {
-  max-width: 100%;
   flex-grow: 1;
-  flex-shrink: 1;
 }
-si-side-panel {
-  max-width: 25%;
-  flex-grow: 0.25;
-  flex-shrink: 1;
+
+#app {
+  flex-grow: 1;
+  padding: 15px;
+  overflow: auto;
 }
+
+si-header {
+  border-bottom: var(--border-light);
+  padding: 5px;
+}
+
+si-footer {
+  border-top: var(--border-light);
+}
+
 #chat-container {
   min-width: 33%;
   max-width: 50%;
@@ -109,16 +90,6 @@ si-side-panel {
   flex-grow: 0.5;
   flex-shrink: 0.5;
   max-height: 25%;
-}
-
-aside {
-  position: fixed;
-  left: 0;
-  width: var(--statics-width-side);
-  top: 0;
-  bottom: var(--statics-height-footer);
-  padding: 5px;
-  border-right: var(--border-light);
 }
 
 .flex-line {

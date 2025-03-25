@@ -1,7 +1,4 @@
 import { commandNames, eventNames, generalNames } from '../data/enums.js';
-import { clearChildren, emitDialogEvent } from '../helper/dom.js';
-import { Command_AppMenu_AddItem, Command_AppMenu_DeleteItem } from '../model/command.js';
-import state from '../services/state.js';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');

@@ -3,9 +3,7 @@ import './components/button-text-image.js';
 import './components/input-field.js';
 import './components/selector-field.js';
 import './components/si-contents.js';
-import './components/si-contents-item.js';
-import './components/si-contents-item-delete-modal.js';
-import './components/si-contents-item-modal.js';
+import './components/si-contents-page.js';
 import './components/si-footer.js';
 import './components/si-header.js';
 import './components/si-main-container.js';
@@ -14,4 +12,4 @@ import './components/svg-wrapper.js';
 import { Navigator } from './services/navigator.js';
 import state from './services/state.js';
 
-const navigator = new Navigator('#app', 'dialog');
+const navigator = new Navigator('#app');
