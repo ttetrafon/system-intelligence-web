@@ -91,27 +91,7 @@ class Component extends HTMLElement {
     this.$okBtn.addEventListener('click', this.confirmDialog.bind(this));
     this.$cancelBtn.addEventListener('click', this.cancelDialog.bind(this));
 
-    let appMenus = state.getAppMenus();
-    let afterSelectorOptions = {
-      valueKey: 'value',
-      textKey: 'text',
-      options: [
-        {
-          value: "-",
-          text: "--- FIRST ---"
-        }
-      ]
-    };
-    for (let i = 0; i < appMenus.order; i++) {
-      let itemId = appMenus.order[i];
-      let label = appMenus.items[itemId].label;
-
-      options.push({
-        value: itemId,
-        text: label
-      });
-    }
-    this.$afterSelector.setAttribute("options", JSON.stringify(afterSelectorOptions));
+    this.buildSelector();
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
@@ -123,6 +103,30 @@ class Component extends HTMLElement {
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
     // Note that adoption does not trigger the constructor again.
+  }
+
+  async buildSelector() {
+    let appMenus = await state.getAppMenus();
+    let afterSelectorOptions = {
+      valueKey: 'value',
+      textKey: 'text',
+      options: [
+        {
+          value: "-",
+          text: "--- FIRST ---"
+        }
+      ]
+    };
+    for (let i = 0; i < appMenus.order.length; i++) {
+      let itemId = appMenus.order[i];
+      let label = appMenus.items[itemId].label;
+
+      afterSelectorOptions.options.push({
+        value: itemId,
+        text: label
+      });
+    }
+    this.$afterSelector.setAttribute("options", JSON.stringify(afterSelectorOptions));
   }
 
   cancelDialog(event) {

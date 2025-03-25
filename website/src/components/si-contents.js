@@ -1,5 +1,4 @@
 import { commandNames, eventNames, generalNames } from '../data/enums.js';
-import { deepCopy } from '../helper/data.js';
 import { clearChildren, emitDialogEvent } from '../helper/dom.js';
 import { Command_AppMenu_AddItem } from '../model/command.js';
 import state from '../services/state.js';
@@ -118,7 +117,7 @@ class Component extends HTMLElement {
 
     clearChildren(this.$container);
 
-    this.$appMenus = deepCopy(res["app-menus"]);
+    this.$appMenus = res;
     for (let i = 0; i < this.$appMenus.order.length; i++) {
       let data = this.$appMenus.items[this.$appMenus.order[i]];
 

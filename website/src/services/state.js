@@ -36,7 +36,9 @@ class State {
       return this.cache.appMenus;
     }
 
-    this.cache.appMenus = await jsonRequest(gameServiceUrl + routeTableOfContents, {}, requestSymbols.GET);
+    let result = await jsonRequest(gameServiceUrl + routeTableOfContents, {}, requestSymbols.GET);
+    this.cache.appMenus = result["app-menus"];
+    console.log(this.cache.appMenus);
     return this.cache.appMenus;
   }
 
