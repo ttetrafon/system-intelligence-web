@@ -130,12 +130,12 @@ class Component extends HTMLElement {
   }
 
   cancelDialog(event) {
-    event.stopPropagation();
+    event.stopImmediatePropagation();
     emitDialogCancelEvent(this.$cancelBtn);
   }
 
   confirmDialog(event) {
-    event.stopPropagation();
+    event.stopImmediatePropagation();
 
     let label = this.$labelInput.getValue();
     if (!label || label == "") label = "Untitled page";

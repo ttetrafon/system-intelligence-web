@@ -5,7 +5,7 @@ import { User } from "../model/user.js";
 
 class State {
   constructor() {
-    console.log("---> State()");
+    // console.log("---> State()");
     if (!State.instance) {
       State.instance = this;
     }
@@ -38,7 +38,6 @@ class State {
 
     let result = await jsonRequest(gameServiceUrl + routeTableOfContents, {}, requestSymbols.GET);
     this.cache.appMenus = result["app-menus"];
-    console.log(this.cache.appMenus);
     return this.cache.appMenus;
   }
 

@@ -62,6 +62,12 @@ export async function setDateInputAsToday(dateInput) {
   dateInput.value = `${ year }-${ month }-${ day }`;
 }
 
+/**
+ *
+ * @param {HTMLElement} that
+ * @param {String} eventName
+ * @param {Object} eventDetails
+ */
 export async function emitCustomEvent(that, eventName, eventDetails) {
   that.dispatchEvent(new CustomEvent(eventName, {
     bubbles: true,

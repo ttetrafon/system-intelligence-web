@@ -29,7 +29,7 @@ export class Navigator {
     });
 
     window.addEventListener(eventNames.SUB_PAGE_CONTAINER.description, (e) => {
-      e.stopPropagation();
+      e.stopImmediatePropagation();
       // console.log(eventNames.SUB_PAGE_CONTAINER.description, e.detail);
       this.$subPageContainers[e.detail.route] = e.detail.container;
     });
@@ -39,7 +39,7 @@ export class Navigator {
     body.appendChild(this.dialog);
 
     window.addEventListener(eventNames.DIALOG_OPEN.description, (e) => {
-      e.stopPropagation();
+      e.stopImmediatePropagation();
       clearChildren(this.dialog);
 
       this.$dialogConfirmCallback = e.detail.confirmCb ? e.detail.confirmCb : () => {};
@@ -55,7 +55,7 @@ export class Navigator {
     });
     this.dialog.addEventListener(eventNames.DIALOG_CONFIRM.description, async (event) => {
       console.log("dialog event:", eventNames.DIALOG_CONFIRM.description)
-      event.stopPropagation();
+      event.stopImmediatePropagation();
       this.dialog.close();
       await this.$dialogConfirmCallback(event.detail.data);
 
@@ -64,7 +64,7 @@ export class Navigator {
     });
     this.dialog.addEventListener(eventNames.DIALOG_CANCEL.description, async (event) => {
       console.log("dialog event:", eventNames.DIALOG_CANCEL.description)
-      event.stopPropagation();
+      event.stopImmediatePropagation();
       this.dialog.close();
       await this.$dialogCancelCallback();
 
@@ -73,7 +73,7 @@ export class Navigator {
     });
     this.dialog.addEventListener('cancel', async (event) => {
       console.log("dialog event: cancel");
-      event.stopPropagation();
+      event.stopImmediatePropagation();
       this.dialog.close();
       await this.$dialogCancelCallback();
 
@@ -128,7 +128,7 @@ export class Navigator {
   }
 
   normalisePath(path) {
-    console.log(`---> normalisePath(${ path })`);
+    // console.log(`---> normalisePath(${ path })`);
     if (path == "/") return path;
     if (path == "") return "/";
     if (path[path.length - 1] == "/") path = path.slice(0, -1);

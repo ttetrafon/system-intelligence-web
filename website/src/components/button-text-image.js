@@ -95,7 +95,7 @@ class Component extends HTMLElement {
    * @param {Event} event
    */
   clickEvent(event) {
-    event.stopPropagation();
+    event.stopImmediatePropagation();
     if (!this.eventName) return;
     emitCustomEvent(this.$button, this.eventName, {});
   }
