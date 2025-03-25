@@ -109,32 +109,13 @@ class Component extends HTMLElement {
 
   /**
    *
-   * @returns
-   */
-  async buildTableOfContents() {
-    let res = await state.getAppMenus();
-    if (res.version == this.$appMenus.version) return;
-
-    clearChildren(this.$container);
-
-    this.$appMenus = res;
-    for (let i = 0; i < this.$appMenus.order.length; i++) {
-      let data = this.$appMenus.items[this.$appMenus.order[i]];
-
-      let item = document.createElement("si-contents-item");
-      item.setAttribute("label", data.label);
-      item.setAttribute("indentation", data.indentation);
-      this.$container.appendChild(item);
-    }
-  }
-
-  /**
-   *
    * @param {HTMLElement} after
    * @param {Number} indentation
    */
-  addItem(after, label, indentation) {
+  addItem(id, after, label, indentation) {
+    // console.log("---> addItem()", after, label, indentation);
     let item = document.createElement("si-contents-item");
+    item.setAttribute("id", id);
     item.setAttribute("label", label);
     item.setAttribute("indentation", indentation);
 
@@ -148,9 +129,35 @@ class Component extends HTMLElement {
 
   /**
    *
+   * @returns
+   */
+  async buildTableOfContents() {
+    let res = await state.getAppMenus();
+    if (res.version == this.$appMenus.version) return;
+
+    clearChildren(this.$container);
+
+    this.$appMenus = res;
+    for (let i = 0; i < this.$appMenus.order.length; i++) {
+      let itemsUuid = this.$appMenus.order[i];
+      let data = this.$appMenus.items[itemsUuid];
+
+      let item = document.createElement("si-contents-item");
+      item.setAttribute("id", data.id);
+      item.setAttribute("label", data.label);
+      item.setAttribute("indentation", data.indentation);
+      this.$container.appendChild(item);
+
+      this.$contentItems[itemsUuid] = item;
+    }
+  }
+
+  /**
+   *
    * @param {JSON} data
    */
   async createAddItemCommand(data) {
+    // console.log("---> createAddItemCommand()", data);
     const addItemCommand = new Command_AppMenu_AddItem(
       this.$appMenus.version,
       data.label,
@@ -167,6 +174,8 @@ class Component extends HTMLElement {
    * @param {JSON} commands
    */
   async executeCommands(data) {
+    if (!data) return;
+
     for (let i = 0; i < data.commands.length; i++) {
       const command = data.commands[i];
       console.log("... executing command:", command);
@@ -202,7 +211,7 @@ class Component extends HTMLElement {
           console.log("this.$appMenus:", this.$appMenus);
 
           // execution
-          this.addItem(afterElement, command.label, command.indentation);
+          this.addItem(command.identifier, afterElement, command.label, command.indentation);
           break;
         case commandNames.COMMAND_APP_MENUS_INDENT_ITEM.description:
           break;

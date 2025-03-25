@@ -13,6 +13,7 @@ template.innerHTML = /*html*/`
   }
 
   #container {
+    margin-top: 5px;
     border-radius: 10px;
     padding: 0 10px;
     white-space: nowrap;

@@ -60,6 +60,7 @@ export class Gameplay {
     else {
       menus.order.unshift(command.identifier);
     }
+    console.log("new order:", menus.order);
 
     // - items
     let newItem =  new ContentsMenuItem(
@@ -70,12 +71,12 @@ export class Gameplay {
       [],
       []
     );
+    console.log("new item:", newItem);
 
     // - version
     menus.version += 1;
 
     // store the document
-    console.log("updated menus:", menus);
     let res = await this.fileDB.updateDataFile(fileDbNames.COL_APP_STRUCTURE, fileDbNames.ID_APP_MENUS,
       { _id: "menus" },
       {

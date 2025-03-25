@@ -1,7 +1,7 @@
 {
   "name": "system-intelligence-web-app",
   "private": true,
-  "version": "0.0.15",
+  "version": "0.0.16",
   "type": "module",
   "scripts": {
     "dev": "vite",
