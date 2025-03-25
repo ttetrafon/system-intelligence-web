@@ -57,12 +57,12 @@ template.innerHTML = /*html*/`
 <section id="container">
 </section>
 <div id="controls" class="flex-line">
-  <button-text-image id="add-contents-item-empty"
+<!--  <button-text-image id="add-contents-item-empty"
     label="Add Page"
     hide-text=true,
     image="add"
     event-name=${ eventNames.CONTENTS_ITEM_ADD.description }
-  ></button-text-image>
+  ></button-text-image> -->
 </div>
 <hr>
 `;
@@ -92,182 +92,17 @@ class Component extends HTMLElement {
   // A web component implements the following lifecycle methods.
   connectedCallback() {
     // Triggered when the component is added to the DOM.
-    this.$addItemBtn.addEventListener(eventNames.CONTENTS_ITEM_ADD.description, this.triggerItemDialog.bind(this, generalNames.PAGE_NEW.description, 0));
-    this.$container.addEventListener(eventNames.CONTENTS_ITEM_DELETE.description, this.triggerDeleteItemDialog.bind(this));
-
-    this.buildTableOfContents();
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
     // Ideal place for cleanup code.
     // Note that when destroying a component, it is good to also release any listeners.
-    this.$addItemBtn.removeEventListener(eventNames.CONTENTS_ITEM_ADD.description, this.triggerItemDialog);
-    this.$container.removeEventListener(eventNames.CONTENTS_ITEM_DELETE.description, this.triggerDeleteItemDialog);
   }
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
     // Note that adoption does not trigger the constructor again.
   }
 
-  /**
-   *
-   * @param {HTMLElement} after
-   * @param {Number} indentation
-   */
-  addItem(id, after, label, indentation) {
-    // console.log("---> addItem()", after, label, indentation);
-    let item = document.createElement("si-contents-item");
-    item.setAttribute("id", id);
-    item.setAttribute("label", label);
-    item.setAttribute("indentation", indentation);
-
-    if (after) {
-      after.insertAdjacentElement('afterend', item);
-    }
-    else {
-      this.$container.prepend(item);
-    }
-  }
-
-  /**
-   *
-   * @returns
-   */
-  async buildTableOfContents() {
-    let res = await state.getAppMenus();
-    if (res.version == this.$appMenus.version) return;
-
-    clearChildren(this.$container);
-
-    this.$appMenus = res;
-    for (let i = 0; i < this.$appMenus.order.length; i++) {
-      let itemsUuid = this.$appMenus.order[i];
-      let data = this.$appMenus.items[itemsUuid];
-
-      let item = document.createElement("si-contents-item");
-      item.setAttribute("id", data.id);
-      item.setAttribute("label", data.label);
-      item.setAttribute("indentation", data.indentation);
-      this.$container.appendChild(item);
-
-      this.$contentItems[itemsUuid] = item;
-    }
-  }
-
-  /**
-   *
-   * @param {JSON} data
-   */
-  async createAddItemCommand(data) {
-    // console.log("---> createAddItemCommand()", data);
-    const addItemCommand = new Command_AppMenu_AddItem(
-      this.$appMenus.version,
-      data.label,
-      data.indentation,
-      data.after != "-" ? data.after : null
-    );
-    console.log("addItemCommand:", addItemCommand);
-    const res = await state.publishCommand(addItemCommand);
-    if (res) this.executeCommands(res);
-  }
-
-  async createDeleteItemCommand(data) {
-    console.log("---> createDeleteItemCommand()", data);
-    const deleteCommand = new Command_AppMenu_DeleteItem(this.$appMenus.version, data.uuid);
-    console.log("deleteCommand:", deleteCommand);
-
-  }
-
-  /**
-   *
-   * @param {JSON} commands
-   */
-  async executeCommands(data) {
-    if (!data) return;
-
-    for (let i = 0; i < data.commands.length; i++) {
-      const command = data.commands[i];
-      console.log("... executing command:", command);
-      switch (command.type) {
-        case commandNames.COMMAND_APP_MENUS_ADD_ITEM.description:
-          // items
-          this.$appMenus.items[command.identifier] = {
-            id: command.identifier,
-            label: command.label,
-            indentation: command.indentation
-          };
-
-          // order
-          let afterElement = null;
-          if (command.after) {
-            let afterIndex = this.$appMenus.order.indexOf(command.after);
-            afterElement = this.$contentItems[command.after];
-            if (afterIndex >= 0) {
-              if (this.$appMenus.order.length > afterIndex) {
-                this.$appMenus.order.splice(afterIndex + 1, 0, command.identifier);
-              }
-              else {
-                this.$appMenus.order.push(command.identifier);
-              }
-            }
-          }
-          else {
-            this.$appMenus.order.unshift(command.identifier);
-          }
-
-          // version
-          this.$appMenus.version = data.info.newVersion;
-          console.log("this.$appMenus:", this.$appMenus);
-
-          // execution
-          this.addItem(command.identifier, afterElement, command.label, command.indentation);
-          break;
-        case commandNames.COMMAND_APP_MENUS_DELETE_ITEM.description:
-
-          break
-        case commandNames.COMMAND_APP_MENUS_INDENT_ITEM.description:
-          break;
-        case commandNames.COMMAND_APP_MENUS_MOVE_ITEM.description:
-          break;
-        default:
-          console.warn(`"No command matched: ${JSON.stringify(command)}"`);
-          break;
-      }
-    }
-  }
-
-  /**
-   *
-   * @param {Event} event
-   */
-  async triggerDeleteItemDialog(event) {
-    event.stopImmediatePropagation();
-    emitDialogEvent(
-      this.$container,
-      "si-contents-item-delete-modal",
-      {
-        uuid: event.detail.uuid,
-        title: this.$appMenus.items[event.detail.uuid].label
-      },
-      this.createDeleteItemCommand.bind(this)
-    );
-  }
-
-  /**
-   *
-   * @param {Number} indentation
-   */
-  async triggerItemDialog(title, indentation) {
-    emitDialogEvent(
-      this.$addItemBtn,
-      "si-contents-item-modal",
-      {
-        title: title,
-        indentation: indentation
-      },
-      this.createAddItemCommand.bind(this)
-    );
-  }
 }
 
 window.customElements.define('si-contents', Component);
