@@ -33,3 +33,19 @@ export class Command_AppMenu_AddItem extends Command {
     this.after = after;
   }
 }
+
+export class Command_AppMenu_DeleteItem extends Command {
+  /**
+   *
+   * @param {Number} documentVersion
+   * @param {String} identifier: the item's uuid
+   */
+  constructor(documentVersion, identifier) {
+    super(
+      commandNames.CATEGORY_APP_MENUS.description,
+      commandNames.COMMAND_APP_MENUS_DELETE_ITEM.description,
+      documentVersion
+    );
+    this.identifier = identifier;
+  }
+}

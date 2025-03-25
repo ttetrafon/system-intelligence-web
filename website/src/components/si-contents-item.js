@@ -1,4 +1,5 @@
 import { eventNames } from '../data/enums';
+import { emitCustomEvent } from '../helper/dom';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');
@@ -47,13 +48,13 @@ template.innerHTML = /*html*/`
     label="Edit Page"
     image="edit"
     hide-text=true
-    event-name=${ eventNames.CONTENTS_ITEM_EDIT.description }
+    event-name=${ eventNames.CONTENTS_ITEM_EDIT_PLAIN.description }
   ></button-text-image>
   <button-text-image class="contents-item-controls" id="delete-button"
     label="Delete Page"
     image="delete"
     hide-text=true
-    event-name=${ eventNames.CONTENTS_ITEM_DELETE.description }
+    event-name=${ eventNames.CONTENTS_ITEM_DELETE_PLAIN.description }
   ></button-text-image>
   <svg-wrapper class="contents-item-controls" id="drag-handle"
     label="Move Page"
@@ -102,15 +103,15 @@ class Component extends HTMLElement {
   }
   connectedCallback() {
     // Triggered when the component is added to the DOM.
-    this.$editBtn.addEventListener(eventNames.CONTENTS_ITEM_EDIT.description, this.editBtnClicked.bind(this));
-    this.$deleteBtn.addEventListener(eventNames.CONTENTS_ITEM_DELETE.description, this.deleteBtnClicked.bind(this));
+    this.$editBtn.addEventListener(eventNames.CONTENTS_ITEM_EDIT_PLAIN.description, this.editBtnClicked.bind(this));
+    this.$deleteBtn.addEventListener(eventNames.CONTENTS_ITEM_DELETE_PLAIN.description, this.deleteBtnClicked.bind(this));
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
     // Ideal place for cleanup code.
     // Note that when destroying a component, it is good to also release any listeners.
-    this.$editBtn.removeEventListener(eventNames.CONTENTS_ITEM_EDIT.description, this.editBtnClicked);
-    this.$deleteBtn.removeEventListener(eventNames.CONTENTS_ITEM_DELETE.description, this.deleteBtnClicked);
+    this.$editBtn.removeEventListener(eventNames.CONTENTS_ITEM_EDIT_PLAIN.description, this.editBtnClicked);
+    this.$deleteBtn.removeEventListener(eventNames.CONTENTS_ITEM_DELETE_PLAIN.description, this.deleteBtnClicked);
   }
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
@@ -122,8 +123,8 @@ class Component extends HTMLElement {
   * @param {Event} event
   */
   deleteBtnClicked(event) {
-    event.stopPropagation();
-    console.log("... delete item!");
+    event.stopImmediatePropagation();
+    emitCustomEvent(this.$deleteBtn, eventNames.CONTENTS_ITEM_DELETE.description, { uuid: this.id });
   }
 
   /**
@@ -131,7 +132,7 @@ class Component extends HTMLElement {
    * @param {Event} event
    */
   editBtnClicked(event) {
-    event.stopPropagation();
+    event.stopImmediatePropagation();
     console.log("... edit item!");
   }
 }

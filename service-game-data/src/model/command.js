@@ -17,9 +17,10 @@ export class Command {
 export class Command_AppMenu_AddItem extends Command {
   /**
    *
-   * @param {String} identifier // the menu item's uuid
+   * @param {UUID} commandId
+   * @param {UUID} identifier // the menu item's uuid
    * @param {Number} indentation // the menu item's indentation
-   * @param {String} after // the previous sibling for the new menu item; null if first
+   * @param {UUID} after // the previous sibling for the new menu item; null if first
    */
   constructor(commandId, identifier, label, indentation, after) {
     super(commandId, commandNames.CATEGORY_APP_MENUS.description, commandNames.COMMAND_APP_MENUS_ADD_ITEM.description);
@@ -27,5 +28,17 @@ export class Command_AppMenu_AddItem extends Command {
     this.identifier = identifier;
     this.indentation = indentation;
     this.after = after;
+  }
+}
+
+export class Command_AppMenu_DeleteItem extends Command {
+  /**
+   *
+   * @param {UUID} commandId
+   * @param {UUID} identifier // the menu item's uuid
+   */
+  constructor(commandId, identifier) {
+    super(commandId, commandNames.CATEGORY_APP_MENUS.description, commandNames.COMMAND_APP_MENUS_ADD_ITEM.description);
+    this.identifier = identifier;
   }
 }

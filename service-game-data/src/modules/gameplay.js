@@ -63,14 +63,7 @@ export class Gameplay {
     console.log("new order:", menus.order);
 
     // - items
-    let newItem =  new ContentsMenuItem(
-      command.identifier,
-      command.label,
-      command.indentation,
-      [],
-      [],
-      []
-    );
+    let newItem =  new ContentsMenuItem( command.identifier, command.label, command.indentation, [], [], []);
     console.log("new item:", newItem);
 
     // - version
@@ -88,6 +81,49 @@ export class Gameplay {
       }
     );
     console.log("... fileDb result", res); // TODO: return a failure if the update fails!
+
+    return {
+      'commands': [ // TODO: will send previous commands also if needed!
+        command
+      ],
+      'info': {
+        newVersion: menus.version
+      },
+      'menus': menus
+    };
+  }
+
+  /**
+   *
+   * @param {Request} request
+   * @param {Response} response
+   */
+  async commandAppMenuDeleteItem(request, response) {
+    this.logger.info(`---> WebApp.command()`);
+    let data = request.body;
+    let documentVersion = data.documentVersion;
+    let command = new Command_AppMenu_AddItem(data.id, data.identifier);
+
+
+    let menus = await this.fileDB.retrieveDataFile(
+      fileDbNames.COL_APP_STRUCTURE,
+      fileDbNames.ID_APP_MENUS
+    );
+
+    // check document version
+    if (menus.version != documentVersion) {
+      this.completion.sendFailResponse(request, response, this.completion.completionCodes.COMMAND_DOCUMENT_VERSION_MISMATCH);
+      return;
+    };
+
+    // - version
+    menus.version += 1;
+
+    // - order
+
+
+    // - items
+
 
     return {
       'commands': [ // TODO: will send previous commands also if needed!

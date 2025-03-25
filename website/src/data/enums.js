@@ -1,6 +1,7 @@
 export const commandNames = Object.freeze({
   CATEGORY_APP_MENUS: Symbol("command-app-menus"),
   COMMAND_APP_MENUS_ADD_ITEM: Symbol("app-menus-add-item"),
+  COMMAND_APP_MENUS_DELETE_ITEM: Symbol("app-menus-add-item"),
   COMMAND_APP_MENUS_INDENT_ITEM: Symbol("app-menus-indent-item"),
   COMMAND_APP_MENUS_MOVE_ITEM: Symbol("app-menus-move-item"),
   COMMAND_APP_MENUS_RENAME_ITEM: Symbol("app-menus-rename-item")
@@ -9,7 +10,9 @@ export const commandNames = Object.freeze({
 export const eventNames = Object.freeze({
   CONTENTS_ITEM_ADD: Symbol("add-contents-item"),
   CONTENTS_ITEM_DELETE: Symbol("delete-contents-item"),
+  CONTENTS_ITEM_DELETE_PLAIN: Symbol("delete-contents-item-trigger"),
   CONTENTS_ITEM_EDIT: Symbol("edit-contents-item"),
+  CONTENTS_ITEM_EDIT_PLAIN: Symbol("edit-contents-item-trigger"),
   CONTENTS_ITEM_OPEN_PAGE: Symbol("add-contents-item"),
   DIALOG_OPEN: Symbol("open-dialog"),
   DIALOG_CANCEL: Symbol("cancel-dialog"),

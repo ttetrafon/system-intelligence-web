@@ -27,6 +27,7 @@ class State {
     if (!res) return;
 
     // TODO: handle extra commands submitted before this client's
+    // TODO: centralise the command running in it's own module and send events to the proper listeners for updates, or apply the changes from commands and have the appropriate elements listen to changes in the data (use Proxy or events?)
     return res;
   }
 

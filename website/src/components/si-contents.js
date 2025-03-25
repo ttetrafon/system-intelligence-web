@@ -1,6 +1,6 @@
 import { commandNames, eventNames, generalNames } from '../data/enums.js';
 import { clearChildren, emitDialogEvent } from '../helper/dom.js';
-import { Command_AppMenu_AddItem } from '../model/command.js';
+import { Command_AppMenu_AddItem, Command_AppMenu_DeleteItem } from '../model/command.js';
 import state from '../services/state.js';
 import styles from '../style.css?inline';
 
@@ -75,7 +75,7 @@ class Component extends HTMLElement {
     // Access happens through ths `shadowroot` property in the host.
     this._shadow.appendChild(template.content.cloneNode(true));
 
-    this.$AddItemBtn = this._shadow.getElementById("add-contents-item-empty");
+    this.$addItemBtn = this._shadow.getElementById("add-contents-item-empty");
     this.$container = this._shadow.getElementById("container");
 
     this.$appMenus = {
@@ -92,7 +92,8 @@ class Component extends HTMLElement {
   // A web component implements the following lifecycle methods.
   connectedCallback() {
     // Triggered when the component is added to the DOM.
-    this.$AddItemBtn.addEventListener(eventNames.CONTENTS_ITEM_ADD.description, this.triggerItemDialog.bind(this, generalNames.PAGE_NEW.description, 0));
+    this.$addItemBtn.addEventListener(eventNames.CONTENTS_ITEM_ADD.description, this.triggerItemDialog.bind(this, generalNames.PAGE_NEW.description, 0));
+    this.$container.addEventListener(eventNames.CONTENTS_ITEM_DELETE.description, this.triggerDeleteItemDialog.bind(this));
 
     this.buildTableOfContents();
   }
@@ -100,7 +101,8 @@ class Component extends HTMLElement {
     // Triggered when the component is removed from the DOM.
     // Ideal place for cleanup code.
     // Note that when destroying a component, it is good to also release any listeners.
-    this.$AddItemBtn.removeEventListener(eventNames.CONTENTS_ITEM_ADD.description, this.triggerItemDialog);
+    this.$addItemBtn.removeEventListener(eventNames.CONTENTS_ITEM_ADD.description, this.triggerItemDialog);
+    this.$container.removeEventListener(eventNames.CONTENTS_ITEM_DELETE.description, this.triggerDeleteItemDialog);
   }
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
@@ -166,7 +168,14 @@ class Component extends HTMLElement {
     );
     console.log("addItemCommand:", addItemCommand);
     const res = await state.publishCommand(addItemCommand);
-    this.executeCommands(res);
+    if (res) this.executeCommands(res);
+  }
+
+  async createDeleteItemCommand(data) {
+    console.log("---> createDeleteItemCommand()", data);
+    const deleteCommand = new Command_AppMenu_DeleteItem(this.$appMenus.version, data.uuid);
+    console.log("deleteCommand:", deleteCommand);
+
   }
 
   /**
@@ -213,6 +222,9 @@ class Component extends HTMLElement {
           // execution
           this.addItem(command.identifier, afterElement, command.label, command.indentation);
           break;
+        case commandNames.COMMAND_APP_MENUS_DELETE_ITEM.description:
+
+          break
         case commandNames.COMMAND_APP_MENUS_INDENT_ITEM.description:
           break;
         case commandNames.COMMAND_APP_MENUS_MOVE_ITEM.description:
@@ -226,15 +238,32 @@ class Component extends HTMLElement {
 
   /**
    *
+   * @param {Event} event
+   */
+  async triggerDeleteItemDialog(event) {
+    event.stopImmediatePropagation();
+    emitDialogEvent(
+      this.$container,
+      "si-contents-item-delete-modal",
+      {
+        uuid: event.detail.uuid,
+        title: this.$appMenus.items[event.detail.uuid].label
+      },
+      this.createDeleteItemCommand.bind(this)
+    );
+  }
+
+  /**
+   *
    * @param {Number} indentation
    */
   async triggerItemDialog(title, indentation) {
     emitDialogEvent(
-      this.$AddItemBtn,
+      this.$addItemBtn,
       "si-contents-item-modal",
       {
-        "title": title,
-        "indentation": indentation
+        title: title,
+        indentation: indentation
       },
       this.createAddItemCommand.bind(this)
     );

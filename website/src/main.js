@@ -4,6 +4,7 @@ import './components/input-field.js';
 import './components/selector-field.js';
 import './components/si-contents.js';
 import './components/si-contents-item.js';
+import './components/si-contents-item-delete-modal.js';
 import './components/si-contents-item-modal.js';
 import './components/si-footer.js';
 import './components/si-header.js';
