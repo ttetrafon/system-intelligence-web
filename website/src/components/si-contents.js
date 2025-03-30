@@ -1,4 +1,3 @@
-import { commandNames, eventNames, generalNames } from '../data/enums.js';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');
@@ -18,6 +17,7 @@ template.innerHTML = /*html*/`
   h3 {
     text-align: center;
     font-size: 1rem;
+    white-space: nowrap;
   }
 
   hr {
@@ -28,7 +28,7 @@ template.innerHTML = /*html*/`
   section {
     width: 100%;
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
     padding: 10px;
     flex-grow: 1;
   }
@@ -36,10 +36,6 @@ template.innerHTML = /*html*/`
   #controls {
     height: var(--statics-controls-short);
     justify-content: flex-end;
-  }
-
-  #add-contents-item-empty {
-    opacity: 0.75;
   }
 
   @media (prefers-color-scheme: light) {
@@ -50,18 +46,45 @@ template.innerHTML = /*html*/`
 </style>
 
 <h3>Table of Contents</h3>
+
 <hr>
+
 <section id="container">
+  <si-contents-page
+    label="Gameplay"
+    image="casino"
+  ></si-contents-page>
+  <si-contents-page
+    label="Characters"
+    image="supervisor_account"
+  ></si-contents-page>
+  <si-contents-page
+    label="Adventuring"
+    image="nordic_walking"
+  ></si-contents-page>
+  <si-contents-page
+    label="Equipment"
+    image="construction"
+  ></si-contents-page>
+  <si-contents-page
+    label="Vehicles"
+    image="transportation"
+  ></si-contents-page>
+  <si-contents-page
+    label="Organisations"
+    image="source_environment"
+  ></si-contents-page>
+  <si-contents-page
+    label="World"
+    image="globe_location_pin"
+  ></si-contents-page>
 </section>
-<div id="controls" class="flex-line">
-<!--  <button-text-image id="add-contents-item-empty"
-    label="Add Page"
-    hide-text=true,
-    image="add"
-    event-name=${ eventNames.CONTENTS_ITEM_ADD.description }
-  ></button-text-image> -->
-</div>
+
 <hr>
+
+<div id="controls" class="flex-multi-line">
+</div>
+
 `;
 
 class Component extends HTMLElement {
@@ -72,7 +95,6 @@ class Component extends HTMLElement {
     // Access happens through ths `shadowroot` property in the host.
     this._shadow.appendChild(template.content.cloneNode(true));
 
-    this.$addItemBtn = this._shadow.getElementById("add-contents-item-empty");
     this.$container = this._shadow.getElementById("container");
 
     this.$appMenus = {

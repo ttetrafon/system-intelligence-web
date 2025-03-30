@@ -69,7 +69,7 @@ class Component extends HTMLElement {
     if (oldVal == newVal) return;
     switch (name) {
       case "image":
-        this.createSvg(`./img/ui/${ this.image }`);
+        this.createSvg();
         break;
       case "label":
         this.$svgContainer.setAttribute("title", this.label);
@@ -99,7 +99,7 @@ class Component extends HTMLElement {
     // Note that adoption does not trigger the constructor again.
   }
 
-  async createSvg(url) {
+  async createSvg() {
     let svg = await import(`../assets/ui/${ this.image }.svg?raw`);
     this.$svgContainer.innerHTML = svg.default;
     this.$svg = this._shadow.querySelector("svg");

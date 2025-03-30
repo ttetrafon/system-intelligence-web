@@ -52,7 +52,6 @@ body {
 }
 
 nav {
-  width: 100px;
   background-color: var(--colour-2a);
   border-right: var(--border-light);
   padding: 5px 10px;
