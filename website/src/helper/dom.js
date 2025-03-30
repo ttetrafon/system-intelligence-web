@@ -64,6 +64,74 @@ export async function setDateInputAsToday(dateInput) {
 
 /**
  *
+ * @param {HTMLElement} details
+ * @param {HTMLElement} summary
+ * @param {Object} detailControls
+ */
+export async function makeDetailsPanelOpenHoverable(context, details, summary, detailControls) {
+  details.addEventListener("mouseenter", toggleDetailsVisibility.bind(context, details, detailControls, true));
+  details.addEventListener("mouseleave", toggleDetailsVisibility.bind(context, details, detailControls, false));
+  summary.addEventListener("click", summaryClicked.bind(context, details, detailControls));
+}
+/**
+ *
+ * @param {HTMLElement} details
+ * @param {HTMLElement} summary
+ */
+export async function unmakeDetailsPanelOpenHoverable(details, summary) {
+  details.removeEventListener("mouseenter", toggleDetailsVisibility);
+  details.removeEventListener("mouseleave", toggleDetailsVisibility);
+  summary.removeEventListener("click", summaryClicked);
+}
+/**
+ *
+ * @param {HTMLElement} details
+ * @param {Object} detailControls
+ * @param {Event} event
+ */
+function summaryClicked(details, detailControls, event) {
+  event.preventDefault();
+  event.stopImmediatePropagation();
+
+  if (detailControls.detailsOpenFromHover) {
+    detailControls.detailsForcedOpen = true;
+    detailControls.detailsOpenFromHover = false;
+  }
+  else {
+    if (details.open) {
+      details.removeAttribute("open");
+      detailControls.detailsForcedOpen = false;
+    }
+    else {
+      details.setAttribute("open", "");
+      detailControls.detailsForcedOpen = true;
+    }
+  }
+}
+/**
+ *
+ * @param {HTMLElement} details
+ * @param {Object} detailControls
+ * @param {Boolean} mouseHover
+ * @param {Event} event
+ * @returns
+ */
+function toggleDetailsVisibility(details, detailControls, mouseHover, event) {
+  event.stopImmediatePropagation();
+  if (detailControls.detailsForcedOpen) return;
+
+  if (mouseHover) {
+    detailControls.detailsOpenFromHover = true;
+    details.setAttribute("open", "");
+  }
+  else {
+    detailControls.detailsOpenFromHover = false;
+    details.removeAttribute("open")
+  }
+}
+
+/**
+ *
  * @param {HTMLElement} that
  * @param {String} eventName
  * @param {Object} eventDetails

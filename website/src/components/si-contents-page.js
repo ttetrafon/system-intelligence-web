@@ -1,3 +1,5 @@
+import { contentsSubpages } from '../data/data.js';
+import { makeDetailsPanelOpenHoverable, unmakeDetailsPanelOpenHoverable } from '../helper/dom.js';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');
@@ -11,7 +13,7 @@ template.innerHTML = /*html*/`
     border-radius: 5px;
   }
 
-  #container {
+  summary {
     margin-top: 5px;
     border-radius: 10px;
     padding: 0 10px;
@@ -28,16 +30,25 @@ template.innerHTML = /*html*/`
     margin-right: 5px;
   }
 
-  span {
+  a {
     white-space: nowrap;
     cursor: pointer;
   }
+
+  #subpages {
+    margin-top: 3px;
+    padding: 5px;
+    gap: 8px;
+  }
 </style>
 
-<div id="container" class="flex-line">
-  <svg-wrapper id="page-image" class="hidden"></svg-wrapper>
-  <span id="page"></span>
-</div>
+<details>
+  <summary class="flex-line">
+    <svg-wrapper id="page-image" class="hidden"></svg-wrapper>
+    <a id="page"></a>
+  </summary>
+  <div id="subpages" class="flex-column hidden"></div>
+</details>
 `;
 
 class Component extends HTMLElement {
@@ -48,21 +59,29 @@ class Component extends HTMLElement {
     // Access happens through ths `shadowroot` property in the host.
     this._shadow.appendChild(template.content.cloneNode(true));
 
-    this.$container = this._shadow.getElementById("container");
+    this.$details = this._shadow.querySelector("details");
+    this.$summary = this._shadow.querySelector("summary");
     this.$pageImage = this._shadow.getElementById("page-image");
     this.$page = this._shadow.getElementById("page");
+    this.$subpages = this._shadow.getElementById("subpages");
+
+    this.indentationBasisPx = 15;
+
+    this.$hasSub = false;
+    this.$detailsControls = {
+      detailsForcedOpen: false,
+      detailsOpenFromHover: false
+    };
   }
 
   // Attributes need to be observed to be tied to the lifecycle change callback.
-  static get observedAttributes() { return ['custom', 'image', 'indentation', 'label']; }
+  static get observedAttributes() { return ['image', 'indentation', 'label']; }
 
   // Attribute values are always strings, so we need to convert them in their getter/setters as appropriate.
-  get custom() { return Boolean(this.getAttribute('custom')); }
   get image() { return this.getAttribute('image'); }
   get indentation() { return JSON.parse(this.getAttribute('indentation')); }
   get label() { return this.getAttribute('label'); }
 
-  set custom(value) { this.setAttribute('custom', value); }
   set image(value) { this.setAttribute('image', value); }
   set indentation(value) { this.setAttribute('indentation', value); }
   set label(value) { this.setAttribute('label', value); }
@@ -77,11 +96,15 @@ class Component extends HTMLElement {
         this.$pageImage.setAttribute("image", this.image);
         break;
       case 'indentation':
-        this.$page.style.paddingLeft = `${ this.indentation * 15 }px`;
+        this.$details.style.paddingLeft = `${ this.indentation * this.indentationBasisPx }px`;
+        for (let i = 0; i < this.$subpages.children.length; i++) {
+          this.setSubpageIndentation(this.$subpages.children[i]);
+        }
         break;
       case 'label':
         this.$page.innerText = this.label;
-        this.$container.setAttribute("title", this.label);
+        this.$summary.setAttribute("title", this.label);
+        this.setupSubs();
         break;
     }
   }
@@ -92,12 +115,59 @@ class Component extends HTMLElement {
     // Triggered when the component is removed from the DOM.
     // Ideal place for cleanup code.
     // Note that when destroying a component, it is good to also release any listeners.
+    if (this.$hasSub) {
+      unmakeDetailsPanelOpenHoverable(this, this.$details, this.$summary);
+    }
   }
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
     // Note that adoption does not trigger the constructor again.
   }
 
+  /**
+   *
+   * @param {HTMLElement} subpage
+   */
+  setSubpageIndentation(subpage) {
+    switch (subpage.tagName) {
+      case "SI-CONTENTS-PAGE":
+        subpage.setAttribute("indentation", (this.indentation ? this.indentation : 0) + 1);
+        break;
+      case "HR":
+        subpage.style.marginLeft = `${ ((this.indentation ? this.indentation : 0) + 1) * (this.indentationBasisPx + 5) }px`;
+        break;
+    }
+  }
+
+  setupSubs() {
+    if (!this.label) return;
+
+    let subs = structuredClone(contentsSubpages[this.label]);
+    if (!subs) return;
+
+    let subsLength = subs.length;
+    this.$hasSub = subsLength > 0;
+    this.$subpages.classList.toggle("hidden", !this.$hasSub);
+
+    for (let i = 0; i < subsLength; i++) {
+      let elType = subs[i].element;
+      let el = document.createElement(elType);
+
+      switch (elType) {
+        case "si-contents-page":
+          el.setAttribute("label", subs[i].label);
+          if (subs[i].image) el.setAttribute("image", subs[i].image);
+          break;
+      }
+      this.setSubpageIndentation(el);
+
+      this.$subpages.appendChild(el);
+    }
+
+    if (this.$hasSub) {
+      makeDetailsPanelOpenHoverable(this, this.$details, this.$summary, this.$detailsControls);
+    }
+  }
 }
 
 window.customElements.define('si-contents-page', Component);

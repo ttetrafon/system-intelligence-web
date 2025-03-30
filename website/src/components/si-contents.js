@@ -31,6 +31,7 @@ template.innerHTML = /*html*/`
     overflow-x: hidden;
     padding: 10px;
     flex-grow: 1;
+    gap: 8px;
   }
 
   #controls {
@@ -49,7 +50,11 @@ template.innerHTML = /*html*/`
 
 <hr>
 
-<section id="container">
+<section id="container" class="flex-column">
+<si-contents-page
+    label="Introduction"
+    image="menu_book"
+  ></si-contents-page>
   <si-contents-page
     label="Gameplay"
     image="casino"

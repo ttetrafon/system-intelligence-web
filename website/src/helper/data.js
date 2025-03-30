@@ -13,28 +13,6 @@ export function allCombinations(arr) {
   }
 }
 
-export function deepCopy(obj) {
-  if (!obj || typeof(obj) != 'object') {
-    return obj;
-  }
-
-  let res;
-  if (obj instanceof Array) {
-    res = [];
-    obj.forEach(element => {
-      res.push(deepCopy(element));
-    });
-
-  }
-  else {
-    res = {};
-    Object.keys(obj).forEach(key => {
-      res[key] = deepCopy(obj[key]);
-    });
-  }
-  return res;
-}
-
 export function checkStringForExistence(str) {
   return !(str == undefined || str == null || str == "");
 }

@@ -100,17 +100,22 @@ class Component extends HTMLElement {
   }
 
   async createSvg() {
-    let svg = await import(`../assets/ui/${ this.image }.svg?raw`);
-    this.$svgContainer.innerHTML = svg.default;
-    this.$svg = this._shadow.querySelector("svg");
-    this.$svg.removeAttribute("height");
-    this.$svg.removeAttribute("width");
-    this.$svg.removeAttribute("fill");
-    this.$path = this._shadow.querySelector("path");
-    // this.setAlt();
-    // this.setColour();
-    // this.setBackground();
-    // this.setPointer();
+    try {
+      let svg = await import(`../assets/ui/${ this.image }.svg?raw`);
+      this.$svgContainer.innerHTML = svg.default;
+      this.$svg = this._shadow.querySelector("svg");
+      this.$svg.removeAttribute("height");
+      this.$svg.removeAttribute("width");
+      this.$svg.removeAttribute("fill");
+      this.$path = this._shadow.querySelector("path");
+      this.setAlt();
+      this.setColour();
+      this.setBackground();
+      this.setPointer();
+    }
+    catch (err) {
+
+    }
   }
 
   setAlt() {
