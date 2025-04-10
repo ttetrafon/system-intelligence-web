@@ -1,4 +1,10 @@
-import { userRoles } from '../data/enums.js';
+export const roles = Object.freeze({
+  SYSTEM_EDITOR: Symbol("system-editor"),
+  GM: Symbol("game-master"),
+  PLAYER: Symbol("player"),
+  OBSERVER: Symbol("observer"),
+  VISITOR: Symbol("visitor")
+});
 
 export class User {
   /**

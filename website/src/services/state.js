@@ -1,49 +1,75 @@
-import { gameServiceUrl, routeCommands, routeTableOfContents } from "../data/config.js";
-import { jsonRequest, requestSymbols } from "../helper/requests.js";
-import { Command } from "../model/command.js";
-import { User } from "../model/user.js";
+import { generalNames } from "../data/enums.js";
+import { roles, User } from "../model/user.js";
 
 class State {
+  #observables;
+
   constructor() {
-    // console.log("---> State()");
+    console.log("---> State()");
     if (!State.instance) {
       State.instance = this;
     }
 
-    this.cache = {}; // TODO: put cache in the browser storage, and retrieve it when loading state!
-    this.commands = []; // TODO: store executed commands for undo functionality
+    this.#observables = {};
+
+    this.createObservable(
+      generalNames.OBSERVABLE_USER,
+      new User(crypto.randomUUID(), "", roles.VISITOR)
+    );
 
     return State.instance;
   }
 
-  /**
-   * Sends commands created on this client to the server.
-   * @param {Command} command
-   * // TODO:
-   */
-  async publishCommand(command) {
-    // console.log("state.publishCommand: ", command);
-    let res = await jsonRequest(gameServiceUrl + routeCommands, command, requestSymbols.POST);
-    if (!res) return;
+  createObservable(observable, obj) {
+    let onChange = (property, newValue) => {
+      console.log(`Property '${property}' changed to:`, newValue, "... calling subscribers!");
+      Object.keys(this.#observables[observable].listeners).forEach(listener => listener(property, newValue));
+    };
 
-    // TODO: handle extra commands submitted before this client's
-    // TODO: centralise the command running in it's own module and send events to the proper listeners for updates, or apply the changes from commands and have the appropriate elements listen to changes in the data (use Proxy or events?)
-    return res;
-  }
+    let proxy = new Proxy(obj, {
+      get(target, prop, receiver) {
+        const value = target[prop];
+        if (value instanceof Function) {
+          return function(...args) {
+            return value.apply(this === receiver ? target : this, args);
+          };
+        }
+        return value;
+      },
+      set(target, prop, value, receiver) {
+        if (target[prop] !== value) {
+          onChange(prop, value);
+        }
+        return Reflect.set(target, prop, value, receiver);
+      },
+      deleteProperty(target, prop) {
+        onChange(prop, undefined);
+        return Reflect.deleteProperty(target, prop);
+      }
+    });
 
-  async getAppMenus() {
-    // TODO: cache...
-    if (this.cache.appMenus) {
-      return this.cache.appMenus;
+    this.#observables[observable] = {
+      proxy: proxy,
+      listeners: {}
     }
-
-    let result = await jsonRequest(gameServiceUrl + routeTableOfContents, {}, requestSymbols.GET);
-    this.cache.appMenus = result["app-menus"];
-    return this.cache.appMenus;
   }
 
-  async updateAppMenus(appMenus) {
-    this.cache.appMenus = appMenus;
+  subscribeToObservable(observable, subscriber, callback) {
+    if (this.#observables.hasOwnProperty(observable) && !this.#observables[observable].listeners.hasOwnProperty(subscriber)) {
+      this.#observables[observable].listeners[subscriber] = callback;
+    }
+  }
+
+  unsubscribeFromObservable(id, subscriber) {
+    if (this.#observables.hasOwnProperty(observable) && this.#observables[observable].listeners.hasOwnProperty(subscriber)) {
+      delete this.#observables[observable].listeners[subscriber];
+    }
+  }
+
+  updateObservable(observable, prop, value) {
+    if (this.#observables.hasOwnProperty(observable)) {
+      this.#observables[observable].proxy[prop] = value;
+    }
   }
 }
 

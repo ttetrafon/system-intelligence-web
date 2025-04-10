@@ -27,10 +27,3 @@ export const generalNames = Object.freeze({
   PAGE_EDIT: Symbol("Edit Page"),
   PAGE_NEW: Symbol("New Page")
 });
-
-export const userRoles = Object.freeze({
-  SYSTEM_EDITOR: Symbol("system-editor"),
-  GM: Symbol("game-master"),
-  PLAYER: Symbol("player"),
-  OBSERVER: Symbol("observer")
-});

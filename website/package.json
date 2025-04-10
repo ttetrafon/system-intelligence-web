@@ -1,7 +1,7 @@
 {
   "name": "system-intelligence-web-app",
   "private": true,
-  "version": "0.0.20",
+  "version": "0.0.21",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,6 +10,6 @@
     "build and preview": "npm run build && npm run preview"
   },
   "devDependencies": {
-    "vite": "^6.1.0"
+    "vite": "^6.2.6"
   }
 }
