@@ -7,26 +7,11 @@ template.innerHTML = /*html*/`
   ${styles}
 
   :host {
-    display: flex;
-    flex-flow: row nowrap;
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-  }
-
-  #main-container {
-    padding: 4px;
-    flex-grow: 1;
-    flex-shrink: 1;
-    overflow: auto;
+    display: block;
+    background-color: red;
   }
 </style>
 
-<!-- The main-container holds all open tabs/panels -->
-<section id="main-container" class="flex-column"></section>
-<si-side-panel></si-side-panel>
 `;
 
 class Component extends HTMLElement {
@@ -53,8 +38,6 @@ class Component extends HTMLElement {
     // Attribute value changes can be tied to any type of functionality through the lifecycle methods.
     if (oldVal == newVal) return;
     switch(name) {
-      default:
-        break;
     }
   }
   connectedCallback() {
@@ -71,4 +54,4 @@ class Component extends HTMLElement {
   }
 }
 
-window.customElements.define('si-main-container', Component);
+window.customElements.define('si-tabs-panel', Component);

@@ -52,7 +52,7 @@ body {
 }
 
 nav {
-  background-color: var(--colour-2a);
+  background-color: var(--colour-tertiary-a);
   border-right: var(--border-light);
   padding: 5px 10px;
 }
@@ -63,8 +63,8 @@ main {
 
 #app {
   flex-grow: 1;
-  padding: 15px;
-  overflow: auto;
+  height: 100%;
+  position: relative;
 }
 
 si-header {
