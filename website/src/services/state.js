@@ -5,7 +5,6 @@ class State {
   #observables;
 
   constructor() {
-    console.log("---> State()");
     if (!State.instance) {
       State.instance = this;
     }

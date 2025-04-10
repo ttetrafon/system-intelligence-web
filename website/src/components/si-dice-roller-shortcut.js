@@ -1,3 +1,4 @@
+import { eventNames } from '../data/enums.js';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');
@@ -8,10 +9,15 @@ template.innerHTML = /*html*/`
 
   :host {
     display: block;
+    height: 100%;
   }
 </style>
 
-<div>...</div>
+<button-text-image
+  label="Dice Roller"
+  image="casino"
+  event=${ eventNames.DICE_ROLLER_BUTTON.description }
+></button-text-image>
 `;
 
 class Component extends HTMLElement {
@@ -54,4 +60,4 @@ class Component extends HTMLElement {
   }
 }
 
-window.customElements.define('my-component', Component);
+window.customElements.define('si-dice-roller-shortcut', Component);

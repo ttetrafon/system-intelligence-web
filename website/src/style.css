@@ -59,6 +59,7 @@ nav {
 
 main {
   flex-grow: 1;
+  position: relative;
 }
 
 #app {
@@ -83,6 +84,7 @@ si-footer {
   flex-shrink: 0.5;
   max-height: 25%;
 }
+
 #dice-roller {
   min-width: 33%;
   max-width: 50%;
@@ -95,48 +97,70 @@ si-footer {
   display: flex;
   flex-flow: row nowrap;
 }
+
 .flex-multi-line {
   display: flex;
   flex-flow: row wrap;
 }
+
 .flex-column {
   display: flex;
   flex-flow: column nowrap;
 }
+
 .flex-multi-column {
   display: flex;
   flex-flow: column wrap;
 }
+
 .flex-separator {
   flex-grow: 1;
   flex-shrink: 1;
 }
 
-h1, h2, h3, h4, h5, h6 {
+.flex-adaptable {
+  flex-grow: 0.5;
+  flex-shrink: 0.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
   margin-top: 15px;
 }
+
 h1 {
   font-size: 1.5em;
 }
+
 h2 {
   font-size: 1.4em;
 }
+
 h3 {
   font-size: 1.3em;
 }
+
 h4 {
   font-size: 1.2em;
 }
+
 h5 {
   font-size: 1.1em;
 }
+
 h6 {
   font-size: 1.05em;
 }
+
 p {
   margin-bottom: 0.5em;
 }
+
 p.quote {
   padding-left: 35px;
   font-style: italic;
@@ -156,14 +180,13 @@ dialog {
   border-radius: 10px;
   margin: auto;
 }
+
 dialog::backdrop {
-  background-image: linear-gradient(
-    45deg,
-    magenta,
-    rebeccapurple,
-    dodgerblue,
-    green
-  );
+  background-image: linear-gradient(45deg,
+      magenta,
+      rebeccapurple,
+      dodgerblue,
+      green);
   opacity: 0.75;
 }
 
@@ -192,7 +215,8 @@ dialog::backdrop {
     background-color: none;
   }
 
-  si-header, si-footer {
+  si-header,
+  si-footer {
     display: none;
   }
 }

@@ -5,7 +5,7 @@ const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  ${styles}
+  ${ styles }
 
   :host {
     display: block;
@@ -13,19 +13,26 @@ template.innerHTML = /*html*/`
   }
 
   button {
-    align-items: center;
     height: 100%;
-    gap: 0.5em;
+    gap: 3px;
+    align-items: center;
+    padding: 3px;
   }
 
   svg-wrapper {
     height: 100%;
+    white-space: nowrap;
+  }
+
+  span {
+    flex-grow: 1;
+    text-align: left;
   }
 </style>
 
 <button class="flex-line">
-  <span></span>
   <svg-wrapper></svg-wrapper>
+  <span></span>
 </button>
 `;
 
@@ -60,7 +67,7 @@ class Component extends HTMLElement {
   attributeChangedCallback(name, oldVal, newVal) {
     // Attribute value changes can be tied to any type of functionality through the lifecycle methods.
     if (oldVal == newVal) return;
-    switch(name) {
+    switch (name) {
       case 'hide-text':
         this.$label.classList.toggle("hidden", this.hideText);
         break;

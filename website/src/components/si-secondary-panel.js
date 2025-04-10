@@ -4,14 +4,20 @@ const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  ${ styles }
+  ${styles}
 
   :host {
-    display: block;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-top: var(--border-light);
   }
 </style>
 
-<div>...</div>
+<si-dice-roller-panel class="hidden"></si-dice-roller-panel>
+<si-chat-panel class="hidden"></si-chat-panel>
 `;
 
 class Component extends HTMLElement {
@@ -37,7 +43,7 @@ class Component extends HTMLElement {
   attributeChangedCallback(name, oldVal, newVal) {
     // Attribute value changes can be tied to any type of functionality through the lifecycle methods.
     if (oldVal == newVal) return;
-    switch (name) {
+    switch(name) {
     }
   }
   connectedCallback() {
@@ -47,11 +53,11 @@ class Component extends HTMLElement {
     // Triggered when the component is removed from the DOM.
     // Ideal place for cleanup code.
     // Note that when destroying a component, it is good to also release any listeners.
-  }
+}
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
     // Note that adoption does not trigger the constructor again.
   }
 }
 
-window.customElements.define('my-component', Component);
+window.customElements.define('si-secondary-panel', Component);

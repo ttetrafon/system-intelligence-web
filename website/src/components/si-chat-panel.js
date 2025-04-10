@@ -54,4 +54,4 @@ class Component extends HTMLElement {
   }
 }
 
-window.customElements.define('my-component', Component);
+window.customElements.define('si-chat-panel', Component);

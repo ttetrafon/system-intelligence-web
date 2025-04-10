@@ -8,6 +8,7 @@ export const commandNames = Object.freeze({
 });
 
 export const eventNames = Object.freeze({
+  CHAT_BUTTON: Symbol("chat-button"),
   CONTENTS_ITEM_ADD: Symbol("add-contents-item"),
   CONTENTS_ITEM_DELETE: Symbol("delete-contents-item"),
   CONTENTS_ITEM_DELETE_PLAIN: Symbol("delete-contents-item-trigger"),
@@ -17,6 +18,7 @@ export const eventNames = Object.freeze({
   DIALOG_OPEN: Symbol("open-dialog"),
   DIALOG_CANCEL: Symbol("cancel-dialog"),
   DIALOG_CONFIRM: Symbol("confirm-dialog"),
+  DICE_ROLLER_BUTTON: Symbol("chat-button"),
   INPUT_CONTROL: Symbol("input-control"),
   NAVIGATE: Symbol("navigate"),
   SUB_PAGE_CONTAINER: Symbol("sub-page-container"),
