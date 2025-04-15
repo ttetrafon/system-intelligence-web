@@ -21,6 +21,7 @@ export const eventNames = Object.freeze({
   DICE_ROLLER_BUTTON: Symbol("chat-button"),
   INPUT_CONTROL: Symbol("input-control"),
   NAVIGATE: Symbol("navigate"),
+  PAGE_OPEN_PLAIN: Symbol("open-page-trigger"),
   SUB_PAGE_CONTAINER: Symbol("sub-page-container"),
   TOGGLE_SPINNING_CIRCLE: Symbol("toggle-spinning-circle")
 });

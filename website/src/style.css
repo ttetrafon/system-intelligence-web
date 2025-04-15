@@ -66,6 +66,22 @@ main {
   flex-grow: 1;
   height: 100%;
   position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+}
+#main-container {
+  padding: 4px;
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: auto;
+}
+#main-container > * {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: auto;
 }
 
 si-header {

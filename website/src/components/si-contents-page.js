@@ -1,5 +1,5 @@
 import { contentsSubpages } from '../data/data.js';
-import { makeDetailsPanelOpenHoverable, unmakeDetailsPanelOpenHoverable } from '../helper/dom.js';
+import { emitNavigationEvent, makeDetailsPanelOpenHoverable, unmakeDetailsPanelOpenHoverable } from '../helper/dom.js';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');
@@ -33,6 +33,9 @@ template.innerHTML = /*html*/`
   a {
     white-space: nowrap;
     cursor: pointer;
+  }
+  a:hover {
+    text-decoration: underline;
   }
 
   #subpages {
@@ -75,16 +78,18 @@ class Component extends HTMLElement {
   }
 
   // Attributes need to be observed to be tied to the lifecycle change callback.
-  static get observedAttributes() { return ['image', 'indentation', 'label']; }
+  static get observedAttributes() { return ['image', 'indentation', 'label', 'link']; }
 
   // Attribute values are always strings, so we need to convert them in their getter/setters as appropriate.
   get image() { return this.getAttribute('image'); }
   get indentation() { return JSON.parse(this.getAttribute('indentation')); }
   get label() { return this.getAttribute('label'); }
+  get link() { return `/${this.getAttribute('link')}`; }
 
   set image(value) { this.setAttribute('image', value); }
   set indentation(value) { this.setAttribute('indentation', value); }
   set label(value) { this.setAttribute('label', value); }
+  set link(value) { this.setAttribute('link', value); }
 
   // A web component implements the following lifecycle methods.
   attributeChangedCallback(name, oldVal, newVal) {
@@ -106,6 +111,10 @@ class Component extends HTMLElement {
         this.$summary.setAttribute("title", this.label);
         this.setupSubs();
         break;
+      case 'link':
+        this.$page.setAttribute("href", this.link);
+        this.$page.addEventListener("click", this.linkClicked.bind(this));
+        break;
     }
   }
   connectedCallback() {
@@ -117,11 +126,22 @@ class Component extends HTMLElement {
     // Note that when destroying a component, it is good to also release any listeners.
     if (this.$hasSub) {
       unmakeDetailsPanelOpenHoverable(this, this.$details, this.$summary);
+      this.$page.removeEventListener("click", this.linkClicked);
     }
   }
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
     // Note that adoption does not trigger the constructor again.
+  }
+
+  /**
+   *
+   * @param {Event} event
+   */
+  linkClicked(event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    emitNavigationEvent(this.$page, this.link);
   }
 
   /**

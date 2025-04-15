@@ -1,10 +1,23 @@
 export const routes = {
   '/': {
-    content: "si-main-container",
+    content: "editable-page",
     title: "System Intelligence",
     description: "System Intelligence Web App",
     path: "/",
-    pathType: "WebPage"
+    pathType: "WebPage",
+    navData: {
+      pageData: "introduction"
+    }
+  },
+  '/gameplay': {
+    content: "editable-page",
+    title: "System Intelligence: Gameplay",
+    description: "System Intelligence Web App",
+    path: "/gameplay",
+    pathType: "WebPage",
+    navData: {
+      pageData: "gameplay::general"
+    }
   },
   '/404': {
     content: "page-404",
@@ -16,4 +29,5 @@ export const routes = {
 }
 
 export const aliases = {
+  '/introduction': '/'
 }

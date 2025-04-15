@@ -42,8 +42,8 @@ export class Navigator {
       e.stopImmediatePropagation();
       clearChildren(this.dialog);
 
-      this.$dialogConfirmCallback = e.detail.confirmCb ? e.detail.confirmCb : () => {};
-      this.$dialogCancelCallback = e.detail.cancelCb ? e.detail.cancelCb : () => {};
+      this.$dialogConfirmCallback = e.detail.confirmCb ? e.detail.confirmCb : () => { };
+      this.$dialogCancelCallback = e.detail.cancelCb ? e.detail.cancelCb : () => { };
 
       let el = document.createElement(e.detail.element);
       for (const [key, value] of Object.entries(e.detail.data)) {
@@ -59,8 +59,8 @@ export class Navigator {
       this.dialog.close();
       await this.$dialogConfirmCallback(event.detail.data);
 
-      this.$dialogCancelCallback = () => {};
-      this.$dialogConfirmCallback = () => {};
+      this.$dialogCancelCallback = () => { };
+      this.$dialogConfirmCallback = () => { };
     });
     this.dialog.addEventListener(eventNames.DIALOG_CANCEL.description, async (event) => {
       console.log("dialog event:", eventNames.DIALOG_CANCEL.description)
@@ -68,8 +68,8 @@ export class Navigator {
       this.dialog.close();
       await this.$dialogCancelCallback();
 
-      this.$dialogCancelCallback = () => {};
-      this.$dialogConfirmCallback = () => {};
+      this.$dialogCancelCallback = () => { };
+      this.$dialogConfirmCallback = () => { };
     });
     this.dialog.addEventListener('cancel', async (event) => {
       console.log("dialog event: cancel");
@@ -77,8 +77,8 @@ export class Navigator {
       this.dialog.close();
       await this.$dialogCancelCallback();
 
-      this.$dialogCancelCallback = () => {};
-      this.$dialogConfirmCallback = () => {};
+      this.$dialogCancelCallback = () => { };
+      this.$dialogConfirmCallback = () => { };
     });
   }
 
@@ -112,7 +112,8 @@ export class Navigator {
         url: this.createCanonicalUrl(r.path),
         subroute: r.subroute
       },
-      subroute: r.subroute
+      subroute: r.subroute,
+      navData: r.navData
     };
   }
 
@@ -120,7 +121,7 @@ export class Navigator {
     // console.log(`navigateTo(${path}, ${pushState}, ${JSON.stringify(stateData)})`);
     path = this.normalisePath(path);
     const route = this.getRoute(path);
-    this.updateContent(path, route.subroute, route.content);
+    this.updateContent(path, route.subroute, route.content, route.navData);
     this.updateMetadata(route);
     if (pushState) {
       window.history.pushState({}, '', path);
@@ -148,12 +149,13 @@ export class Navigator {
     link.setAttribute("href", value);
   }
 
-  updateContent(path, isSubroute, content) {
+  updateContent(path, isSubroute, content, navData) {
     // console.log(`--> updateContent(${path}, ${isSubroute}, ${content})`);
     if (checkStringForNonExistence(content)) return;
 
     if (!isSubroute) {
       this.container.innerHTML = content;
+      if (navData) this.container.firstChild.setAttribute("nav-data", JSON.stringify(navData));
       return;
     }
 

@@ -51,13 +51,15 @@ template.innerHTML = /*html*/`
 <hr>
 
 <section id="container" class="flex-column">
-<si-contents-page
+  <si-contents-page
     label="Introduction"
     image="menu_book"
+    link="introduction"
   ></si-contents-page>
   <si-contents-page
     label="Gameplay"
-    image="casino"
+    image="casino",
+    link="gameplay"
   ></si-contents-page>
   <si-contents-page
     label="Characters"
