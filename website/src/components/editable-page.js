@@ -1,3 +1,4 @@
+import { eventNames } from '../data/enums.js';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');
@@ -8,10 +9,247 @@ template.innerHTML = /*html*/`
 
   :host {
     display: block;
+    position: relative;
+  }
+
+  #over-controls {
+    height: 2em;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+
+  #edit-controls {
+    position: sticky;
+    top: 0;
+    justify-content: space-evenly;
+    background-color: var(--colour-primary);
+    border-bottom: var(--border-light);
+  }
+
+  .edit-controls-section {
+    height: 2em;
+    align-items: center;
+  }
+  .edit-controls-section hr {
+    height: 75%;
+    margin: 0 5px;
+  }
+
+  .flex-separator-small {
+    min-width: 5px;
+  }
+
+  .flex-separator-medium {
+    min-width: 15px;
+  }
+
+  .flex-separator, .flex-separator-medium {
+    min-width: 25px;
+  }
+
+  @media (prefers-color-scheme: light) {
+    #edit-controls {
+      background-color: var(--colour-quaternary);
+      border-bottom: var(--border-dark);
+    }
   }
 </style>
 
-<section></section>
+<section id="over-controls" class="flex-line">
+  <button-text-image
+    id="edit-page"
+    label="Edit Page"
+    hide-text=true
+    image="edit"
+    event-name=${ eventNames.PAGE_EDIT.description }
+  ></button-text-image>
+</section>
+
+<section id="edit-controls" class="flex-multi-line hidden">
+  <div class="edit-controls-section flex-line">
+    <button-text-image
+      id="heading1"
+      label="Heading 1"
+      hide-text=true
+      image="format_h1"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="heading2"
+      label="Heading 2"
+      hide-text=true
+      image="format_h2"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="heading3"
+      label="Heading 3"
+      hide-text=true
+      image="format_h3"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="heading4"
+      label="Heading 4"
+      hide-text=true
+      image="format_h4"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="heading5"
+      label="Heading 5"
+      hide-text=true
+      image="format_h5"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="heading6"
+      label="Heading 6"
+      hide-text=true
+      image="format_h6"
+      event-name=""
+    ></button-text-image>
+
+    <hr/>
+
+    <button-text-image
+      id="text"
+      label="Text"
+      hide-text=true
+      image="text_fields"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="note"
+      label="Note"
+      hide-text=true
+      image="notes"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="quote"
+      label="Quote"
+      hide-text=true
+      image="format_quote"
+      event-name=""
+    ></button-text-image>
+
+    <hr/>
+
+    <button-text-image
+      id="unordered-list"
+      label="Unordered List"
+      hide-text=true
+      image="format_list_bulleted"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="ordered-list"
+      label="Ordered List"
+      hide-text=true
+      image="format_list_numbered"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="checklist"
+      label="Checklist"
+      hide-text=true
+      image="checklist"
+      event-name="checklist"
+    ></button-text-image>
+  </div>
+
+  <div class="edit-controls-section flex-line">
+    <button-text-image
+      id="bold"
+      label="Bold"
+      hide-text=true
+      image="format_bold"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="italic"
+      label="Italic"
+      hide-text=true
+      image="format_italic"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="underline"
+      label="Underline"
+      hide-text=true
+      image="format_underlined"
+      event-name=""
+    ></button-text-image>
+
+    <hr/>
+
+    <button-text-image
+      id="align-left"
+      label="Align Left"
+      hide-text=true
+      image="format_align_left"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="align-centre"
+      label="Align Centre"
+      hide-text=true
+      image="format_align_center"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="align-right"
+      label="Align Right"
+      hide-text=true
+      image="format_align_right"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="align-justify"
+      label="Justify"
+      hide-text=true
+      image="format_align_justify"
+      event-name=""
+    ></button-text-image>
+
+    <hr/>
+
+    <button-text-image
+      id="indent_increase"
+      label="Increase Indent"
+      hide-text=true
+      image="format_indent_increase"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="indent-decrease"
+      label="Decrease Indent"
+      hide-text=true
+      image="format_indent_decrease"
+      event-name=""
+    ></button-text-image>
+  </div>
+
+  <div class="edit-controls-section flex-line">
+    <button-text-image
+      id="link"
+      label="Insert Link"
+      hide-text=true
+      image="link"
+      event-name=""
+    ></button-text-image>
+    <button-text-image
+      id="image"
+      label="Insert Image"
+      hide-text=true
+      image="image"
+      event-name=""
+    ></button-text-image>
+  </div>
+</section>
+<article id="page-contents"></article>
 `;
 
 class Component extends HTMLElement {
@@ -22,7 +260,16 @@ class Component extends HTMLElement {
     // Access happens through ths `shadowroot` property in the host.
     this._shadow.appendChild(template.content.cloneNode(true));
 
-    this.$container = this._shadow.querySelector("section");
+    this.$overControls = this._shadow.getElementById("over-controls");
+    this.$editControls = this._shadow.getElementById("edit-controls");
+    this.$container = this._shadow.querySelector("article");
+
+    // TODO: instead of this, make the page editable by default as a user-setting
+    setTimeout(() => {
+      this.$overControls.classList.toggle("hidden", true);
+      this.$editControls.classList.toggle("hidden", false);
+      this.editEventListeners(true);
+    }, 500);
   }
 
   // Attributes need to be observed to be tied to the lifecycle change callback.
@@ -40,19 +287,51 @@ class Component extends HTMLElement {
     // Attribute value changes can be tied to any type of functionality through the lifecycle methods.
     if (oldVal == newVal) return;
     switch (name) {
+      case "nav-data":
+
+        break;
     }
   }
   connectedCallback() {
     // Triggered when the component is added to the DOM.
+    this.$overControls.addEventListener(eventNames.PAGE_EDIT.description, this.editPage.bind(this, true));
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
     // Ideal place for cleanup code.
     // Note that when destroying a component, it is good to also release any listeners.
+    this.$overControls.removeEventListener(eventNames.PAGE_EDIT.description, this.editPage);
+    this.editEventListeners(false);
   }
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
     // Note that adoption does not trigger the constructor again.
+  }
+
+  /**
+   *
+   * @param {Boolean} add
+   */
+  editEventListeners(add) {
+    if (add) {
+
+    }
+    else {
+
+    }
+  }
+
+  /**
+   *
+   * @param {Boolean} edit
+   * @param {Event} event
+   */
+  editPage(edit, event) {
+    event.stopImmediatePropagation();
+    console.log("edit page:", edit);
+    this.$overControls.classList.toggle("hidden", edit);
+    this.$editControls.classList.toggle("hidden", !edit);
+    this.editEventListeners(edit);
   }
 }
 

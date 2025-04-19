@@ -134,6 +134,16 @@ si-footer {
   flex-shrink: 1;
 }
 
+.flex-separator-medium {
+  flex-grow: 0.3;
+  flex-shrink: 1.5;
+}
+
+.flex-separator-small {
+  flex-grow: 0.1;
+  flex-shrink: 2;
+}
+
 .flex-adaptable {
   flex-grow: 0.5;
   flex-shrink: 0.5;
