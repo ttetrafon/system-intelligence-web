@@ -34,6 +34,8 @@
 
   --border-dark: 1px solid var(--colour-secondary);
   --border-light: 1px solid var(--colour-tertiary);
+
+  --box-shadow-neutral: 0 0 5px var(--colour-tertiary-a);
 }
 
 * {

@@ -25,6 +25,7 @@ template.innerHTML = /*html*/`
     justify-content: space-evenly;
     background-color: var(--colour-primary);
     border-bottom: var(--border-light);
+    gap: 10px;
   }
 
   .edit-controls-section {
@@ -46,6 +47,18 @@ template.innerHTML = /*html*/`
 
   .flex-separator, .flex-separator-medium {
     min-width: 25px;
+  }
+
+  #page-contents {
+    padding: 5px 10px;
+  }
+
+  #page-contents *[contenteditable=true] {
+    cursor: text;
+  }
+
+  .focused {
+    box-shadow: var(--box-shadow-neutral);
   }
 
   @media (prefers-color-scheme: light) {
@@ -118,7 +131,7 @@ template.innerHTML = /*html*/`
       label="Text"
       hide-text=true
       image="text_fields"
-      event-name=""
+      event-name=${ eventNames.PAGE_EDIT_PARAGRAPH.description }
     ></button-text-image>
     <button-text-image
       id="note"
@@ -264,11 +277,24 @@ class Component extends HTMLElement {
     this.$editControls = this._shadow.getElementById("edit-controls");
     this.$container = this._shadow.querySelector("article");
 
+    this.preventDefaultOnKeys = [
+      "ctrl+shift+i",
+      "ctrl+o"
+    ]
+    this.$lastFocusedElement = null;
+
     // TODO: instead of this, make the page editable by default as a user-setting
     setTimeout(() => {
       this.$overControls.classList.toggle("hidden", true);
       this.$editControls.classList.toggle("hidden", false);
       this.editEventListeners(true);
+      // if (this.$container.children.length == 0) {
+      //   let el = document.createElement("p");
+      //   el.setAttribute("contenteditable", true);
+      //   el.id = crypto.randomUUID();
+      //   this.$container.appendChild(el);
+      //   el.focus();
+      // }
     }, 500);
   }
 
@@ -310,15 +336,71 @@ class Component extends HTMLElement {
 
   /**
    *
+   * @param {Event} event
+   */
+  containerKeyCaptured(event) {
+    event.stopImmediatePropagation();
+    console.log(`---> containerKeyCaptured()`, event);
+    let composedKey = `${event.ctrlKey ? 'Ctrl+' : ''}${event.shiftKey ? 'Shift+' : ''}${event.altKey ? 'Alt+' : ''}${event.metaKey ? 'Meta+' : ''}${event.key}`.toLowerCase();
+    // console.log("composedKey:", composedKey, this.preventDefaultOnKeys, this.preventDefaultOnKeys.includes(composedKey));
+
+    if (this.preventDefaultOnKeys.includes(composedKey)) {
+      event.preventDefault();
+    }
+  }
+
+  /**
+   *
+   * @param {String} element: h1, h2, h3, h4, h5, h6, p
+   * @param {Event} event
+   */
+  createLine(element, data, event) {
+    event.stopImmediatePropagation();
+    let el = document.createElement(element);
+    el.setAttribute("contenteditable", true);
+    if (data) {
+
+    }
+    else {
+      el.id = crypto.randomUUID();
+    }
+    this.$container.appendChild(el);
+    el.focus();
+  }
+
+  /**
+   *
+   * @param {Event} event
+   */
+  elementFocused(event) {
+    event.stopImmediatePropagation();
+    if (this.$lastFocusedElement) this.$lastFocusedElement.classList.remove("focused");
+
+    this.$lastFocusedElement = event.target;
+    if (this.$lastFocusedElement) this.$lastFocusedElement.classList.add("focused");
+    console.log("this.$lastFocusedElement:", this.$lastFocusedElement);
+  }
+
+  /**
+   *
    * @param {Boolean} add
    */
   editEventListeners(add) {
     if (add) {
-
+      this.$container.addEventListener("focusin", this.elementFocused.bind(this));
+      this.$container.addEventListener("keydown", this.containerKeyCaptured.bind(this));
+      this.$editControls.addEventListener(eventNames.PAGE_EDIT_PARAGRAPH.description, this.createLine.bind(this, "p", null));
     }
     else {
-
+      this.$container.removeEventListener("focusin", this.elementFocused);
+      this.$container.removeEventListener("keydown", this.containerKeyCaptured);
+      this.$editControls.removeEventListener(eventNames.PAGE_EDIT_PARAGRAPH.description, this.createLine);
+      this.$lastFocusedElement = null;
     }
+
+    this.$container.childNodes.forEach(element => {
+      element.setAttribute("contenteditable", edit);
+    });
   }
 
   /**
@@ -332,6 +414,7 @@ class Component extends HTMLElement {
     this.$overControls.classList.toggle("hidden", edit);
     this.$editControls.classList.toggle("hidden", !edit);
     this.editEventListeners(edit);
+    this.$container.focus();
   }
 }
 

@@ -23,6 +23,7 @@ export const eventNames = Object.freeze({
   NAVIGATE: Symbol("navigate"),
   PAGE_OPEN_PLAIN: Symbol("open-page-trigger"),
   PAGE_EDIT: Symbol("edit-page"),
+  PAGE_EDIT_PARAGRAPH: Symbol("create-paragraph"),
   SUB_PAGE_CONTAINER: Symbol("sub-page-container"),
   TOGGLE_SPINNING_CIRCLE: Symbol("toggle-spinning-circle")
 });
