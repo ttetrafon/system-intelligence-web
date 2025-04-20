@@ -143,20 +143,39 @@ export async function emitCustomEvent(that, eventName, eventDetails) {
     detail: eventDetails
   }));
 };
+/**
+ *
+ * @param {HTMLElement} that
+ * @param {Boolean} state
+ */
 export async function toggleSpinningCircle(that, state) {
+  console.log("...");
   emitCustomEvent(that, eventNames.TOGGLE_SPINNING_CIRCLE.description, {
     bubbles: true,
     composed: true,
     state: state
   });
 }
-export async function emitNavigationEvent(that, target) {
+/**
+ *
+ * @param {HTMLElement} that
+ * @param {String} targetUrl
+ */
+export async function emitNavigationEvent(that, targetUrl) {
   emitCustomEvent(that, eventNames.NAVIGATE.description, {
     bubbles: true,
     composed: true,
-    target: target
+    target: targetUrl
   });
 }
+/**
+ *
+ * @param {HTMLElement} that
+ * @param {String} webComponent
+ * @param {JSON} data
+ * @param {function} confirmCb
+ * @param {function} cancelCb
+ */
 export async function emitDialogEvent(that, webComponent, data, confirmCb, cancelCb) {
   emitCustomEvent(that, eventNames.DIALOG_OPEN.description, {
     bubbles: true,

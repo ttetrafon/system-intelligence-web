@@ -8,11 +8,15 @@ template.innerHTML = /*html*/`
 
   .spinner-parent {
     position: fixed;
-    background-color: var(--colour-secondary-a);
+    background-color: var(--colour-tertiary-a);
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+    z-index: 999;
+  }
+
+  .spinner {
     z-index: 999;
   }
 
@@ -30,7 +34,7 @@ template.innerHTML = /*html*/`
 
   #spinner::before {
     border-radius: 50%;
-    border: 3px solid var(--colour-background);
+    border: 3px solid var(--colour-secondary);
     border-top-color: var(--colour-primary);
     border-bottom-color: var(--colour-primary);
     animation: spinner 0.7s ease infinite;
