@@ -1,4 +1,6 @@
+import { gameServiceUrl } from "../data/config.js";
 import { generalNames } from "../data/enums.js";
+import { jsonRequest, requestSymbols } from '../helper/requests.js';
 import { roles, User } from "../model/user.js";
 
 class State {
@@ -11,9 +13,13 @@ class State {
 
     this.#observables = {};
 
+    let userUuid = Math.random();
+    try {
+      userUuid = crypto.randomUUID();
+    } catch(err) {}
     this.createObservable(
       generalNames.OBSERVABLE_USER,
-      new User(crypto.randomUUID(), "", roles.VISITOR)
+      new User(userUuid, "", roles.VISITOR)
     );
 
     return State.instance;
@@ -51,6 +57,10 @@ class State {
       proxy: proxy,
       listeners: {}
     }
+  }
+
+  async pingServer() {
+    await jsonRequest(`${gameServiceUrl}/`, {}, requestSymbols.GET);
   }
 
   subscribeToObservable(observable, subscriber, callback) {

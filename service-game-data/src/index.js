@@ -17,6 +17,7 @@ const isMain = () => {
 // Create the Express app
 const app = express();
 const allowedOrigins = [
+  'http://192.168.1.136:5173',
   'http://localhost:5173',
   'https://system-intelligence.com'
 ];
@@ -55,8 +56,9 @@ export const handler = async (event, context) => {
 
 // Run locally if this file is the main entry point
 if (isMain()) {
+  const HOST = '0.0.0.0';
   const PORT = process.env.PORT || 8080;
-  app.listen(PORT, () => {
-    logger.info(`Server running locally on http://localhost:${ PORT }`);
+  app.listen(PORT, HOST, () => {
+    logger.info(`Server running locally on http://0.0.0.0:${ PORT }`);
   });
 }

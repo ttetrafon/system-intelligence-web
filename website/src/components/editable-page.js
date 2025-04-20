@@ -1,5 +1,6 @@
-import { eventNames } from '../data/enums.js';
 import styles from '../style.css?inline';
+import state from '../services/state.js';
+import { eventNames } from '../data/enums.js';
 
 const template = document.createElement('template');
 
@@ -284,10 +285,6 @@ class Component extends HTMLElement {
     ];
     this.$lastFocusedElement = null;
 
-    // TODO: make the page editable by default as a user-setting
-    setTimeout(() => {
-      this.editPage(true);
-    }, 500);
   }
 
   // Attributes need to be observed to be tied to the lifecycle change callback.
@@ -313,6 +310,11 @@ class Component extends HTMLElement {
   connectedCallback() {
     // Triggered when the component is added to the DOM.
     this.$overControls.addEventListener(eventNames.PAGE_EDIT.description, this.editPage.bind(this, true));
+
+    // TODO: make the page editable by default as a user-setting
+    setTimeout(() => {
+      this.editPage(true);
+    }, 500);
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
