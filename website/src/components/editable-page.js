@@ -279,22 +279,14 @@ class Component extends HTMLElement {
 
     this.preventDefaultOnKeys = [
       "ctrl+shift+i",
-      "ctrl+o"
-    ]
+      "ctrl+o",
+      "enter"
+    ];
     this.$lastFocusedElement = null;
 
-    // TODO: instead of this, make the page editable by default as a user-setting
+    // TODO: make the page editable by default as a user-setting
     setTimeout(() => {
-      this.$overControls.classList.toggle("hidden", true);
-      this.$editControls.classList.toggle("hidden", false);
-      this.editEventListeners(true);
-      // if (this.$container.children.length == 0) {
-      //   let el = document.createElement("p");
-      //   el.setAttribute("contenteditable", true);
-      //   el.id = crypto.randomUUID();
-      //   this.$container.appendChild(el);
-      //   el.focus();
-      // }
+      this.editPage(true);
     }, 500);
   }
 
@@ -338,7 +330,7 @@ class Component extends HTMLElement {
    *
    * @param {Event} event
    */
-  containerKeyCaptured(event) {
+  async containerKeyCaptured(event) {
     event.stopImmediatePropagation();
     console.log(`---> containerKeyCaptured()`, event);
     let composedKey = `${event.ctrlKey ? 'Ctrl+' : ''}${event.shiftKey ? 'Shift+' : ''}${event.altKey ? 'Alt+' : ''}${event.metaKey ? 'Meta+' : ''}${event.key}`.toLowerCase();
@@ -346,6 +338,12 @@ class Component extends HTMLElement {
 
     if (this.preventDefaultOnKeys.includes(composedKey)) {
       event.preventDefault();
+
+      switch(composedKey) {
+        case "enter":
+          this.newLine();
+          break;
+      }
     }
   }
 
@@ -354,15 +352,18 @@ class Component extends HTMLElement {
    * @param {String} element: h1, h2, h3, h4, h5, h6, p
    * @param {Event} event
    */
-  createLine(element, data, event) {
-    event.stopImmediatePropagation();
+  async createLine(element, data, event) {
+    if (event) event.stopImmediatePropagation();
     let el = document.createElement(element);
     el.setAttribute("contenteditable", true);
     if (data) {
 
     }
     else {
-      el.id = crypto.randomUUID();
+      try {
+        el.id = crypto.randomUUID();
+      }
+      catch(err) {}
     }
     this.$container.appendChild(el);
     el.focus();
@@ -372,7 +373,7 @@ class Component extends HTMLElement {
    *
    * @param {Event} event
    */
-  elementFocused(event) {
+  async elementFocused(event) {
     event.stopImmediatePropagation();
     if (this.$lastFocusedElement) this.$lastFocusedElement.classList.remove("focused");
 
@@ -385,7 +386,7 @@ class Component extends HTMLElement {
    *
    * @param {Boolean} add
    */
-  editEventListeners(add) {
+  async editEventListeners(add) {
     if (add) {
       this.$container.addEventListener("focusin", this.elementFocused.bind(this));
       this.$container.addEventListener("keydown", this.containerKeyCaptured.bind(this));
@@ -408,13 +409,33 @@ class Component extends HTMLElement {
    * @param {Boolean} edit
    * @param {Event} event
    */
-  editPage(edit, event) {
-    event.stopImmediatePropagation();
-    console.log("edit page:", edit);
+  async editPage(edit, event) {
+    if (event) event.stopImmediatePropagation();
     this.$overControls.classList.toggle("hidden", edit);
     this.$editControls.classList.toggle("hidden", !edit);
     this.editEventListeners(edit);
-    this.$container.focus();
+    if (this.$container.children.length == 0) {
+      this.createLine("p");
+    }
+    else {
+      // TODO: switch between first child/last child/none as a user setting
+      this.$container.firstChild.focus();
+    }
+  }
+
+  async newLine() {
+    // on a newline
+    // - get the current element type (p, li)
+
+    // - create a new element depending on the previous one
+    // h# -> p, p -> p, li -> li
+
+    // - check if there was any text selected or if the cursor wasn't at the end of the previous line
+    //   - if it was at the end, just create a new line
+    //   - if it wasn't, move the text after the cursor and to the new line
+    //   - if text was selected, remove the selection and create a new line, while moving any text after the selection to the new line
+
+    // - send command to create the new line
   }
 }
 
