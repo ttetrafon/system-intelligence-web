@@ -1,10 +1,11 @@
 import styles from '../style.css?inline';
+import { eventNames } from '../data/enums.js';
 
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  ${styles}
+  ${ styles }
 
   div {
     width: 100%;
@@ -15,6 +16,13 @@ template.innerHTML = /*html*/`
 </style>
 
 <div class="flex-line">
+  <button-text-image
+    id="main-menu-btn"
+    label="Table of Contents"
+    hide-text=true
+    image="menu_book"
+    event-name=${ eventNames.MAIN_MENU_TOGGLE.description }
+  ></button-text-image>
   <span id="flex-separator"></span>
   <si-search-bar></si-search-bar>
   <span id="flex-separator"></span>
@@ -36,7 +44,7 @@ class Component extends HTMLElement {
 
   attributeChangedCallback(name, oldVal, newVal) {
     if (oldVal == newVal) return;
-    switch(name) {
+    switch (name) {
       default:
         break;
     }

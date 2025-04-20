@@ -134,7 +134,7 @@ function toggleDetailsVisibility(details, detailControls, mouseHover, event) {
  *
  * @param {HTMLElement} that
  * @param {String} eventName
- * @param {Object} eventDetails
+ * @param {JSON} eventDetails
  */
 export async function emitCustomEvent(that, eventName, eventDetails) {
   that.dispatchEvent(new CustomEvent(eventName, {

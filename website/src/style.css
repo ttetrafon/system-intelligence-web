@@ -228,13 +228,17 @@ dialog::backdrop {
   }
 }
 
-@container full-page (max-width: 1024px) {
-  main {
-    left: 50px;
-  }
-
-  aside {
-    width: 50px;
+@media (max-width: 1024px) {
+  nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border: none;
+    background-color: var(--colour-tertiary);
+    padding: 5px;
+    z-index: 5;
   }
 }
 

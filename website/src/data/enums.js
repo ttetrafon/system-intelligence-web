@@ -20,6 +20,8 @@ export const eventNames = Object.freeze({
   DIALOG_CONFIRM: Symbol("confirm-dialog"),
   DICE_ROLLER_BUTTON: Symbol("chat-button"),
   INPUT_CONTROL: Symbol("input-control"),
+  MAIN_MENU_TOGGLE: Symbol("main-manu-toggle"),
+  MAIN_MENU_CLOSE: Symbol("main-menu-close"),
   NAVIGATE: Symbol("navigate"),
   PAGE_OPEN_PLAIN: Symbol("open-page-trigger"),
   PAGE_EDIT: Symbol("edit-page"),

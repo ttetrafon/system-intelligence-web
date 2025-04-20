@@ -402,7 +402,7 @@ class Component extends HTMLElement {
     }
 
     this.$container.childNodes.forEach(element => {
-      element.setAttribute("contenteditable", edit);
+      element.setAttribute("contenteditable", add);
     });
   }
 

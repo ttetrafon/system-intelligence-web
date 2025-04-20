@@ -1,5 +1,6 @@
 import { contentsSubpages } from '../data/data.js';
-import { emitNavigationEvent, makeDetailsPanelOpenHoverable, unmakeDetailsPanelOpenHoverable } from '../helper/dom.js';
+import { eventNames } from '../data/enums.js';
+import { emitCustomEvent, emitNavigationEvent, makeDetailsPanelOpenHoverable, unmakeDetailsPanelOpenHoverable } from '../helper/dom.js';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');
@@ -142,6 +143,7 @@ class Component extends HTMLElement {
     event.preventDefault();
     event.stopImmediatePropagation();
     emitNavigationEvent(this.$page, this.link);
+    emitCustomEvent(document, eventNames.MAIN_MENU_CLOSE.description);
   }
 
   /**

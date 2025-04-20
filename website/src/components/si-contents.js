@@ -14,6 +14,10 @@ template.innerHTML = /*html*/`
     gap: 5px;
   }
 
+  #main-menu-btn {
+    display: none;
+  }
+
   h3 {
     text-align: center;
     font-size: 1rem;
@@ -37,6 +41,17 @@ template.innerHTML = /*html*/`
   #controls {
     height: var(--statics-controls-short);
     justify-content: flex-end;
+  }
+
+  @media (max-width: 1024px) {
+    #main-menu-btn {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      height: 50px;
+      z-index: 33;
+    }
   }
 
   @media (prefers-color-scheme: light) {
