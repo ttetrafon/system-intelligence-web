@@ -31,6 +31,13 @@ export const eventNames = Object.freeze({
 });
 
 export const generalNames = Object.freeze({
+  OBSERVABLE_USER: Symbol("user"),
   PAGE_EDIT: Symbol("Edit Page"),
   PAGE_NEW: Symbol("New Page")
+});
+
+export const editablePageOperationNames = Object.freeze({
+  LINE_ADDED: Symbol("new-line"),
+  LINE_DELETED: Symbol("delete-line"),
+  LINE_UPDATED: Symbol("update-line")
 });

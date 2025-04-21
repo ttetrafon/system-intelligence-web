@@ -5,16 +5,14 @@ export const templateFileDbData = {
     [fileDbNames.ID_APP_MENUS]: {
       schemaVersion: 1,
       version: 0,
-      order: [],
-      items: {}
+      order: []
     }
   },
   [fileDbNames.COL_GENERAL_GAMEPLAY]: {
     [fileDbNames.ID_INTRODUCTION]: {
       schemaVersion: 1,
       version: 0,
-      order: [],
-      items: {}
+      order: []
     }
   }
 };

@@ -303,18 +303,13 @@ class Component extends HTMLElement {
     if (oldVal == newVal) return;
     switch (name) {
       case "nav-data":
-
+        this.getGameplayData();
         break;
     }
   }
   connectedCallback() {
     // Triggered when the component is added to the DOM.
     this.$overControls.addEventListener(eventNames.PAGE_EDIT.description, this.editPage.bind(this, true));
-
-    // TODO: make the page editable by default as a user-setting
-    setTimeout(() => {
-      this.editPage(true);
-    }, 500);
   }
   disconnectedCallback() {
     // Triggered when the component is removed from the DOM.
@@ -326,6 +321,14 @@ class Component extends HTMLElement {
   adoptedCallback() {
     // Triggered when the element is adopted through `document.adoptElement()` (like when using an <iframe/>).
     // Note that adoption does not trigger the constructor again.
+  }
+
+  /**
+   *
+   * @param {JSON} data
+   */
+  async buildPage(data) {
+
   }
 
   /**
@@ -371,6 +374,10 @@ class Component extends HTMLElement {
     el.focus();
   }
 
+  async dataUpdated() {
+
+  }
+
   /**
    *
    * @param {Event} event
@@ -381,7 +388,7 @@ class Component extends HTMLElement {
 
     this.$lastFocusedElement = event.target;
     if (this.$lastFocusedElement) this.$lastFocusedElement.classList.add("focused");
-    console.log("this.$lastFocusedElement:", this.$lastFocusedElement);
+    // console.log("this.$lastFocusedElement:", this.$lastFocusedElement);
   }
 
   /**
@@ -423,6 +430,17 @@ class Component extends HTMLElement {
       // TODO: switch between first child/last child/none as a user setting
       this.$container.firstChild.focus();
     }
+  }
+
+  async getGameplayData() {
+    let data = await state.getGameplayData(this.navData.pageData);
+    console.log(data);
+    this.buildPage(data);
+
+    state.subscribeToObservable(this.navData.pageData, this.navData.pageData, this.dataUpdated.bind(this));
+
+    // TODO: make the page editable by default as a user-setting
+    this.editPage(true);
   }
 
   async newLine() {

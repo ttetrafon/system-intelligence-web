@@ -6,7 +6,8 @@ export const routes = {
     path: "/",
     pathType: "WebPage",
     navData: {
-      pageData: "introduction"
+      pageData: "introduction",
+      dataSubscriptions: []
     }
   },
   '/gameplay': {
@@ -16,7 +17,8 @@ export const routes = {
     path: "/gameplay",
     pathType: "WebPage",
     navData: {
-      pageData: "gameplay::general"
+      pageData: "gameplay",
+      dataSubscriptions: []
     }
   },
   '/404': {
