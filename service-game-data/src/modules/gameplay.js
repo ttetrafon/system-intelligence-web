@@ -1,9 +1,9 @@
+import { Command_AppMenu_AddItem } from '../model/command.js';
+import { ContentsMenuItem } from '../model/db-data.js';
+import { fileDbNames, fileDbNamesByDescription } from '../data/enums.js';
+import { CompletionServices } from '../services/Completion.js';
 import { FileDB } from '../services/FileDB.js';
 import { Logger } from '../services/Logger.js';
-import { fileDbNames } from '../data/enums.js';
-import { Command_AppMenu_AddItem } from '../model/command.js';
-import { CompletionServices } from '../services/Completion.js';
-import { ContentsMenuItem } from '../model/db-data.js';
 
 export class Gameplay {
   constructor() {
@@ -26,7 +26,7 @@ export class Gameplay {
  * @returns
  */
   async commandAppMenusAddItem(request, response) {
-    this.logger.info(`---> WebApp.command()`);
+    this.logger.info(`---> Gameplay.command()`);
     let data = request.body;
     let documentVersion = data.documentVersion;
     let command = new Command_AppMenu_AddItem(data.id, data.identifier, data.label, data.indentation, data.after);
@@ -99,7 +99,7 @@ export class Gameplay {
    * @param {Response} response
    */
   async commandAppMenuDeleteItem(request, response) {
-    this.logger.info(`---> WebApp.command()`);
+    this.logger.info(`---> Gameplay.command()`);
     let data = request.body;
     let documentVersion = data.documentVersion;
     let command = new Command_AppMenu_AddItem(data.id, data.identifier);
@@ -136,6 +136,19 @@ export class Gameplay {
     };
   }
 
+  async gameplayData(request, response, section) {
+    this.logger.info(`---> Gameplay.gameplayData(${section})`);
+
+    await this.fileDB.getGameplayDb();
+
+    console.log(fileDbNamesByDescription);
+    let sectionData = await this.fileDB.retrieveDataFile(fileDbNames.COL_GENERAL_GAMEPLAY, fileDbNamesByDescription[section]);
+
+    // TODO: update schema if needed
+
+    return sectionData;
+  }
+
   /**
   *
   * @param {Request} request
@@ -143,7 +156,7 @@ export class Gameplay {
   * @returns
   */
   async menus(request, response) {
-    this.logger.info(`---> WebApp.menus()`);
+    this.logger.info(`---> Gameplay.menus()`);
 
     await this.fileDB.getAppDataDb();
 

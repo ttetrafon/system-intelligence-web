@@ -46,6 +46,20 @@ export class FileDB {
   }
 
   /**
+   * Returns an iterator for all documents within a collection.
+   * iterate with:
+   * while (await iterator.hasNext()) {
+   *   const document = await iterator.next();
+   * }
+   * @param {Symbol} collection
+   * @returns
+   */
+  collectionFilesIterator(collection) {
+    this.logger.debug(`--> collectionFilesIterator(${ collection.description })`);
+    return this[collection].find({});
+  }
+
+  /**
    *
    * @param {Symbol} db: The name of the DB.
    * @param {Array[Symbol]} collections: The names of the collections in the given DB.
@@ -94,6 +108,16 @@ export class FileDB {
 
   /**
    *
+   * @param {Symbol} collection
+   * @returns
+   */
+  async retrieveCollectionFiles(collection) {
+    this.logger.debug(`--> retrieveCollectionFiles(${ collection.description })`);
+    return await this[collection].find({}).toArray();
+  }
+
+  /**
+   *
    * @param {Symbol} db
    * @param {Symbol} collection
    * @param {Symbol} key
@@ -112,6 +136,18 @@ export class FileDB {
 
     this.logger.debug(`retrieved document: ${ JSON.stringify(document) }`);
     return document;
+  }
+
+  /**
+   *
+   * @param {Symbol} collection
+   * @param {Array[String]} keys
+   * @returns
+   */
+  async retrieveDataFiles(collection, keys) {
+    this.logger.debug(`--> retrieveDataFiles(${ collection.description }, ${ JSON.stringify(keys) })`);
+    const query = { _id: { $in: keys } };
+    return await this[collection].find(query).toArray();
   }
 
   /**

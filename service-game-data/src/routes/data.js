@@ -31,7 +31,7 @@ router.use((req, res, next) => {
   next();
 });
 
-// POST /data//command
+// POST /data/command
 router.post('/command/', async (req, res) => {
   // TODO: maybe move the command category & type into the request url as params; i.e.: /command/{command-category}/{command-type}/
   let data = req.body;
@@ -47,14 +47,15 @@ router.post('/command/', async (req, res) => {
   }
 });
 
-// GET /data/app-menus
+// GET /data/web-app-menus
 router.get('/web-app-menus/', async (req, res) => {
   await requestHandler(req, res, gameplay.menus.bind(gameplay, req, res));
 });
 
-// GET /data/gameplay
-router.get('/gameplay-data/gameplay', async (req, res) => {
-  await requestHandler(req, res, gameplay.gameplayData.bind(gameplay, req, res));
+// GET /data/gameplay-data/:section
+router.get('/gameplay-data/:section', async (req, res) => {
+  const section = req.params.section;
+  await requestHandler(req, res, gameplay.gameplayData.bind(gameplay, req, res, section));
 });
 
 export default router;

@@ -33,7 +33,6 @@ if (window.innerWidth < 1024) {
   navClosed = true;
 }
 window.addEventListener("resize", () => {
-  console.log(window.innerWidth);
   if (window.innerWidth <= 1024) {
     nav.classList.toggle("hidden", true);
     navClosed = true;

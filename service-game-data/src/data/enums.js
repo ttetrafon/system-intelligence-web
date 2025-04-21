@@ -16,7 +16,14 @@ export const fileDbNames = Object.freeze({
   DB_GAME_DATA: Symbol("gameplay-data"),
   COL_GENERAL_GAMEPLAY: Symbol("general-gameplay"),
   ID_ATTRIBUTES: Symbol("attributes"),
-  ID_GAMEPLAY: Symbol("gameplay")
+  ID_GAMEPLAY: Symbol("gameplay"),
+  ID_INTRODUCTION: Symbol("introduction")
+});
+
+export const fileDbNamesByDescription = Object.freeze({
+  "attributes": fileDbNames.ID_ATTRIBUTES,
+  "gameplay": fileDbNames.ID_GAMEPLAY,
+  "introduction": fileDbNames.ID_INTRODUCTION
 });
 
 export const schemaUpdates = Object.freeze({
