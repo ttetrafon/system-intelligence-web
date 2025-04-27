@@ -315,6 +315,7 @@ class Component extends HTMLElement {
     // Triggered when the component is removed from the DOM.
     // Ideal place for cleanup code.
     // Note that when destroying a component, it is good to also release any listeners.
+    state.unsubscribeFromObservable(this.navData.pageData, this.navData.pageData);
     this.$overControls.removeEventListener(eventNames.PAGE_EDIT.description, this.editPage);
     this.editEventListeners(false);
   }
@@ -374,8 +375,14 @@ class Component extends HTMLElement {
     el.focus();
   }
 
-  async dataUpdated() {
-
+  /**
+   *
+   * @param {String} subscriber
+   * @param {String} property
+   * @param {Object} newValue
+   */
+  async dataUpdated(subscriber, property, newValue) {
+    console.log(`---> dataUpdated(${subscriber}, ${property}, ${JSON.stringify(newValue)})`);
   }
 
   /**

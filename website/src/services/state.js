@@ -33,7 +33,9 @@ class State {
   createObservable(observable, obj) {
     let onChange = (property, newValue) => {
       console.log(`Property '${property}' changed to:`, newValue, "... calling subscribers!");
-      Object.keys(this.#observables[observable].listeners).forEach(listener => listener(property, newValue));
+      Object.keys(this.#observables[observable].listeners).forEach(subscriber =>
+        this.#observables[observable].listeners[subscriber](subscriber, property, newValue)
+      );
     };
 
     let proxy = new Proxy(obj, {
@@ -103,7 +105,7 @@ class State {
     }
   }
 
-  unsubscribeFromObservable(id, subscriber) {
+  unsubscribeFromObservable(observable, subscriber) {
     if (this.#observables.hasOwnProperty(observable) && this.#observables[observable].listeners.hasOwnProperty(subscriber)) {
       delete this.#observables[observable].listeners[subscriber];
     }

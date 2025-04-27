@@ -141,7 +141,6 @@ export class Gameplay {
 
     await this.fileDB.getGameplayDb();
 
-    console.log(fileDbNamesByDescription);
     let sectionData = await this.fileDB.retrieveDataFile(fileDbNames.COL_GENERAL_GAMEPLAY, fileDbNamesByDescription[section]);
 
     // TODO: update schema if needed
