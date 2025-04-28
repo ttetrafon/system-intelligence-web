@@ -34,9 +34,13 @@ template.innerHTML = /*html*/`
   a {
     white-space: nowrap;
     cursor: pointer;
+    text-decoration: none;
   }
   a:hover {
     text-decoration: underline;
+  }
+  a:visited {
+    color: inherit;
   }
 
   #subpages {

@@ -1,6 +1,6 @@
 import { gameServiceUrl } from "../data/config.js";
 import { generalNames } from "../data/enums.js";
-import { jsonRequest, requestSymbols } from '../helper/requests.js';
+import { jsonRequest } from '../helper/requests.js';
 import { roles, User } from "../model/user.js";
 
 class State {
@@ -74,7 +74,7 @@ class State {
   async getGameplayData(section) {
     console.log(`---> getGameplayData(${section})`);
     // TODO: check local storage...
-    let res = await jsonRequest(`${gameServiceUrl}/data/gameplay-data/${section}`, requestSymbols.GET);
+    let res = await jsonRequest(`${gameServiceUrl}/data/gameplay-data/${section}`);
 
     if (res.completionCode == 0) {
       delete res.completionCode;
@@ -90,7 +90,7 @@ class State {
   }
 
   async pingServer() {
-    await jsonRequest(`${gameServiceUrl}/`, {}, requestSymbols.GET);
+    await jsonRequest(`${gameServiceUrl}/`);
   }
 
   /**

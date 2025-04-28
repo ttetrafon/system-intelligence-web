@@ -12,7 +12,7 @@ export const requestSymbols = Object.freeze({
  * @returns
  */
 export async function jsonRequest(url, body, method = requestSymbols.GET) {
-  // console.log(`---> request(${url}, ${JSON.stringify(body)})`);
+  console.log(`---> request(${url}, ${JSON.stringify(body)}, ${method.description})`);
   let headers = {
     "Accept": "*/*",
     "Connection": "keep-alive",
@@ -33,7 +33,7 @@ export async function jsonRequest(url, body, method = requestSymbols.GET) {
   if (status != 200) return null;
 
   let res = await response.json();
-  // console.log("res:", res);
+  console.log("res:", res);
   return res;
 }
 

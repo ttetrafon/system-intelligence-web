@@ -36,7 +36,7 @@ app.use(express.json());
 
 // Global middleware
 app.use((req, res, next) => {
-  logger.debug(`[${ new Date().toISOString() }] ${ req.method } ${ req.originalUrl }: body=${JSON.stringify(req.body)}`);
+  logger.debug(`[${ new Date().toISOString() }] ${ req.method } ${ req.originalUrl }: body=${ JSON.stringify(req.body) }`);
   next();
 });
 
@@ -57,8 +57,8 @@ export const handler = async (event, context) => {
 // Run locally if this file is the main entry point
 if (isMain()) {
   const HOST = '0.0.0.0';
-  const PORT = process.env.PORT || 8080;
+  const PORT = process.env.PORT || 3000;
   app.listen(PORT, HOST, () => {
-    logger.info(`Server running locally on http://0.0.0.0:${ PORT }`);
+    logger.info(`Server running locally on http://${ HOST }:${ PORT }`);
   });
 }

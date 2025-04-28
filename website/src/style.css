@@ -71,13 +71,15 @@ main {
   display: flex;
   flex-flow: row nowrap;
 }
+
 #main-container {
   padding: 4px;
   flex-grow: 1;
   flex-shrink: 1;
   overflow: auto;
 }
-#main-container > * {
+
+#main-container>* {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -211,10 +213,10 @@ dialog {
 
 dialog::backdrop {
   background-image: linear-gradient(45deg,
-      magenta,
-      rebeccapurple,
-      dodgerblue,
-      green);
+      var(--colour-primary),
+      var(--colour-secondary),
+      var(--colour-tertiary),
+      var(--colour-quaternary));
   opacity: 0.75;
 }
 
