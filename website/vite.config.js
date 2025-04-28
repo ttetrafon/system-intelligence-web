@@ -9,7 +9,7 @@ export default defineConfig({
     // redirect the requests for cors
     proxy: {
       '/data': { // Proxy all requests from the Vite server's origin
-        target: 'http://0.0.0.0:3000',
+        target: 'http://192.168.1.6:3000',
         changeOrigin: true,
         secure: false
       }

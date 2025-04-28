@@ -9,7 +9,7 @@ export class Logger {
     }
     Logger._instance = this;
 
-    let logPath = isDev() ? './logs/ergaliothiki-%DATE%.log' : '/home/ergaliothiki/webapps/ergaliothiki/logs/ergaliothiki-%DATE%.log';
+    let logPath = isDev() ? './logs/si-game-service-%DATE%.log' : '/home/si-game-service/webapps/si-game-service/logs/si-game-service-%DATE%.log';
     var transport = new winston.transports.DailyRotateFile({
       level: 'debug',
       filename: logPath,
