@@ -1,6 +1,7 @@
 import styles from '../style.css?inline';
 import state from '../services/state.js';
 import { eventNames } from '../data/enums.js';
+import { setCaretPosition } from '../helper/dom.js';
 
 const template = document.createElement('template');
 
@@ -87,42 +88,42 @@ template.innerHTML = /*html*/`
       label="Heading 1"
       hide-text=true
       image="format_h1"
-      event-name=""
+      event-name=${ eventNames.EDITOR_FORMAT_H1.description }
     ></button-text-image>
     <button-text-image
       id="heading2"
       label="Heading 2"
       hide-text=true
       image="format_h2"
-      event-name=""
+      event-name=${ eventNames.EDITOR_FORMAT_H2.description }
     ></button-text-image>
     <button-text-image
       id="heading3"
       label="Heading 3"
       hide-text=true
       image="format_h3"
-      event-name=""
+      event-name=${ eventNames.EDITOR_FORMAT_H3.description }
     ></button-text-image>
     <button-text-image
       id="heading4"
       label="Heading 4"
       hide-text=true
       image="format_h4"
-      event-name=""
+      event-name=${ eventNames.EDITOR_FORMAT_H4.description }
     ></button-text-image>
     <button-text-image
       id="heading5"
       label="Heading 5"
       hide-text=true
       image="format_h5"
-      event-name=""
+      event-name=${ eventNames.EDITOR_FORMAT_H5.description }
     ></button-text-image>
     <button-text-image
       id="heading6"
       label="Heading 6"
       hide-text=true
       image="format_h6"
-      event-name=""
+      event-name=${ eventNames.EDITOR_FORMAT_H6.description }
     ></button-text-image>
 
     <hr/>
@@ -132,7 +133,7 @@ template.innerHTML = /*html*/`
       label="Text"
       hide-text=true
       image="text_fields"
-      event-name=${ eventNames.PAGE_EDIT_PARAGRAPH.description }
+      event-name=${ eventNames.EDITOR_FORMAT_P.description }
     ></button-text-image>
     <button-text-image
       id="note"
@@ -284,7 +285,6 @@ class Component extends HTMLElement {
       "enter"
     ];
     this.$lastFocusedElement = null;
-
   }
 
   // Attributes need to be observed to be tied to the lifecycle change callback.
@@ -339,13 +339,13 @@ class Component extends HTMLElement {
   async containerKeyCaptured(event) {
     event.stopImmediatePropagation();
     console.log(`---> containerKeyCaptured()`, event);
-    let composedKey = `${event.ctrlKey ? 'Ctrl+' : ''}${event.shiftKey ? 'Shift+' : ''}${event.altKey ? 'Alt+' : ''}${event.metaKey ? 'Meta+' : ''}${event.key}`.toLowerCase();
+    let composedKey = `${ event.ctrlKey ? 'Ctrl+' : '' }${ event.shiftKey ? 'Shift+' : '' }${ event.altKey ? 'Alt+' : '' }${ event.metaKey ? 'Meta+' : '' }${ event.key }`.toLowerCase();
     // console.log("composedKey:", composedKey, this.preventDefaultOnKeys, this.preventDefaultOnKeys.includes(composedKey));
 
     if (this.preventDefaultOnKeys.includes(composedKey)) {
       event.preventDefault();
 
-      switch(composedKey) {
+      switch (composedKey) {
         case "enter":
           this.newLine();
           break;
@@ -369,7 +369,7 @@ class Component extends HTMLElement {
       try {
         el.id = crypto.randomUUID();
       }
-      catch(err) {}
+      catch (err) { }
     }
     this.$container.appendChild(el);
     el.focus();
@@ -382,7 +382,7 @@ class Component extends HTMLElement {
    * @param {Object} newValue
    */
   async dataUpdated(subscriber, property, newValue) {
-    console.log(`---> dataUpdated(${subscriber}, ${property}, ${JSON.stringify(newValue)})`);
+    console.log(`---> dataUpdated(${ subscriber }, ${ property }, ${ JSON.stringify(newValue) })`);
   }
 
   /**
@@ -406,12 +406,24 @@ class Component extends HTMLElement {
     if (add) {
       this.$container.addEventListener("focusin", this.elementFocused.bind(this));
       this.$container.addEventListener("keydown", this.containerKeyCaptured.bind(this));
-      this.$editControls.addEventListener(eventNames.PAGE_EDIT_PARAGRAPH.description, this.createLine.bind(this, "p", null));
+      this.$editControls.addEventListener(eventNames.EDITOR_FORMAT_H1.description, this.updateLineFormat.bind(this, "h1"));
+      this.$editControls.addEventListener(eventNames.EDITOR_FORMAT_H2.description, this.updateLineFormat.bind(this, "h2"));
+      this.$editControls.addEventListener(eventNames.EDITOR_FORMAT_H3.description, this.updateLineFormat.bind(this, "h3"));
+      this.$editControls.addEventListener(eventNames.EDITOR_FORMAT_H4.description, this.updateLineFormat.bind(this, "h4"));
+      this.$editControls.addEventListener(eventNames.EDITOR_FORMAT_H5.description, this.updateLineFormat.bind(this, "h5"));
+      this.$editControls.addEventListener(eventNames.EDITOR_FORMAT_H6.description, this.updateLineFormat.bind(this, "h6"));
+      this.$editControls.addEventListener(eventNames.EDITOR_FORMAT_P.description, this.updateLineFormat.bind(this, "p"));
     }
     else {
       this.$container.removeEventListener("focusin", this.elementFocused);
       this.$container.removeEventListener("keydown", this.containerKeyCaptured);
-      this.$editControls.removeEventListener(eventNames.PAGE_EDIT_PARAGRAPH.description, this.createLine);
+      this.$editControls.removeEventListener(eventNames.EDITOR_FORMAT_H1.description, this.updateLineFormat);
+      this.$editControls.removeEventListener(eventNames.EDITOR_FORMAT_H2.description, this.updateLineFormat);
+      this.$editControls.removeEventListener(eventNames.EDITOR_FORMAT_H3.description, this.updateLineFormat);
+      this.$editControls.removeEventListener(eventNames.EDITOR_FORMAT_H4.description, this.updateLineFormat);
+      this.$editControls.removeEventListener(eventNames.EDITOR_FORMAT_H5.description, this.updateLineFormat);
+      this.$editControls.removeEventListener(eventNames.EDITOR_FORMAT_H6.description, this.updateLineFormat);
+      this.$editControls.removeEventListener(eventNames.EDITOR_FORMAT_P.description, this.updateLineFormat);
       this.$lastFocusedElement = null;
     }
 
@@ -463,6 +475,44 @@ class Component extends HTMLElement {
     //   - if text was selected, remove the selection and create a new line, while moving any text after the selection to the new line
 
     // - send command to create the new line
+  }
+
+  /**
+   * Swaps in place the element-type for the selected line(s).
+   * @param {String} elementType
+   * @param {Event} event
+   */
+  async updateLineFormat(elementType, event) {
+    console.log(`---> updateLineFormat(${elementType})`);
+    event.stopImmediatePropagation();
+
+    if (this.$lastFocusedElement) {
+      const selection = window.getSelection();
+      const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+      let cursorPosition = 0;
+      if (range && this.$lastFocusedElement.contains(range.startContainer)) {
+        const preCaretRange = document.createRange();
+        preCaretRange.selectNodeContents(this.$lastFocusedElement);
+        preCaretRange.setEnd(range.startContainer, range.startOffset);
+        cursorPosition = preCaretRange.toString().length;
+      }
+
+      const newElement = document.createElement(elementType);
+      newElement.innerHTML = this.$lastFocusedElement.innerHTML;
+      newElement.id = this.$lastFocusedElement.id;
+      newElement.classList = this.$lastFocusedElement.classList;
+      newElement.setAttribute("contenteditable", true);
+      this.$container.replaceChild(newElement, this.$lastFocusedElement);
+      this.$lastFocusedElement = newElement;
+      this.$lastFocusedElement.focus();
+
+      if (cursorPosition) {
+        setCaretPosition(selection, this.$lastFocusedElement, cursorPosition);
+      }
+    }
+    else {
+      this.createLine(elementType);
+    }
   }
 }
 

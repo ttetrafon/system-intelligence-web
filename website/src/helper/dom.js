@@ -213,3 +213,28 @@ export async function emitSubPageContainerEvent(that, route) {
     });
   }, 0);
 }
+
+/**
+ *
+ * @param {Selection} selection
+ * @param {HTMLElement} element
+ * @param {number} position
+ */
+export function setCaretPosition(selection, element, position) {
+  if (element) {
+    const range = document.createRange();
+    const textNode = element.firstChild;
+    if (textNode) {
+      range.setStart(textNode, Math.min(position, textNode.length));
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+    else {
+      range.setStart(element, 0);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  }
+}

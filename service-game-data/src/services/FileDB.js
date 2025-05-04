@@ -124,7 +124,7 @@ export class FileDB {
    * @returns {JSON}
    */
   async retrieveDataFile(collection, key) {
-    this.logger.debug(`--> retrieveDataFile(${ collection.description }, ${ key.description })`);
+    this.logger.debug(`---> retrieveDataFile(${ collection.description }, ${ key.description })`);
     const query = { _id: key.description };
     let document = await this[collection].findOne(query);
 
@@ -145,7 +145,7 @@ export class FileDB {
    * @returns
    */
   async retrieveDataFiles(collection, keys) {
-    this.logger.debug(`--> retrieveDataFiles(${ collection.description }, ${ JSON.stringify(keys) })`);
+    this.logger.debug(`---> retrieveDataFiles(${ collection.description }, ${ JSON.stringify(keys) })`);
     const query = { _id: { $in: keys } };
     return await this[collection].find(query).toArray();
   }
