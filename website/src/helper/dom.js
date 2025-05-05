@@ -1,5 +1,55 @@
 import { eventNames } from "../data/enums.js";
 
+///////////////////////////
+///   BUILDING BLOCKS   ///
+///////////////////////////
+
+/**
+ *
+ * @param {json} data
+ * @param {Node} parent
+ */
+export async function buildHtmlFromStructure(data, parent) {
+  console.log(`---> buildHtmlFromStructure`, data, parent);
+  clearChildren(parent);
+  for (let i = 0; i < data.order.length; i++) {
+    let element = data[data.order[i]];
+    let node = await createElement(element);
+    parent.appendChild(node);
+  }
+}
+async function createElement(node) {
+  // Create text nodes
+  if (node.element === "#text") {
+    return document.createTextNode(node.contents);
+  }
+
+  // Create the main element
+  const el = document.createElement(node.element);
+
+  // Add attributes
+  if (node.id) {
+    el.id = node.id;
+  }
+  if (node.attributes) {
+    node.attributes.forEach(attr => el.setAttribute(attr.attribute, (typeof attr.value == "object" ? JSON.stringify(attr.value) : attr.value)));
+  }
+
+  // Handle contents (recursively if necessary)
+  if (Array.isArray(node.contents)) {
+    node.contents.forEach(childNode => el.appendChild(createElement(childNode)));
+  }
+  else if (node.contents && typeof node.contents === "string") {
+    el.textContent = node.contents;
+  }
+
+  return el;
+}
+
+//////////////////////////
+///   CHILD ELEMENTS   ///
+//////////////////////////
+
 export async function clearChildren(parent) {
   while (parent.firstChild) {
     parent.removeChild(parent.lastChild);
@@ -30,6 +80,10 @@ export async function findSelfIndexInParent(self, parent) {
   }
   return index;
 }
+
+//////////////////////////
+///   INPUT ELEMENTS   ///
+//////////////////////////
 
 /**
  * Creates options within a select element.
@@ -132,6 +186,35 @@ function toggleDetailsVisibility(details, detailControls, mouseHover, event) {
 
 /**
  *
+ * @param {Selection} selection
+ * @param {HTMLElement} element
+ * @param {number} position
+ */
+export function setCaretPosition(selection, element, position) {
+  if (element) {
+    const range = document.createRange();
+    const textNode = element.firstChild;
+    if (textNode) {
+      range.setStart(textNode, Math.min(position, textNode.length));
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+    else {
+      range.setStart(element, 0);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  }
+}
+
+//////////////////
+///   EVENTS   ///
+//////////////////
+
+/**
+ *
  * @param {HTMLElement} that
  * @param {String} eventName
  * @param {JSON} eventDetails
@@ -212,29 +295,4 @@ export async function emitSubPageContainerEvent(that, route) {
       route: route
     });
   }, 0);
-}
-
-/**
- *
- * @param {Selection} selection
- * @param {HTMLElement} element
- * @param {number} position
- */
-export function setCaretPosition(selection, element, position) {
-  if (element) {
-    const range = document.createRange();
-    const textNode = element.firstChild;
-    if (textNode) {
-      range.setStart(textNode, Math.min(position, textNode.length));
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-    else {
-      range.setStart(element, 0);
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  }
 }

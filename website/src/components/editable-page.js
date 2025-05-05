@@ -1,7 +1,7 @@
 import styles from '../style.css?inline';
 import state from '../services/state.js';
 import { eventNames } from '../data/enums.js';
-import { setCaretPosition } from '../helper/dom.js';
+import { buildHtmlFromStructure, setCaretPosition } from '../helper/dom.js';
 
 const template = document.createElement('template');
 
@@ -326,14 +326,6 @@ class Component extends HTMLElement {
 
   /**
    *
-   * @param {JSON} data
-   */
-  async buildPage(data) {
-
-  }
-
-  /**
-   *
    * @param {Event} event
    */
   async containerKeyCaptured(event) {
@@ -453,13 +445,12 @@ class Component extends HTMLElement {
 
   async getGameplayData() {
     let data = await state.getGameplayData(this.navData.pageData);
-    console.log(data);
-    this.buildPage(data);
+    await buildHtmlFromStructure(data, this.$container);
 
     state.subscribeToObservable(this.navData.pageData, this.navData.pageData, this.dataUpdated.bind(this));
 
     // TODO: make the page editable by default as a user-setting
-    this.editPage(true);
+    await this.editPage(true);
   }
 
   async newLine() {
