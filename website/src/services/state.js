@@ -1,6 +1,6 @@
 import { gameServiceUrl } from "../data/config.js";
 import { generalNames } from "../data/enums.js";
-import { jsonRequest } from '../helper/requests.js';
+import { jsonRequest } from '../helper-library/requests.js';
 import { roles, User } from "../model/user.js";
 
 class State {

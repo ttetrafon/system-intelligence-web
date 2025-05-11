@@ -1,6 +1,6 @@
 import { contentsSubpages } from '../data/data.js';
 import { eventNames } from '../data/enums.js';
-import { emitCustomEvent, emitNavigationEvent, makeDetailsPanelOpenHoverable, unmakeDetailsPanelOpenHoverable } from '../helper/dom.js';
+import { emitCustomEvent, emitNavigationEvent, makeDetailsPanelOpenHoverable, unmakeDetailsPanelOpenHoverable } from '../helper-library/dom.js';
 import styles from '../style.css?inline';
 
 const template = document.createElement('template');
