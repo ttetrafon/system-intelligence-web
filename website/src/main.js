@@ -1,9 +1,4 @@
 import './style.css'
-import './components/button-text-image.js';
-import './components/editable-page.js';
-import './components/input-field.js';
-import './components/loading-circle.js';
-import './components/selector-field.js';
 import './components/si-chat-panel.js';
 import './components/si-chat-shortcut.js';
 import './components/si-contents.js';
@@ -15,7 +10,13 @@ import './components/si-header.js';
 import './components/si-search-bar.js';
 import './components/si-secondary-panel.js';
 import './components/si-tabs-panel.js';
-import './components/svg-wrapper.js';
+import './components-library/404.js';
+import './components-library/button-text-image.js';
+import './components-library/editable-page.js';
+import './components-library/input-field.js';
+import './components-library/loading-circle.js';
+import './components-library/selector-field.js';
+import './components-library/svg-wrapper.js';
 import './services/spinning-circle.js';
 import state from './services/state.js';
 import { eventNames } from './data/enums.js';
