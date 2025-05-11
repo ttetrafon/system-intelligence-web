@@ -30,9 +30,9 @@ export const eventNames = Object.freeze({
 export const generalNames = Object.freeze({
   OBSERVABLE_USER: Symbol("user"),
 
-  GAME_CONNECTION_LIVE: Symbol("game-live"),
-  GAME_CONNECTION_OFFLINE: Symbol("game-offline"),
-  GAME_CONNECTION_SOLO: Symbol("game-solo")
+  CONNECTION_LIVE: Symbol("connection-live"),
+  CONNECTION_SOLO: Symbol("connection-solo"),
+  CONNECTION_OFFLINE: Symbol("connection-offline")
 });
 
 export const editablePageOperationNames = Object.freeze({
