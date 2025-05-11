@@ -1,4 +1,14 @@
-import { commandNames } from "../data/enums.js";
+export const commandNames = Object.freeze({
+  CATEGORY_APP_MENUS: Symbol("command-app-menus"),
+  COMMAND_APP_MENUS_ADD_ITEM: Symbol("app-menus-add-item"),
+  COMMAND_APP_MENUS_DELETE_ITEM: Symbol("app-menus-add-item"),
+  COMMAND_APP_MENUS_INDENT_ITEM: Symbol("app-menus-indent-item"),
+  COMMAND_APP_MENUS_MOVE_ITEM: Symbol("app-menus-move-item"),
+  COMMAND_APP_MENUS_RENAME_ITEM: Symbol("app-menus-rename-item"),
+
+  CATEGORY_GAMEPLAY_DATA: Symbol("command-gameplay-data"),
+  COMMAND_GAMEPLAY_DATA_UPDATE_LINES: Symbol("gameplay-data-update-lines")
+});
 
 export class Command {
   /**
@@ -47,5 +57,23 @@ export class Command_AppMenu_DeleteItem extends Command {
       documentVersion
     );
     this.identifier = identifier;
+  }
+}
+
+export class Command_Editor_UpdateLines extends Command {
+  /**
+   *
+   * @param {Number} documentVersion
+   * @param {JSON} dataCategory
+   * @param {JSON} dataStructure
+   */
+  constructor(documentVersion, dataCategory, dataStructure) {
+    super(
+      commandNames.CATEGORY_GAMEPLAY_DATA.description,
+      commandNames.COMMAND_GAMEPLAY_DATA_UPDATE_LINES.description,
+      documentVersion
+    );
+    this.dataCategory = dataCategory;
+    this.dataStructure = dataStructure;
   }
 }

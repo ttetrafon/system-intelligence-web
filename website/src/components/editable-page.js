@@ -1,7 +1,9 @@
+import isEqual from 'lodash/isEqual';
 import styles from '../style.css?inline';
 import state from '../services/state.js';
-import { eventNames } from '../data/enums.js';
-import { buildHtmlFromStructure, setCaretPosition } from '../helper/dom.js';
+import { eventNames, messageTypes } from '../data/enums.js';
+import { buildHtmlFromStructure, buildStructureFromHtml, setCaretPosition, setCaretPositionAtEnd } from '../helper/dom.js';
+import { Command_Editor_UpdateLines } from '../model/command.js';
 
 const template = document.createElement('template');
 
@@ -282,7 +284,8 @@ class Component extends HTMLElement {
     this.preventDefaultOnKeys = [
       "ctrl+shift+i",
       "ctrl+o",
-      "enter"
+      "enter",
+      "shift+enter"
     ];
     this.$lastFocusedElement = null;
   }
@@ -378,6 +381,36 @@ class Component extends HTMLElement {
   }
 
   /**
+   * When an element loses focus:
+   * - if empty: delete it
+   * - if not empty:
+   *     - build data structure from contents
+   *     - compare with existing data structure
+   *     - send an update command to the server if contents updated
+   * @param {Event} event
+   */
+  async elementBlurred(event) {
+    event.stopImmediatePropagation();
+    // build structure
+    let structure = await buildStructureFromHtml(event.target);
+    console.log("structure:", structure);
+
+    // compare each node with its structured data, and send update command if needed
+    let keys = Object.keys(structure);
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+      let storedValue = await state.getValueFromObservable(this.navData.pageData, key);
+      let changed = !isEqual(structure[key], storedValue);
+
+      if (changed) {
+        let documentVersion = await state.getValueFromObservable(this.navData.pageData, "version");
+        let command = new Command_Editor_UpdateLines(documentVersion, this.navData.pageData, structure);
+        state.publishMessage(messageTypes.COMMAND, command);
+      }
+    };
+  }
+
+  /**
    *
    * @param {Event} event
    */
@@ -397,6 +430,7 @@ class Component extends HTMLElement {
   async editEventListeners(add) {
     if (add) {
       this.$container.addEventListener("focusin", this.elementFocused.bind(this));
+      this.$container.addEventListener("focusout", this.elementBlurred.bind(this));
       this.$container.addEventListener("keydown", this.containerKeyCaptured.bind(this));
       this.$editControls.addEventListener(eventNames.EDITOR_FORMAT_H1.description, this.updateLineFormat.bind(this, "h1"));
       this.$editControls.addEventListener(eventNames.EDITOR_FORMAT_H2.description, this.updateLineFormat.bind(this, "h2"));
@@ -408,6 +442,7 @@ class Component extends HTMLElement {
     }
     else {
       this.$container.removeEventListener("focusin", this.elementFocused);
+      this.$container.addEventListener("focusout", this.containerKeyCaptured);
       this.$container.removeEventListener("keydown", this.containerKeyCaptured);
       this.$editControls.removeEventListener(eventNames.EDITOR_FORMAT_H1.description, this.updateLineFormat);
       this.$editControls.removeEventListener(eventNames.EDITOR_FORMAT_H2.description, this.updateLineFormat);
@@ -419,27 +454,27 @@ class Component extends HTMLElement {
       this.$lastFocusedElement = null;
     }
 
-    this.$container.childNodes.forEach(element => {
-      element.setAttribute("contenteditable", add);
-    });
   }
 
   /**
    *
    * @param {Boolean} edit
    * @param {Event} event
-   */
+  */
   async editPage(edit, event) {
     if (event) event.stopImmediatePropagation();
     this.$overControls.classList.toggle("hidden", edit);
     this.$editControls.classList.toggle("hidden", !edit);
     this.editEventListeners(edit);
-    if (this.$container.children.length == 0) {
-      this.createLine("p");
-    }
-    else {
-      // TODO: switch between first child/last child/none as a user setting
-      this.$container.firstChild.focus();
+
+    this.$container.childNodes.forEach(element => {
+      element.setAttribute("contenteditable", edit);
+    });
+
+    if (this.$container.children.length > 0) {
+      // TODO: make this an option between firstChild/lastChild in user settings
+      this.$container.lastChild.focus();
+      setCaretPositionAtEnd(this.$container.lastChild);
     }
   }
 

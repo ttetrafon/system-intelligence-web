@@ -1,7 +1,7 @@
 {
   "name": "system-intelligence-web-app",
   "private": true,
-  "version": "0.0.35",
+  "version": "0.0.36",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "vite": "^6.2.6"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }

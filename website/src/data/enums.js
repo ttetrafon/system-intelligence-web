@@ -1,12 +1,3 @@
-export const commandNames = Object.freeze({
-  CATEGORY_APP_MENUS: Symbol("command-app-menus"),
-  COMMAND_APP_MENUS_ADD_ITEM: Symbol("app-menus-add-item"),
-  COMMAND_APP_MENUS_DELETE_ITEM: Symbol("app-menus-add-item"),
-  COMMAND_APP_MENUS_INDENT_ITEM: Symbol("app-menus-indent-item"),
-  COMMAND_APP_MENUS_MOVE_ITEM: Symbol("app-menus-move-item"),
-  COMMAND_APP_MENUS_RENAME_ITEM: Symbol("app-menus-rename-item")
-});
-
 export const eventNames = Object.freeze({
   CHAT_BUTTON: Symbol("chat-button"),
   CONTENTS_ITEM_ADD: Symbol("add-contents-item"),
@@ -38,12 +29,19 @@ export const eventNames = Object.freeze({
 
 export const generalNames = Object.freeze({
   OBSERVABLE_USER: Symbol("user"),
-  PAGE_EDIT: Symbol("Edit Page"),
-  PAGE_NEW: Symbol("New Page")
+
+  GAME_CONNECTION_LIVE: Symbol("game-live"),
+  GAME_CONNECTION_OFFLINE: Symbol("game-offline"),
+  GAME_CONNECTION_SOLO: Symbol("game-solo")
 });
 
 export const editablePageOperationNames = Object.freeze({
   LINE_ADDED: Symbol("new-line"),
   LINE_DELETED: Symbol("delete-line"),
   LINE_UPDATED: Symbol("update-line")
+});
+
+export const messageTypes = Object.freeze({
+  CHAT_MESSAGE: Symbol("chat-message"),
+  COMMAND: Symbol("command")
 });

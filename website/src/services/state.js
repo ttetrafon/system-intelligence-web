@@ -4,14 +4,13 @@ import { jsonRequest } from '../helper/requests.js';
 import { roles, User } from "../model/user.js";
 
 class State {
-  #observables;
+  #observables = {};
+  #gameConnection = generalNames.GAME_CONNECTION_SOLO;
 
   constructor() {
     if (!State.instance) {
       State.instance = this;
     }
-
-    this.#observables = {};
 
     let userUuid = Math.random();
     try {
@@ -19,7 +18,7 @@ class State {
     } catch(err) {}
     this.createObservable(
       generalNames.OBSERVABLE_USER.description,
-      new User(userUuid, "", roles.VISITOR)
+      new User(userUuid, roles.VISITOR)
     );
 
     return State.instance;
@@ -89,8 +88,46 @@ class State {
     return res;
   }
 
+  /**
+   *
+   * @param {String} observable
+   * @param {String} prop
+   * @returns
+   */
+  async getValueFromObservable(observable, prop) {
+    // console.log(`---> getValueFromObservable(${observable}, ${prop})`);
+    if (this.#observables.hasOwnProperty(observable)) {
+      return this.#observables[observable].proxy[prop];
+    }
+    return null;
+  }
+
   async pingServer() {
     await jsonRequest(`${gameServiceUrl}/`);
+  }
+
+  /**
+   * Publish a message to the server.
+   * Depending on the gameConnection, publish to
+   *  - web-sockets (live)
+   *  - api (solo)
+   *  - nowhere, keep a list of commands used, and update the local data directly (offline) [TODO: all data will be synchronised when switching to another game mode]
+   * @param {Symbol} type
+   * @param {Object} message
+   */
+  async publishMessage(type, message) {
+    console.log(`---> publishMessage(${type.description}, ${JSON.stringify(message)})`);
+    switch(this.#gameConnection) {
+      case generalNames.GAME_CONNECTION_LIVE:
+        console.log("... wb");
+        break;
+      case generalNames.GAME_CONNECTION_SOLO:
+        console.log("... api");
+        break;
+      case generalNames.GAME_CONNECTION_OFFLINE:
+        console.log("... local");
+        break;
+    }
   }
 
   /**

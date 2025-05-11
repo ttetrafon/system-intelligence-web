@@ -6,6 +6,45 @@ import { eventNames } from "../data/enums.js";
 
 /**
  *
+ * @param {element} innerHTML
+ */
+export async function buildStructureFromHtml(element) {
+  console.log("---> buildStructureFromHtml()", element);
+  // https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML
+  let data = {};
+
+  let nodesNumber = element.childNodes.length;
+  if (nodesNumber == 0) return data;
+
+  // If there is only a single child node, we either have a single element within - could be either #text or any custom element
+  if (nodesNumber == 1) {
+    data[element.id] = await elementStructure(element, element.childNodes[0]);
+    return data;
+  }
+
+  for (let i = 0; i < nodesNumber; i++) {
+    console.log(element.childNodes[i]);
+  }
+
+  return data;
+}
+async function elementStructure(element, node) {
+  let structure = {};
+  switch(node.nodeName) {
+    case '#text':
+      console.log("... single #text node");
+      structure.id = element.id;
+      structure.element = element.nodeName.toLowerCase();
+      structure.contents = element.innerText;
+      break;
+    default:
+      break;
+  }
+  return structure;
+}
+
+/**
+ *
  * @param {json} data
  * @param {Node} parent
  */
@@ -207,6 +246,20 @@ export function setCaretPosition(selection, element, position) {
       selection.addRange(range);
     }
   }
+}
+/**
+ *
+ * @param {HTMLElement} element
+ */
+export function setCaretPositionAtEnd(element) {
+  const selection = window.getSelection();
+  if (!selection) return;
+  const range = document.createRange();
+  if (!range) return;
+  range.selectNodeContents(element);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
 }
 
 //////////////////

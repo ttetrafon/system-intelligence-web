@@ -1,11 +1,11 @@
 {
   "name": "system-intelligence-web",
-  "version": "0.0.35",
+  "version": "0.0.36",
   "description": "",
   "main": "./src/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "update-version": "node ./scripts/update-version.mjs 0.0.35 0.0.35",
+    "update-version": "node ./scripts/update-version.mjs 0.0.36 0.0.36",
     "local-compose-run": "docker compose -f compose-local.yaml up --force-recreate --build -d",
     "local-compose-down": "docker compose -f compose-local.yaml down",
     "local-compose-start": "docker compose -f compose-local.yaml start",
