@@ -1,6 +1,6 @@
 export const routes = {
   '/': {
-    content: "editable-page",
+    content: "si-editable-page",
     title: "System Intelligence",
     description: "System Intelligence Web App",
     path: "/",
@@ -11,7 +11,7 @@ export const routes = {
     }
   },
   '/gameplay': {
-    content: "editable-page",
+    content: "si-editable-page",
     title: "System Intelligence: Gameplay",
     description: "System Intelligence Web App",
     path: "/gameplay",
