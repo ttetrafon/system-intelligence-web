@@ -19,7 +19,7 @@ import './components-library/selector-field.js';
 import './components-library/svg-wrapper.js';
 import './services-library/spinning-circle.js';
 import state from './services-library/state.js';
-import { eventNames } from './data/enums.js';
+import { eventNames } from './data-library/enums.js';
 import { Navigator } from './services-library/navigator.js';
 
 const navigator = new Navigator('#main-container');

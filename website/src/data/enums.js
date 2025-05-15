@@ -1,4 +1,4 @@
-export const eventNames = Object.freeze({
+export const eventNamesLocal = {
   CHAT_BUTTON: Symbol("chat-button"),
   CONTENTS_ITEM_ADD: Symbol("add-contents-item"),
   CONTENTS_ITEM_DELETE: Symbol("delete-contents-item"),
@@ -6,9 +6,6 @@ export const eventNames = Object.freeze({
   CONTENTS_ITEM_EDIT: Symbol("edit-contents-item"),
   CONTENTS_ITEM_EDIT_PLAIN: Symbol("edit-contents-item-trigger"),
   CONTENTS_ITEM_OPEN_PAGE: Symbol("add-contents-item"),
-  DIALOG_OPEN: Symbol("open-dialog"),
-  DIALOG_CANCEL: Symbol("cancel-dialog"),
-  DIALOG_CONFIRM: Symbol("confirm-dialog"),
   DICE_ROLLER_BUTTON: Symbol("chat-button"),
   EDITOR_FORMAT_H1: Symbol("editor-format-h1"),
   EDITOR_FORMAT_H2: Symbol("editor-format-h2"),
@@ -20,28 +17,17 @@ export const eventNames = Object.freeze({
   INPUT_CONTROL: Symbol("input-control"),
   MAIN_MENU_TOGGLE: Symbol("main-manu-toggle"),
   MAIN_MENU_CLOSE: Symbol("main-menu-close"),
-  NAVIGATE: Symbol("navigate"),
   PAGE_OPEN_PLAIN: Symbol("open-page-trigger"),
-  PAGE_EDIT: Symbol("edit-page"),
-  SUB_PAGE_CONTAINER: Symbol("sub-page-container"),
-  TOGGLE_SPINNING_CIRCLE: Symbol("toggle-spinning-circle")
-});
+  PAGE_EDIT: Symbol("edit-page")
+};
 
-export const generalNames = Object.freeze({
-  OBSERVABLE_USER: Symbol("user"),
+export const generalNamesLocal = {
+};
 
-  CONNECTION_LIVE: Symbol("connection-live"),
-  CONNECTION_SOLO: Symbol("connection-solo"),
-  CONNECTION_OFFLINE: Symbol("connection-offline")
-});
+export const editablePageOperationNamesLocal = {
+};
 
-export const editablePageOperationNames = Object.freeze({
-  LINE_ADDED: Symbol("new-line"),
-  LINE_DELETED: Symbol("delete-line"),
-  LINE_UPDATED: Symbol("update-line")
-});
-
-export const messageTypes = Object.freeze({
+export const messageTypesLocal = {
   CHAT_MESSAGE: Symbol("chat-message"),
   COMMAND: Symbol("command")
-});
+};
