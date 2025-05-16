@@ -1,4 +1,4 @@
-import './style.css'
+import './styles/style.css'
 import './components/si-chat-panel.js';
 import './components/si-chat-shortcut.js';
 import './components/si-contents.js';

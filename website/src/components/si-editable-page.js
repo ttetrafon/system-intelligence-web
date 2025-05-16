@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import styles from '../style.css?inline';
+import styles from '../styles/style.css?inline';
 import state from '../services-library/state.js';
 import siState from '../services/si-state.js';
 

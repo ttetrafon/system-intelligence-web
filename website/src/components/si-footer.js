@@ -1,4 +1,4 @@
-import styles from '../style.css?inline';
+import styles from '../styles/style.css?inline';
 
 const template = document.createElement('template');
 
@@ -48,7 +48,7 @@ class Component extends HTMLElement {
     this.$version = this._shadow.getElementById("version");
 
     this.$copyright.innerHTML = `Copyright &#169; 2024 - ${new Date().getFullYear()}`;
-    this.$version.innerText = `v. 0.0.36`;
+    this.$version.innerText = `v. 0.0.37`;
   }
 
   static get observedAttributes() { return []; }

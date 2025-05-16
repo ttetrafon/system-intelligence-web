@@ -1,7 +1,7 @@
 import { contentsSubpages } from '../data/data.js';
 import { eventNames } from '../data-library/enums.js';
 import { emitCustomEvent, emitNavigationEvent, makeDetailsPanelOpenHoverable, unmakeDetailsPanelOpenHoverable } from '../helper-library/dom.js';
-import styles from '../style.css?inline';
+import styles from '../styles/style.css?inline';
 
 const template = document.createElement('template');
 
