@@ -1,33 +1,15 @@
+import styles from '../styles/styles-cs-printable.css?inline';
+
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  @import './styles-cs-printable.css';
+  ${ styles }
 </style>
 
 <div class="flex-row">
   <input type="checkbox" class="hidden" />
   <h6></h6>
-  <span>(</span>
-  <span id="note"></span>
-  <span>)</span>
-  <span id="value" class="entry-line-small"></span>
-  <span>[</span>
-  <span class="entry-line-small"></span>
-  <span>/</span>
-  <span class="entry-line-small"></span>
-  <span>]</span>
-</div>
-<div class="flex-row">
-  <input type="checkbox" class="invisible" />
-  <span class="entry-line"></span>
-</div>
-<div class="flex-row">
-  <input type="checkbox" class="invisible" />
-  <span class="entry-line"></span>
-</div>
-<div class="flex-row">
-  <input type="checkbox" class="invisible" />
   <span class="entry-line"></span>
 </div>
 `;
@@ -39,34 +21,36 @@ class Component extends HTMLElement {
     this._shadow.appendChild(template.content.cloneNode(true));
 
     this.$label = this._shadow.querySelector("h6");
+    this.$span = this._shadow.querySelector("span");
     this.$checkbox = this._shadow.querySelector("input");
-    this.$note = this._shadow.getElementById("note");
   }
 
-  static get observedAttributes() { return ['label', 'checkbox', 'note']; }
+  static get observedAttributes() { return ['label', 'checkbox', 'skill']; }
 
-  get checkbox() { return this.getAttribute('checkbox', 'skill'); }
   get label() { return this.getAttribute('label'); }
-  get note() { return this.getAttribute('note', 'skill'); }
+  get checkbox() { return this.getAttribute('checkbox'); }
+  get skill() { return this.getAttribute('skill'); }
 
-  set checkbox(value) { this.setAttribute('checkbox', value); }
   set label(value) { this.setAttribute('label', value); }
-  set note(value) { this.setAttribute('note', value); }
+  set checkbox(value) { this.setAttribute('checkbox', value); }
+  set skill(value) { this.setAttribute('skill', value); }
 
   attributeChangedCallback(name, oldVal, newVal) {
     // console.log(`--> attributeChangedCallback(${name}, ${JSON.stringify(oldVal)}, ${JSON.stringify(newVal)})`);
     if (oldVal == newVal) return;
-    switch(name) {
+    switch (name) {
       case "label":
         if (this.label == "_") {
           this.$label.classList.add("entry-line");
+          this.$span.classList.remove("entry-line");
+          this.$span.classList.add("entry-line-small");
         }
         else {
           this.$label.innerText = this.label;
         }
         break;
       case "checkbox":
-        switch(this.checkbox) {
+        switch (this.checkbox) {
           case "invisible":
             this.$checkbox.classList.add("invisible");
             this.$checkbox.classList.remove("hidden");
@@ -81,16 +65,18 @@ class Component extends HTMLElement {
             break;
         }
         break;
-      case "note":
-        if (this.note == "_") {
-          this.$note.classList.add("entry-line");
-        }
-        else {
-          this.$note.innerText = this.note;
+      case "skill":
+        switch(this.skill) {
+          case "complex":
+            this.$label.classList.add("complex");
+            break;
+          default:
+            this.$label.classList.remove("complex");
+            break;
         }
         break;
     }
   }
 }
 
-window.customElements.define('cs-perk-entry', Component);
+window.customElements.define('cs-simple-entry-line', Component);

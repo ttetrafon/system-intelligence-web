@@ -1,22 +1,36 @@
+import styles from '../styles/styles-cs-printable.css?inline';
+
 const template = document.createElement('template');
 
 template.innerHTML = /*html*/`
 <style>
-  @import './styles-cs-printable.css';
+  ${ styles }
 </style>
 
 <div class="flex-row">
   <input type="checkbox" class="hidden" />
   <h6></h6>
-  <span id="left-bracket" class="hidden">(</span>
-  <span id="note" class="hidden"></span>
-  <span id="right-bracket" class="hidden">)</span>
-  <span id="value" class="entry-line"></span>
+  <span>(</span>
+  <span id="note"></span>
+  <span>)</span>
+  <span id="value" class="entry-line-small"></span>
   <span>[</span>
   <span class="entry-line-small"></span>
   <span>/</span>
   <span class="entry-line-small"></span>
   <span>]</span>
+</div>
+<div class="flex-row">
+  <input type="checkbox" class="invisible" />
+  <span class="entry-line"></span>
+</div>
+<div class="flex-row">
+  <input type="checkbox" class="invisible" />
+  <span class="entry-line"></span>
+</div>
+<div class="flex-row">
+  <input type="checkbox" class="invisible" />
+  <span class="entry-line"></span>
 </div>
 `;
 
@@ -28,23 +42,18 @@ class Component extends HTMLElement {
 
     this.$label = this._shadow.querySelector("h6");
     this.$checkbox = this._shadow.querySelector("input");
-    this.$span = this._shadow.getElementById("value");
-    this.$leftBracket = this._shadow.getElementById("left-bracket");
-    this.$rightBracket = this._shadow.getElementById("right-bracket");
     this.$note = this._shadow.getElementById("note");
   }
 
-  static get observedAttributes() { return ['label', 'checkbox', 'note', 'skill']; }
+  static get observedAttributes() { return ['label', 'checkbox', 'note']; }
 
+  get checkbox() { return this.getAttribute('checkbox', 'skill'); }
   get label() { return this.getAttribute('label'); }
-  get checkbox() { return this.getAttribute('checkbox'); }
-  get note() { return this.getAttribute('note'); }
-  get skill() { return this.getAttribute('skill'); }
+  get note() { return this.getAttribute('note', 'skill'); }
 
-  set label(value) { this.setAttribute('label', value); }
   set checkbox(value) { this.setAttribute('checkbox', value); }
+  set label(value) { this.setAttribute('label', value); }
   set note(value) { this.setAttribute('note', value); }
-  set skill(value) { this.setAttribute('skill', value); }
 
   attributeChangedCallback(name, oldVal, newVal) {
     // console.log(`--> attributeChangedCallback(${name}, ${JSON.stringify(oldVal)}, ${JSON.stringify(newVal)})`);
@@ -53,8 +62,6 @@ class Component extends HTMLElement {
       case "label":
         if (this.label == "_") {
           this.$label.classList.add("entry-line");
-          this.$span.classList.remove("entry-line");
-          this.$span.classList.add("entry-line-small");
         }
         else {
           this.$label.innerText = this.label;
@@ -76,23 +83,8 @@ class Component extends HTMLElement {
             break;
         }
         break;
-      case "skill":
-        switch(this.skill) {
-          case "complex":
-            this.$label.classList.add("complex");
-            break;
-          default:
-            this.$label.classList.remove("complex");
-            break;
-        }
-        break;
       case "note":
-        this.$span.classList.remove("entry-line");
-        this.$span.classList.add("entry-line-small");
-        this.$leftBracket.classList.remove("hidden");
-        this.$note.classList.remove("hidden");
-        this.$rightBracket.classList.remove("hidden");
-        if (this.note = "_") {
+        if (this.note == "_") {
           this.$note.classList.add("entry-line");
         }
         else {
@@ -103,4 +95,4 @@ class Component extends HTMLElement {
   }
 }
 
-window.customElements.define('cs-skill-level-entry-line', Component);
+window.customElements.define('cs-perk-entry', Component);

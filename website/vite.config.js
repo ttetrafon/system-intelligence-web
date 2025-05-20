@@ -14,5 +14,13 @@ export default defineConfig({
         secure: false
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: './index.html',
+        contact: './character-sheet.html'
+      }
+    }
   }
 });
