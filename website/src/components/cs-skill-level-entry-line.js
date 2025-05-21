@@ -5,6 +5,10 @@ const template = document.createElement('template');
 template.innerHTML = /*html*/`
 <style>
   ${ styles }
+
+  #progress {
+    min-width: 50px;
+  }
 </style>
 
 <div class="flex-row">
@@ -14,9 +18,9 @@ template.innerHTML = /*html*/`
   <span id="note" class="hidden"></span>
   <span id="right-bracket" class="hidden">)</span>
   <span id="value" class="entry-line"></span>
-  <span>[</span>
-  <span class="entry-line-small"></span>
-  <span>]</span>
+  <span id="progress-pre" class>[</span>
+  <span id="progress" class="entry-line-small"></span>
+  <span id="progress-aft">]</span>
 </div>
 `;
 
@@ -32,36 +36,31 @@ class Component extends HTMLElement {
     this.$leftBracket = this._shadow.getElementById("left-bracket");
     this.$rightBracket = this._shadow.getElementById("right-bracket");
     this.$note = this._shadow.getElementById("note");
+    this.$progressPre = this._shadow.getElementById("progress-pre");
+    this.$progress = this._shadow.getElementById("progress");
+    this.$progressAft = this._shadow.getElementById("progress-aft");
   }
 
-  static get observedAttributes() { return ['label', 'checkbox', 'note', 'skill']; }
+  static get observedAttributes() { return ['label', 'checkbox', 'note', 'skill', 'hide-progress']; }
 
   get label() { return this.getAttribute('label'); }
   get checkbox() { return this.getAttribute('checkbox'); }
   get note() { return this.getAttribute('note'); }
   get skill() { return this.getAttribute('skill'); }
+  get hideProgress() { return Boolean(this.getAttribute('hide-progress')); }
 
   set label(value) { this.setAttribute('label', value); }
   set checkbox(value) { this.setAttribute('checkbox', value); }
   set note(value) { this.setAttribute('note', value); }
   set skill(value) { this.setAttribute('skill', value); }
+  set hideProgress(value) { this.setAttribute('hide-progress', value); }
 
   attributeChangedCallback(name, oldVal, newVal) {
     // console.log(`--> attributeChangedCallback(${name}, ${JSON.stringify(oldVal)}, ${JSON.stringify(newVal)})`);
     if (oldVal == newVal) return;
-    switch(name) {
-      case "label":
-        if (this.label == "_") {
-          this.$label.classList.add("entry-line");
-          this.$span.classList.remove("entry-line");
-          this.$span.classList.add("entry-line-small");
-        }
-        else {
-          this.$label.innerText = this.label;
-        }
-        break;
+    switch (name) {
       case "checkbox":
-        switch(this.checkbox) {
+        switch (this.checkbox) {
           case "invisible":
             this.$checkbox.classList.add("invisible");
             this.$checkbox.classList.remove("hidden");
@@ -76,14 +75,14 @@ class Component extends HTMLElement {
             break;
         }
         break;
-      case "skill":
-        switch(this.skill) {
-          case "complex":
-            this.$label.classList.add("complex");
-            break;
-          default:
-            this.$label.classList.remove("complex");
-            break;
+      case "label":
+        if (this.label == "_") {
+          this.$label.classList.add("entry-line");
+          this.$span.classList.remove("entry-line");
+          this.$span.classList.add("entry-line-small");
+        }
+        else {
+          this.$label.innerText = this.label;
         }
         break;
       case "note":
@@ -99,7 +98,22 @@ class Component extends HTMLElement {
           this.$note.innerText = this.note;
         }
         break;
-    }
+      case "skill":
+        switch (this.skill) {
+          case "complex":
+            this.$label.classList.add("complex");
+            break;
+          default:
+            this.$label.classList.remove("complex");
+            break;
+        }
+        break;
+      case "hide-progress":
+        this.$progress.classList.toggle("hidden", this.hideProgress);
+        this.$progressPre.classList.toggle("hidden", this.hideProgress);
+        this.$progressAft.classList.toggle("hidden", this.hideProgress);
+        break;
+      }
   }
 }
 

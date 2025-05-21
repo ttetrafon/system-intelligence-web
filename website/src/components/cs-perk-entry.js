@@ -5,6 +5,10 @@ const template = document.createElement('template');
 template.innerHTML = /*html*/`
 <style>
   ${ styles }
+
+  #value {
+    min-width: 50px;
+  }
 </style>
 
 <div class="flex-row">
@@ -14,11 +18,6 @@ template.innerHTML = /*html*/`
   <span id="note"></span>
   <span>)</span>
   <span id="value" class="entry-line-small"></span>
-  <span>[</span>
-  <span class="entry-line-small"></span>
-  <span>/</span>
-  <span class="entry-line-small"></span>
-  <span>]</span>
 </div>
 <div class="flex-row">
   <input type="checkbox" class="invisible" />

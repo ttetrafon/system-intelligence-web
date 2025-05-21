@@ -50,7 +50,7 @@ template.innerHTML = /*html*/`
 
   .vertical {
     writing-mode: vertical-rl;
-    transform: rotate(200deg);
+    transform: rotate(185deg);
     white-space: nowrap;
   }
 </style>

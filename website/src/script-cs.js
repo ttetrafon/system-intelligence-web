@@ -1,3 +1,5 @@
+import './components/cs-equipment.js';
+import './components/cs-health.js';
 import './components/cs-morality.js';
 import './components/cs-movement.js';
 import './components/cs-perk-entry.js';

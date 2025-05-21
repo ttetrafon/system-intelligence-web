@@ -30,6 +30,90 @@
   user-select: none;
 }
 
+/**********/
+/* PAGE 1 */
+/**********/
+#general-info {
+  grid-column: 1 / 12;
+  grid-row: 1 / 14;
+}
+
+#attributes {
+  grid-column: 12 / 26;
+  grid-row: 1 / 14;
+}
+
+#senses {
+  grid-column: 1 / 16;
+  grid-row: 14 / 37;
+}
+
+#movement {
+  grid-column: 1 / 16;
+  grid-row: 37 / 51;
+}
+
+#languages {
+  grid-column: 16 / 26;
+  grid-row: 14 / 24;
+}
+
+#defence {
+  grid-column: 16 / 26;
+  grid-row: 24 / 34;
+}
+
+#magic {
+  grid-column: 16 / 26;
+  grid-row: 34 / 51;
+}
+
+/**********/
+/* PAGE 2 */
+/**********/
+#aspects {
+  grid-column: 1 / 13;
+  grid-row: 1 / 35;
+}
+
+#morality {
+  grid-column: 1 / 11;
+  grid-row: 35 / 44;
+}
+
+#wealth {
+  grid-column: 1 / 11;
+  grid-row: 44 / 51;
+}
+
+#equipment {
+  grid-column: 13 / 26;
+  grid-row: 1 / 26;;
+}
+
+#resources {
+  grid-column: 13 / 26;
+  grid-row: 26 / 35;
+}
+
+#health {
+  grid-column: 11 / 26;
+  grid-row: 35 / 51;
+}
+
+/**********/
+/* PAGE 3 */
+/**********/
+#perks {
+  grid-column: 1 / 26;
+  grid-row: 1 / 51;
+}
+
+/**********/
+/* PAGE 4 */
+/**********/
+
+
 body {
   width: 210mm;
   height: calc(var(--number-of-pages) * 293mm);
@@ -59,18 +143,22 @@ section {
 
 #page-1 {
   background-color: rgba(0, 128, 0, 0.103);
+  overflow: hidden;
 }
 
 #page-2 {
   background-color: rgba(255, 0, 0, 0.105);
+  overflow: hidden;
 }
 
 #page-3 {
   background-color: rgba(124, 128, 0, 0.103);
+  overflow: hidden;
 }
 
 #page-4 {
   background-color: rgba(0, 4, 128, 0.103);
+  overflow: hidden;
 }
 
 article {
@@ -78,75 +166,6 @@ article {
   border-radius: var(--base-gap);
   border: var(--border-dark);
   padding: var(--base-gap);
-}
-
-/**********/
-/* PAGE 1 */
-/**********/
-#general-info {
-  grid-column: 1 / 12;
-  grid-row: 1 / 14;
-}
-
-#attributes {
-  grid-column: 12 / 26;
-  grid-row: 1 / 14;
-}
-
-#senses {
-  grid-column: 1 / 16;
-  grid-row: 14 / 37;
-}
-
-#movement {
-  grid-column: 1 / 16;
-  grid-row: 37 / 51;
-}
-
-#morality {
-  grid-column: 16 / 26;
-  grid-row: 14 / 24;
-}
-
-#languages {
-  grid-column: 16 / 26;
-  grid-row: 36 / 51;
-}
-
-
-/**********/
-/* PAGE 2 */
-/**********/
-#self {
-  grid-column: 1 / 18;
-  grid-row: 1 / 51;
-}
-
-
-/**********/
-/* PAGE 3 */
-/**********/
-#skills {
-  grid-column: 1 / 13;
-  grid-row: 1 / 51;
-}
-
-#perks {
-  grid-column: 13 / 26;
-  grid-row: 1 / 28;
-}
-
-/**********/
-/* PAGE 4 */
-/**********/
-#magic {
-  grid-column: 1 / 13;
-  grid-row: 1 / 24;
-}
-
-#magic-second {
-  grid-column: 13 / 26;
-  grid-row: 1 / 45;
 }
 
 h2,
