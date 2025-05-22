@@ -38,6 +38,10 @@ template.innerHTML = /*html*/`
     gap: 8px;
   }
 
+  #links {
+    align-items: center;
+  }
+
   #controls {
     height: var(--statics-controls-short);
     justify-content: flex-end;
@@ -101,6 +105,16 @@ template.innerHTML = /*html*/`
     image="globe_location_pin"
   ></si-contents-page>
 </section>
+
+<hr>
+
+<div id="links" class="flex-column">
+  <page-link
+    label="Character Sheet"
+    href="./character-sheet.html"
+    target="_blank"
+  ></page-link>
+</div>
 
 <hr>
 
