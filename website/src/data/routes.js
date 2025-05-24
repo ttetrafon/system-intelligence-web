@@ -1,3 +1,5 @@
+import { editablePageOperationNames } from "./enums"
+
 export const routes = {
   '/': {
     content: "si-editable-page",
@@ -7,6 +9,7 @@ export const routes = {
     pathType: "WebPage",
     navData: {
       pageData: "introduction",
+      saveOn: `${editablePageOperationNames.SAVE_ON_LINE_UPDATED.description}`,
       dataSubscriptions: []
     }
   },
@@ -18,6 +21,7 @@ export const routes = {
     pathType: "WebPage",
     navData: {
       pageData: "gameplay",
+      saveOn: `${editablePageOperationNames.SAVE_ON_LINE_UPDATED.description}`,
       dataSubscriptions: []
     }
   },

@@ -24,7 +24,13 @@ export const eventNamesLocal = {
 export const generalNamesLocal = {
 };
 
-export const editablePageOperationNamesLocal = {
+export const editablePageOperationNames = {
+  LINE_ADDED: Symbol("new-line"),
+  LINE_DELETED: Symbol("delete-line"),
+  LINE_UPDATED: Symbol("update-line"),
+
+  SAVE_ON_LINE_UPDATED: Symbol("save-on-line-updated"),
+  SAVE_ON_PAGE_UPDATED: Symbol("save-on-page-updated")
 };
 
 export const messageTypesLocal = {

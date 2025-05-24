@@ -1,4 +1,4 @@
-import { Command_AppMenu_AddItem } from '../model/command.js';
+import { Command_AppMenu_AddItem, Command_Editor_UpdateLines } from '../model/command.js';
 import { ContentsMenuItem } from '../model/db-data.js';
 import { fileDbNames, fileDbNamesByDescription } from '../data/enums.js';
 import { CompletionServices } from '../services/Completion.js';
@@ -63,7 +63,7 @@ export class Gameplay {
     console.log("new order:", menus.order);
 
     // - items
-    let newItem =  new ContentsMenuItem( command.identifier, command.label, command.indentation, [], [], []);
+    let newItem = new ContentsMenuItem(command.identifier, command.label, command.indentation, [], [], []);
     console.log("new item:", newItem);
 
     // - version
@@ -137,7 +137,7 @@ export class Gameplay {
   }
 
   async gameplayData(request, response, section) {
-    this.logger.info(`---> Gameplay.gameplayData(${section})`);
+    this.logger.info(`---> Gameplay.gameplayData(${ section })`);
 
     await this.fileDB.getGameplayDb();
 
@@ -146,6 +146,31 @@ export class Gameplay {
     // TODO: update schema if needed
 
     return sectionData;
+  }
+
+  async commandEditorUpdateLine(request, response) {
+    this.logger.info(`---> Gameplay.commandEditorUpdateLine()`);
+    let data = request.body;
+    let command = new Command_Editor_UpdateLines(data.id, data.documentVersion, data.dataCategory, data.dataStructure);
+    console.log("command:", command);
+
+    await this.fileDB.getGameplayDb();
+
+    let currentDocumentVersion = await this.fileDB.retrieveDataFileLine(fileDbNames.COL_GENERAL_GAMEPLAY, command.dataCategory, "version");
+    command.documentVersion = currentDocumentVersion.version;
+
+    command.updateDocumentVersion();
+    let res = await this.fileDB.updateDataFile(fileDbNames.COL_GENERAL_GAMEPLAY, command.dataCategory, command.dataStructure);
+
+    console.log("... fileDb result", res); // TODO: return a failure if the update fails!
+
+    return {
+      'commands': [ // TODO: stored commands here...
+        command
+      ],
+      'info': {
+      }
+    };
   }
 
   /**

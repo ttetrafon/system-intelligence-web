@@ -7,7 +7,7 @@ export const commandNames = Object.freeze({
   COMMAND_APP_MENUS_RENAME_ITEM: Symbol("app-menus-rename-item"),
 
   CATEGORY_GAMEPLAY_DATA: Symbol("command-gameplay-data"),
-  COMMAND_GAMEPLAY_DATA_UPDATE_LINES: Symbol("gameplay-data-update-lines")
+  COMMAND_GAMEPLAY_DATA_UPDATE_DOCUMENT: Symbol("gameplay-data-update-document")
 });
 
 export class Command {
@@ -60,7 +60,7 @@ export class Command_AppMenu_DeleteItem extends Command {
   }
 }
 
-export class Command_Editor_UpdateLines extends Command {
+export class Command_Editor_UpdateDocument extends Command {
   /**
    *
    * @param {Number} documentVersion
@@ -70,7 +70,7 @@ export class Command_Editor_UpdateLines extends Command {
   constructor(documentVersion, dataCategory, dataStructure) {
     super(
       commandNames.CATEGORY_GAMEPLAY_DATA.description,
-      commandNames.COMMAND_GAMEPLAY_DATA_UPDATE_LINES.description,
+      commandNames.COMMAND_GAMEPLAY_DATA_UPDATE_DOCUMENT.description,
       documentVersion
     );
     this.dataCategory = dataCategory;

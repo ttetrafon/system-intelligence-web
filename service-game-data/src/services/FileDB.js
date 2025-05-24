@@ -55,7 +55,7 @@ export class FileDB {
    * @returns
    */
   collectionFilesIterator(collection) {
-    this.logger.debug(`--> collectionFilesIterator(${ collection.description })`);
+    this.logger.debug(`---> collectionFilesIterator(${ collection.description })`);
     return this[collection].find({});
   }
 
@@ -112,13 +112,12 @@ export class FileDB {
    * @returns
    */
   async retrieveCollectionFiles(collection) {
-    this.logger.debug(`--> retrieveCollectionFiles(${ collection.description })`);
+    this.logger.debug(`---> retrieveCollectionFiles(${ collection.description })`);
     return await this[collection].find({}).toArray();
   }
 
   /**
-   *
-   * @param {Symbol} db
+   * Retrieves a document (key) from a collection.
    * @param {Symbol} collection
    * @param {Symbol} key
    * @returns {JSON}
@@ -151,6 +150,26 @@ export class FileDB {
   }
 
   /**
+   * Retrieves only a single element (line) from the specified document (key) in a collection.
+   * @param {Symbol} collection
+   * @param {String} key
+   * @param {String} line
+   * @returns
+   */
+  async retrieveDataFileLine(collection, key, line) {
+    this.logger.debug(`---> retrieveDataFileLine(${ collection.description }, ${ key }, ${ line })`);
+    const query = { _id: key };
+    const options = {
+      projection: {
+        [line]: 1,
+        _id: 0
+      }
+    };
+    // this.logger.debug(`Query: ${ JSON.stringify(query) }, Projection options: ${ JSON.stringify(options) }`);
+    return await this[collection].findOne(query, options);
+  }
+
+  /**
    *
    * @param {String} collection
    * @param {String} key
@@ -158,7 +177,7 @@ export class FileDB {
    * @returns {String}
    */
   async storeDataFile(collection, key, json) {
-    this.logger.debug(`--> storeDataFile(${ collection.description }, ${ key.description }, ${ JSON.stringify(json) })`);
+    this.logger.debug(`---> storeDataFile(${ collection.description }, ${ key.description }, ${ JSON.stringify(json) })`);
     let document = {
       _id: key.description,
       ...json
@@ -171,14 +190,18 @@ export class FileDB {
   /**
    *
    * @param {String} collection
-   * @param {String} key
-   * @param {JSON} documentId
-   * @param {JSON} updateJson
+   * @param {String} documentId
+   * @param {JSON} updateJson { field_1: value_1, field_2: value_2, ... }
+   * @param {Boolean} upsertDocument
    * @returns
    */
-  async updateDataFile(collection, key, documentId, updateJson) {
-    this.logger.debug(`--> updateDataFile(${ collection.description }, ${ key.description }, ${ JSON.stringify(documentId) }, ${ JSON.stringify(updateJson) })`);
-    let result = await this[collection].updateOne(documentId, updateJson, { upsert: true });
+  async updateDataFile(collection, documentId, updateJson, upsertDocument = false) {
+    this.logger.debug(`---> updateDataFile(${ collection.description }, ${ JSON.stringify(documentId) }, ${ JSON.stringify(updateJson) }, ${ upsertDocument }})`);
+    const selector = { _id: documentId };
+    const ops = { $set: updateJson };
+    const options = { upsert: upsertDocument };
+    this.logger.debug(`selector: ${ JSON.stringify(selector) }, ops: ${ JSON.stringify(ops) }, options: ${ JSON.stringify(options) }`);
+    let result = await this[collection].updateOne(selector, ops, options);
     return result;
   }
 }

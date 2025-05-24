@@ -3,9 +3,9 @@ import styles from '../styles/style.css?inline';
 import state from '../services-library/state.js';
 import siState from '../services/si-state.js';
 
-import { eventNames, messageTypes } from '../data-library/enums.js';
-import { buildHtmlFromStructure, buildStructureFromHtml, setCaretPosition, setCaretPositionAtEnd } from '../helper-library/dom.js';
-import { Command_Editor_UpdateLines } from '../model/command.js';
+import { eventNames } from '../data-library/enums.js';
+import { buildElement, buildHtmlFromStructure, buildStructureFromHtml, setCaretPosition, setCaretPositionAtEnd } from '../helper-library/dom.js';
+import { Command_Editor_UpdateDocument } from '../model/command.js';
 
 const template = document.createElement('template');
 
@@ -293,18 +293,21 @@ class Component extends HTMLElement {
   }
 
   // Attributes need to be observed to be tied to the lifecycle change callback.
-  static get observedAttributes() { return ['label', 'nav-data']; }
+  static get observedAttributes() { return ['label', 'nav-data', 'saved-on']; }
 
   // Attribute values are always strings, so we need to convert them in their getter/setters as appropriate.
   get navData() { return JSON.parse(this.getAttribute('nav-data')); }
   get label() { return this.getAttribute('label'); }
+  get savedOn() { return this.getAttribute('saved-on'); }
 
   set navData(value) { this.setAttribute('nav-data', value); }
   set label(value) { this.setAttribute('label', value); }
+  set savedOn(value) { this.setAttribute('saved-on', value); }
 
   // A web component implements the following lifecycle methods.
   attributeChangedCallback(name, oldVal, newVal) {
     // Attribute value changes can be tied to any type of functionality through the lifecycle methods.
+    // console.log(`---> attributeChangedCallback(${ name }, ${ oldVal }, ${ newVal })`);
     if (oldVal == newVal) return;
     switch (name) {
       case "nav-data":
@@ -335,7 +338,7 @@ class Component extends HTMLElement {
    */
   async containerKeyCaptured(event) {
     event.stopImmediatePropagation();
-    console.log(`---> containerKeyCaptured()`, event);
+    // console.log(`---> containerKeyCaptured()`, event);
     let composedKey = `${ event.ctrlKey ? 'Ctrl+' : '' }${ event.shiftKey ? 'Shift+' : '' }${ event.altKey ? 'Alt+' : '' }${ event.metaKey ? 'Meta+' : '' }${ event.key }`.toLowerCase();
     // console.log("composedKey:", composedKey, this.preventDefaultOnKeys, this.preventDefaultOnKeys.includes(composedKey));
 
@@ -379,7 +382,23 @@ class Component extends HTMLElement {
    * @param {Object} newValue
    */
   async dataUpdated(subscriber, property, newValue) {
-    console.log(`---> dataUpdated(${ subscriber }, ${ property }, ${ JSON.stringify(newValue) })`);
+    // console.log(`---> dataUpdated(${ subscriber }, ${ property }, ${ JSON.stringify(newValue) })`);
+    let correspondingElement = this._shadow.getElementById(`id::${property}`);
+    // console.log("correspondingElement:", correspondingElement);
+    if (correspondingElement) {
+      // If there is an element with the id from the prop, compare it's structure (recursively) and update elements as needed.
+      // The check should be performed so local updates are not reapplied.
+      console.log("... found corresponding element");
+      const existingStructure = await buildStructureFromHtml(correspondingElement);
+      console.log("existing structure:", existingStructure);
+      console.log("new structure:", newValue);
+      const changed = !isEqual(newValue, existingStructure[property]);
+      console.log("changed?", changed);
+      if (changed) {
+        const replacerElement = buildElement(newValue);
+        correspondingElement.parentNode.replaceChild(replacerElement, correspondingElement);
+      }
+    }
   }
 
   /**
@@ -395,19 +414,20 @@ class Component extends HTMLElement {
     event.stopImmediatePropagation();
     // build structure
     let structure = await buildStructureFromHtml(event.target);
-    console.log("structure:", structure);
+    // console.log("structure:", structure);
 
     // compare each node with its structured data, and send update command if needed
     let keys = Object.keys(structure);
     for (let i = 0; i < keys.length; i++) {
       let key = keys[i];
       let storedValue = await state.getValueFromObservable(this.navData.pageData, key);
+      // TODO: the new structure needs to be rebuilt properly as a tree for complex elements...
       let changed = !isEqual(structure[key], storedValue);
 
       if (changed) {
         let documentVersion = await state.getValueFromObservable(this.navData.pageData, "version");
-        let command = new Command_Editor_UpdateLines(documentVersion, this.navData.pageData, structure);
-        state.publishMessage(messageTypes.COMMAND, command);
+        let command = new Command_Editor_UpdateDocument(documentVersion, this.navData.pageData, structure);
+        await siState.publishEditablePageCommand(command);
       }
     };
   }
@@ -511,7 +531,7 @@ class Component extends HTMLElement {
    * @param {Event} event
    */
   async updateLineFormat(elementType, event) {
-    console.log(`---> updateLineFormat(${elementType})`);
+    // console.log(`---> updateLineFormat(${ elementType })`);
     event.stopImmediatePropagation();
 
     if (this.$lastFocusedElement) {

@@ -12,7 +12,7 @@ export class CompletionServices {
 
     this.completionCodes = {
       OK: { code: 0, message: "Ok", htmlStatus: 200 },
-      COMMAND_NOT_FOUND: { code: 5000, message: "Command not found", htmlStatus: 400 },
+      COMMAND_NOT_FOUND: { code: 5000, message: "Command not found", htmlStatus: 404 },
       COMMAND_DOCUMENT_VERSION_MISMATCH: { code: 5001, message: "Document version mismatch on command", htmlStatus: 200 },
       UNKNOWN_ERROR: { code: 9999, message: "Unknown error", htmlStatus: 500 }
     };

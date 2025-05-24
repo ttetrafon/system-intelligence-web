@@ -5,6 +5,9 @@ import { Gameplay } from '../modules/gameplay.js';
 import { WebApp } from '../modules/web-app.js';
 import { CompletionServices } from '../services/Completion.js';
 import { FileDB } from '../services/FileDB.js';
+import { Logger } from '../services/Logger.js';
+
+const logger = new Logger();
 
 // services
 const completion = new CompletionServices();
@@ -26,20 +29,23 @@ const router = express.Router();
 
 // Middleware specific to this route
 router.use((req, res, next) => {
-  console.log(`Request received at /data:`, req.method, req.url);
+  logger.info(`Request received at /data:`, req.method, req.url);
   fileDb.connectToFileDb(); // always make sure we are connected to the FileDB
   next();
 });
 
-// POST /data/command
-router.post('/command/', async (req, res) => {
-  // TODO: maybe move the command category & type into the request url as params; i.e.: /command/{command-category}/{command-type}/
+// POST /data/command/{commandType}
+router.post('/command/:commandType', async (req, res) => {
+  logger.debug("... command received!");
   let data = req.body;
-  let commandType = data.type;
+  let commandType = req.params.commandType;
 
   switch (commandType) {
     case commandNames.COMMAND_APP_MENUS_ADD_ITEM.description:
       await requestHandler(req, res, gameplay.commandAppMenusAddItem.bind(gameplay, req, res));
+      break;
+    case commandNames.COMMAND_GAMEPLAY_DATA_UPDATE_DOCUMENT.description:
+      await requestHandler(req, res, gameplay.commandEditorUpdateLine.bind(gameplay, req, res));
       break;
     default:
       await completion.sendFailResponse(req, res, completion.completionCodes.COMMAND_NOT_FOUND, data);
@@ -52,7 +58,7 @@ router.get('/web-app-menus/', async (req, res) => {
   await requestHandler(req, res, gameplay.menus.bind(gameplay, req, res));
 });
 
-// GET /data/gameplay-data/:section
+// GET /data/gameplay-data/{section}
 router.get('/gameplay-data/:section', async (req, res) => {
   const section = req.params.section;
   await requestHandler(req, res, gameplay.gameplayData.bind(gameplay, req, res, section));
