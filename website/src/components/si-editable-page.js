@@ -4,7 +4,7 @@ import state from '../services-library/state.js';
 import siState from '../services/si-state.js';
 
 import { eventNames } from '../data-library/enums.js';
-import { buildElement, buildHtmlFromStructure, buildStructureFromHtml, setCaretPosition, setCaretPositionAtEnd } from '../helper-library/dom.js';
+import { buildElement, buildHtmlFromStructure, buildStructureFromHtml, findSelfIndexInParent, getCaretPosition, getTotalCharacterCount, putElementAfter, putElementBefore, setCaretPosition, setCaretPositionAtEnd } from '../helper-library/dom.js';
 import { Command_Editor_UpdateDocument } from '../model/command.js';
 
 const template = document.createElement('template');
@@ -363,13 +363,10 @@ class Component extends HTMLElement {
     let el = document.createElement(element);
     el.setAttribute("contenteditable", true);
     if (data) {
-
+      // TODO ...
     }
     else {
-      try {
-        el.id = crypto.randomUUID();
-      }
-      catch (err) { }
+      el.id = crypto.randomUUID();
     }
     this.$container.appendChild(el);
     el.focus();
@@ -383,17 +380,38 @@ class Component extends HTMLElement {
    */
   async dataUpdated(subscriber, property, newValue) {
     // console.log(`---> dataUpdated(${ subscriber }, ${ property }, ${ JSON.stringify(newValue) })`);
-    let correspondingElement = this._shadow.getElementById(`id::${property}`);
+    if (['version'].includes(property)) return;
+
+    if (property == 'order') {
+      console.log("order updated!", newValue);
+      for (let pos = 0; pos < newValue.length; pos++) {
+        let idAtPos = newValue[pos];
+
+        let element = this._shadow.getElementById(`id::${ idAtPos }`);
+        let elementPos = await findSelfIndexInParent(element);
+
+        if (idAtPos != elementPos) {
+          // an element's actual position can only be later than in the order - if it were earlier, another element out of position would have been found already
+          // so all needed is to move the 'lost' element from its current position to the correct one
+          const children = this.$container.children;
+          const referenceNode = idAtPos > children.length ? children.item(idAtPos) : null;
+          this.$container.insertBefore(element, referenceNode);
+        }
+      }
+      return;
+    }
+
+    let correspondingElement = this._shadow.getElementById(`id::${ property }`);
     // console.log("correspondingElement:", correspondingElement);
     if (correspondingElement) {
       // If there is an element with the id from the prop, compare it's structure (recursively) and update elements as needed.
       // The check should be performed so local updates are not reapplied.
-      console.log("... found corresponding element");
+      // console.log("... found corresponding element");
       const existingStructure = await buildStructureFromHtml(correspondingElement);
-      console.log("existing structure:", existingStructure);
-      console.log("new structure:", newValue);
+      // console.log("existing structure:", existingStructure);
+      // console.log("new structure:", newValue);
       const changed = !isEqual(newValue, existingStructure[property]);
-      console.log("changed?", changed);
+      // console.log("changed?", changed);
       if (changed) {
         const replacerElement = buildElement(newValue);
         correspondingElement.parentNode.replaceChild(replacerElement, correspondingElement);
@@ -513,16 +531,61 @@ class Component extends HTMLElement {
   async newLine() {
     // on a newline
     // - get the current element type (p, li)
+    let currentElementType = this.$lastFocusedElement.nodeName;
 
-    // - create a new element depending on the previous one
-    // h# -> p, p -> p, li -> li
+    // - get the caret position, total number of characters in the element, and any current selection
+    let caretPosition = getCaretPosition(this.$lastFocusedElement);
+    let totalLength = getTotalCharacterCount(this.$lastFocusedElement);
+    console.log(`caret position: ${ caretPosition }/${ totalLength }`);
 
-    // - check if there was any text selected or if the cursor wasn't at the end of the previous line
-    //   - if it was at the end, just create a new line
-    //   - if it wasn't, move the text after the cursor and to the new line
-    //   - if text was selected, remove the selection and create a new line, while moving any text after the selection to the new line
+    // - create a new element depending on the previous one and the current caret position
+    //   - if caret at end: h# -> p, p -> p
+    //   - if caret at start: create same element above
+    //   - if caret at middle: create same element below, and move text after caret and move it at the new line
+    //   - if there was a selection, remove a selection and do as above
+    let newElement;
+    let newElementType = currentElementType;
+    const newId = crypto.randomUUID();
+    const order = await state.getValueFromObservable(this.navData.pageData, "order");
+    const currentElementOrderPosition = order.indexOf(this.$lastFocusedElement.id.split("::")[1]);
+    if (caretPosition == 0) {
+      console.log("... prepending element!");
+      newElement = document.createElement(newElementType);
+      newElement.id = `id::${newId}`;
+      newElement.setAttribute("contenteditable", true);
+      await putElementBefore(newElement, this.$lastFocusedElement);
 
-    // - send command to create the new line
+      let newElementOrderPosition = Math.max(currentElementOrderPosition - 1, 0);
+      order.splice(newElementOrderPosition, 0, newId);
+      await state.updateObservable(this.navData.pageData, "order", order);
+    }
+    else if (caretPosition == totalLength) {
+      console.log("... appending element!");
+      if (["h1", "h2", "h3", "h4", "h5", "h6"].includes(currentElementType.toLowerCase())) {
+        newElementType = "p";
+      }
+      newElement = document.createElement(newElementType);
+      newElement.id = `id::${newId}`;
+      newElement.setAttribute("contenteditable", true);
+      await putElementAfter(newElement, this.$lastFocusedElement);
+      this.$lastFocusedElement = newElement;
+      this.$lastFocusedElement.focus();
+
+      let newElementOrderPosition = currentElementOrderPosition + 1;
+      if (newElementOrderPosition > order.length) {
+        order.push(newId);
+      }
+      else {
+        order.splice(newElementOrderPosition, 0, newId);
+      }
+      await state.updateObservable(this.navData.pageData, "order", order);
+    }
+    else {
+      // TODO: ... (selection/range/document fragment)
+    }
+
+    // - send command to create the new line and/or update the current line if there is some text there... including the new order...
+
   }
 
   /**
