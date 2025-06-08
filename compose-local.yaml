@@ -9,8 +9,8 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin-pass
     volumes:
-    - mongo-db-data:/data/db
-    - mongo-config-data:/data/configdb
+    - C:/Users/ttetr/OneDrive/Projects/System-Intelligence/data backup/volumes/mongo-db-data:/data/db
+    - C:/Users/ttetr/OneDrive/Projects/System-Intelligence/data backup/volumes/mongo-config-data:/data/configdb
   si-mariadb:
     image: mariadb:latest
     environment:
@@ -21,7 +21,7 @@ services:
     ports:
     - "3306:3306"
     volumes:
-    - mariadb_data:/var/lib/mysql
+    - C:/Users/ttetr/OneDrive/Projects/System-Intelligence/data backup/volumes/mariadb_data:/var/lib/mysql
   # si-service-game-data:
   #   build: ./service-game-data/
   #   environment:
@@ -38,8 +38,3 @@ services:
   #   depends_on:
   #   - si-mongodb
   #   - si-mariadb
-
-volumes:
-  mongo-db-data:
-  mongo-config-data:
-  mariadb_data:
