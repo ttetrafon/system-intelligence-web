@@ -13,6 +13,11 @@ export const templateFileDbData = {
       schemaVersion: 1,
       version: 0,
       order: []
+    },
+    [fileDbNames.ID_GAMEPLAY]: {
+      schemaVersion: 1,
+      version: 0,
+      order: []
     }
   }
 };
@@ -24,8 +29,5 @@ export const fileDbSchemaOperations = {
     }
   },
   [fileDbNames.COL_GENERAL_GAMEPLAY]: {
-    [fileDbNames.ID_INTRODUCTION]: {
-      "1::2": []
-    }
   }
 };

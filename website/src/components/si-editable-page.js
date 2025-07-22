@@ -366,7 +366,8 @@ class Component extends HTMLElement {
       // TODO ...
     }
     else {
-      el.id = crypto.randomUUID();
+      el.id = `id::${crypto.randomUUID()}`;
+      el.setAttribute("new-line", true);
     }
     this.$container.appendChild(el);
     el.focus();
@@ -432,7 +433,7 @@ class Component extends HTMLElement {
     event.stopImmediatePropagation();
     // build structure
     let structure = await buildStructureFromHtml(event.target);
-    // console.log("structure:", structure);
+    console.log("structure:", structure);
 
     // compare each node with its structured data, and send update command if needed
     let keys = Object.keys(structure);
@@ -444,8 +445,10 @@ class Component extends HTMLElement {
 
       if (changed) {
         let documentVersion = await state.getValueFromObservable(this.navData.pageData, "version");
+
         let command = new Command_Editor_UpdateDocument(documentVersion, this.navData.pageData, structure);
-        await siState.publishEditablePageCommand(command);
+        console.log("command:", command);
+        // await siState.publishEditablePageCommand(command);
       }
     };
   }
