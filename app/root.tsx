@@ -7,8 +7,14 @@ import {
   ScrollRestoration,
 } from "react-router";
 
+import { UserProvider } from "./context/UserContext";
+
 import type { Route } from "./+types/root";
 import "./app.css";
+import Head from "./components/general/Head";
+import Contents from "./components/game-system/Contents";
+import Footer from "./components/general/Footer";
+import Side from "./components/game-system/Side";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -32,8 +38,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
-        {children}
+      <body className='w-full h-dvh antialiased bg-alpha text-text flex flex-col flex-nowrap justify-stretch'>
+        <Head />
+        <main className="flex-1 flex flex-row flex-nowrap justify-stretch">
+          <Contents />
+          <article className="flex-1 p-2 overflow-auto">
+            {children}
+          </article>
+          <Side />
+        </main>
+        <Footer />
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -42,7 +56,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <UserProvider>
+      <Outlet />
+    </UserProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
