@@ -6,10 +6,11 @@
     "app/**/.server/**/*",
     "app/**/.client/**/*",
     "workers/**/*",
+    "types/**/*",
     "worker-configuration.d.ts"
   ],
   "compilerOptions": {
-    "composite": true,
+    // "composite": true,
     "strict": true,
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "types": ["vite/client"],
@@ -20,7 +21,8 @@
     "baseUrl": ".",
     "rootDirs": [".", "./.react-router/types"],
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      "@app-types/*": ["./types/*"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true

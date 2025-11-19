@@ -1,4 +1,4 @@
-import { createRequestHandler } from "react-router";
+import { createRequestHandler, type ServerBuild } from 'react-router';
 
 declare module "react-router" {
   export interface AppLoadContext {
@@ -10,8 +10,8 @@ declare module "react-router" {
 }
 
 const requestHandler = createRequestHandler(
-  () => import("virtual:react-router/server-build"),
-  import.meta.env.MODE
+  () => import('virtual:react-router/server-build') as Promise<ServerBuild>,
+  import.meta.env.MODE,
 );
 
 export default {

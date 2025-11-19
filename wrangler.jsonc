@@ -4,15 +4,78 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "web",
-	"compatibility_date": "2025-04-04",
+	"name": "system-intelligence-web",
+  "compatibility_flags": [
+    "nodejs_compat",
+  ],
+  "compatibility_date": "2025-07-09",
 	"main": "./workers/app.ts",
-	"vars": {
-		"VALUE_FROM_CLOUDFLARE": "Hello from Cloudflare"
-	},
+  "env": {
+    "staging": {
+      "vars": {
+        "PUBLIC_ENVIRONMENT": "staging"
+      },
+      // "durable_objects": {
+      //   "bindings": [
+      //     {
+      //       "name": "chat",
+      //       "class_name": "Chat"
+      //     }
+      //   ]
+      // },
+      // "migrations": [
+      //   {
+      //     "tag": "v1",
+      //     "new_sqlite_classes": [
+      //       "Chat"
+      //     ]
+      //   }
+      // ]
+    },
+    "production": {
+      "vars": {
+        "PUBLIC_ENVIRONMENT": "production"
+      },
+      // "durable_objects": {
+      //   "bindings": [
+      //     {
+      //       "name": "chat",
+      //       "class_name": "Chat"
+      //     }
+      //   ]
+      // },
+      // "migrations": [
+      //   {
+      //     "tag": "v1",
+      //     "new_sqlite_classes": [
+      //       "Chat"
+      //     ]
+      //   }
+      // ]
+    }
+  },
+  "vars": {
+    "PUBLIC_ENVIRONMENT": "development"
+  },
 	"observability": {
 		"enabled": true
-	}
+	},
+  // "durable_objects": {
+  //   "bindings": [
+  //     {
+  //       "name": "chat",
+  //       "class_name": "Chat"
+  //     }
+  //   ]
+  // },
+  // "migrations": [
+  //   {
+  //     "tag": "v1",
+  //     "new_sqlite_classes": [
+  //       "Chat"
+  //     ]
+  //   }
+  // ]
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
