@@ -6,6 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { useState } from "react";
 
 import { UserProvider } from "./context/UserContext";
 
@@ -30,6 +31,9 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const [isContentsVisible, setIsContentsVisible] = useState(false);
+  const toggleContents = () => setIsContentsVisible(!isContentsVisible);
+
   return (
     <html lang="en">
       <head>
@@ -39,9 +43,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className='w-full h-dvh antialiased bg-alpha text-text flex flex-col flex-nowrap justify-stretch'>
-        <Head />
+        <Head toggleContents={toggleContents} />
         <main className="flex-1 flex flex-row flex-nowrap justify-stretch">
-          <Contents />
+          <Contents isContentsVisible={isContentsVisible} toggleContents={toggleContents} />
           <article className="flex-1 p-2 overflow-auto">
             {children}
           </article>

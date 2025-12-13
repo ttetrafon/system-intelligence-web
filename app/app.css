@@ -12,3 +12,7 @@
   --color-delta: #F5DAA7;
   --color-text: #ece3d2;
 }
+
+button {
+  cursor: pointer;
+}
