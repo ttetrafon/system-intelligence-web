@@ -3,18 +3,22 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"supabase-project-init": "pnpx supabase init",
+		"supabase-project-start": "pnpx supabase start",
+		"supabase-project-stop": "pnpx supabase stop",
 		"build:staging": "react-router build --mode staging",
 		"build:production": "react-router build --mode production",
 		"cf-typegen": "wrangler types",
 		"deploy:staging": "pnpm run build:staging && wrangler deploy",
 		"deploy:production": "pnpm run build:production && wrangler deploy",
-		"dev": "react-router dev --host",
+		"dev": "pnpm supabase-project-start && react-router dev --host",
 		"postinstall": "npm run cf-typegen",
 		"preview": "pnpm run build && vite preview",
 		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b"
 	},
-	"packageManager": "pnpm@10.16.1",
+	"packageManager": "pnpm@10.26.2",
 	"dependencies": {
+		"@supabase/supabase-js": "^2.89.0",
 		"isbot": "^5.1.32",
 		"react": "^19.2.3",
 		"react-dom": "^19.2.3",
@@ -27,11 +31,17 @@
 		"@types/node": "^25.0.1",
 		"@types/react": "^19.2.7",
 		"@types/react-dom": "^19.2.3",
+		"supabase": "^2.70.5",
 		"tailwindcss": "^4.1.18",
 		"typescript": "^5.9.3",
 		"vite": "^7.2.7",
 		"vite-plugin-icons-spritesheet": "^3.0.1",
-		"vite-tsconfig-paths": "^5.1.4",
+		"vite-tsconfig-paths": "^6.0.3",
 		"wrangler": "^4.54.0"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"supabase"
+		]
 	}
 }
