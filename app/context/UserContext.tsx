@@ -1,36 +1,38 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { type User, type UserRole } from '../types/user';
+import {
+  createContext,
+  useContext,
+  useState,
+  type ReactNode,
+  useEffect,
+} from 'react';
+import { type Session } from '@supabase/supabase-js';
+import { supabase } from '../supabase';
 
 interface UserContextType {
-  user: User | null;
+  session: Session | null;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-const createInitialUser = (): User => {
-  const randomSixDigitNumber = Math.floor(100000 + Math.random() * 900000);
-
-  return {
-    id: crypto.randomUUID(),
-    username: `${randomSixDigitNumber}`,
-    role: 'observer' as UserRole,
-    colour: '000000',
-    loginType: 'none',
-  };
-};
-
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user] = useState<User | null>(() => {
-    // This check ensures the user is only created on the client-side,
-    // preventing SSR hydration mismatch errors.
-    if (typeof window !== 'undefined') {
-      return createInitialUser();
-    }
-    return null;
-  });
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
-    <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ session }}>{children}</UserContext.Provider>
   );
 };
 

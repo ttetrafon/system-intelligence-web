@@ -1,17 +1,17 @@
-import { useState } from "react";
-import MenuIcon from "../generic/MenuIcon";
-import { Modal } from "../generic/Modal";
-import { LoginForm } from "./LoginForm";
+import { Link } from 'react-router-dom';
+import { supabase } from '../../supabase';
+import { type Session } from '@supabase/supabase-js';
+import MenuIcon from '../generic/MenuIcon';
 
 interface HeadProps {
   toggleContents: () => void;
+  session: Session | null;
 }
 
-export default function Head({ toggleContents }: HeadProps) {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  const openLoginModal = () => setIsLoginModalOpen(true);
-  const closeLoginModal = () => setIsLoginModalOpen(false);
+export default function Head({ toggleContents, session }: HeadProps) {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <header className="w-full bg-beta p-2 flex justify-center-safe items-stretch gap-4">
@@ -24,25 +24,23 @@ export default function Head({ toggleContents }: HeadProps) {
         <MenuIcon title="Table of Contents" imageName="menu" />
       </button>
       <span className="flex-1"></span>
-      <button
-        type="button"
-        className="text-text hover:text-white"
-        onClick={openLoginModal}
-        aria-label="Login"
-      >
-        <MenuIcon title="Login" imageName="login" />
-      </button>
-      <button
-        type="button"
-        className="text-text hover:text-white"
-        onClick={() => {}}
-        aria-label="Logout"
-      >
-        <MenuIcon title="Logout" imageName="logout" />
-      </button>
-      <Modal isOpen={isLoginModalOpen} onClose={closeLoginModal}>
-        <LoginForm />
-      </Modal>
+      {session ? (
+        <>
+          <span className="text-text self-center">{session.user.email}</span>
+          <button
+            type="button"
+            className="text-text hover:text-white"
+            onClick={handleLogout}
+            aria-label="Logout"
+          >
+            <MenuIcon title="Logout" imageName="logout" />
+          </button>
+        </>
+      ) : (
+        <Link to="/login" className="text-text hover:text-white" aria-label="Login">
+          <MenuIcon title="Login" imageName="login" />
+        </Link>
+      )}
     </header>
   );
 }

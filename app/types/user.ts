@@ -1,4 +1,4 @@
-export type UserRole = 'gm' | 'writer' | 'player' | 'observer';
+export type UserRole = 'owner' | 'gm' | 'writer' | 'player' | 'observer';
 export type LoginType = 'email' | 'gmail' | 'none';
 
 /**

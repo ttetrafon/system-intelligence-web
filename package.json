@@ -18,11 +18,13 @@
 	},
 	"packageManager": "pnpm@10.26.2",
 	"dependencies": {
+		"@supabase/auth-ui-react": "^0.4.7",
 		"@supabase/supabase-js": "^2.89.0",
 		"isbot": "^5.1.32",
 		"react": "^19.2.3",
 		"react-dom": "^19.2.3",
-		"react-router": "^7.10.1"
+		"react-router": "^7.10.1",
+		"react-router-dom": "^7.10.1"
 	},
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "^1.17.1",
