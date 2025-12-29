@@ -6,15 +6,15 @@
 		"supabase-project-init": "pnpx supabase init",
 		"supabase-project-start": "pnpx supabase start",
 		"supabase-project-stop": "pnpx supabase stop",
+		"dev": "pnpm supabase-project-start && react-router dev --host",
+		"preview": "pnpm run build && vite preview",
+		"cf-typegen": "wrangler types",
+		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b",
+		"postinstall": "npm run typecheck",
 		"build:staging": "react-router build --mode staging",
 		"build:production": "react-router build --mode production",
-		"cf-typegen": "wrangler types",
 		"deploy:staging": "pnpm run build:staging && wrangler deploy",
-		"deploy:production": "pnpm run build:production && wrangler deploy",
-		"dev": "pnpm supabase-project-start && react-router dev --host",
-		"postinstall": "npm run cf-typegen",
-		"preview": "pnpm run build && vite preview",
-		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b"
+		"deploy:production": "pnpm run build:production && wrangler deploy"
 	},
 	"packageManager": "pnpm@10.26.2",
 	"dependencies": {
