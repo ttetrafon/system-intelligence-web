@@ -7,7 +7,7 @@ export type Env = {
 };
 
 export type PublicEnv = {
-  [K in keyof Env as K extends `PUBLIC_${string}` | `SUPABASE_${string}`
+  [K in keyof Env as K extends `PUBLIC_${string}`
     ? K
     : never]: Env[K];
 };

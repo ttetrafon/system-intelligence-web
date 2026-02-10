@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { supabase } from '~/supabase';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -10,30 +9,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(error.message);
-      } else if (data.user) {
-        navigate('/dashboard');
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred.');
-      }
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (

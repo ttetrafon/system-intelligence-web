@@ -1,16 +1,14 @@
 import { Link } from 'react-router-dom';
-import { supabase } from '../../supabase';
-import { type Session } from '@supabase/supabase-js';
 import MenuIcon from '../generic/MenuIcon';
 
 interface HeadProps {
   toggleContents: () => void;
-  session: Session | null;
+  session: Object | null;
 }
 
 export default function Head({ toggleContents, session }: HeadProps) {
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+
   };
 
   return (
@@ -26,7 +24,7 @@ export default function Head({ toggleContents, session }: HeadProps) {
       <span className="flex-1"></span>
       {session ? (
         <>
-          <span className="text-text self-center">{session.user.email}</span>
+          <span className="text-text self-center">{"TODO!"}</span>
           <button
             type="button"
             className="text-text hover:text-white"

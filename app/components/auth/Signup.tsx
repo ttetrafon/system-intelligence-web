@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { supabase } from '~/supabase';
 
 export function Signup() {
   const [email, setEmail] = useState('');
@@ -14,22 +13,8 @@ export function Signup() {
     setError(null);
     setMessage(null);
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
     setLoading(false);
 
-    if (error) {
-      setError(error.message);
-    } else if (data.user) {
-        if (data.user.identities?.length === 0) {
-            setMessage("An account with this email already exists, but it is unconfirmed. Please check your email for the confirmation link.");
-        } else {
-            setMessage('Check your email for the confirmation link!');
-        }
-    }
   };
 
   return (

@@ -16,7 +16,6 @@ import Head from './components/general/Head';
 import Contents from './components/game-system/Contents';
 import Footer from './components/general/Footer';
 import Side from './components/game-system/Side';
-import type { Session } from '@supabase/supabase-js';
 
 export const links: Route.LinksFunction = () => [];
 
