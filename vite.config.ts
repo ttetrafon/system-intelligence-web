@@ -2,7 +2,6 @@ import { reactRouter } from "@react-router/dev/vite";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
-import { iconsSpritesheet } from 'vite-plugin-icons-spritesheet';
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
@@ -11,12 +10,5 @@ export default defineConfig({
     tailwindcss(),
     reactRouter(),
     tsconfigPaths(),
-    iconsSpritesheet({
-      withTypes: true,
-      inputDir: 'icons',
-      outputDir: './app/icons',
-      fileName: 'icon.svg',
-      formatter: 'biome',
-    }),
   ],
 });
