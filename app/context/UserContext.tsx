@@ -6,21 +6,34 @@ import {
   useEffect,
 } from 'react';
 
+export interface SessionUser {
+  id: number;
+  username: string;
+  display: string | null;
+  colour: string;
+}
+
 interface UserContextType {
-  session: Object | null;
+  session: SessionUser | null;
+  setSession: (user: SessionUser | null) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [session, setSession] = useState<Object | null>(null);
+  const [session, setSession] = useState<SessionUser | null>(null);
 
   useEffect(() => {
-
+    fetch('/api/me')
+      .then((res) => (res.ok ? (res.json() as Promise<{ user: SessionUser }>) : null))
+      .then((data) => {
+        if (data?.user) setSession(data.user);
+      })
+      .catch(() => {});
   }, []);
 
   return (
-    <UserContext.Provider value={{ session }}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ session, setSession }}>{children}</UserContext.Provider>
   );
 };
 

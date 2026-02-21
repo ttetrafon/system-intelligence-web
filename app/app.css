@@ -1,11 +1,6 @@
 @import "tailwindcss" source(".");
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-
-  --spacing: 4px;
-
+:root {
   --color-alpha: #662222;
   --color-beta: #842A3B;
   --color-gamma: #A3485A;
@@ -13,6 +8,31 @@
   --color-text: #ece3d2;
 }
 
-button {
-  cursor: pointer;
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --spacing: 4px;
+
+  --color-alpha: var(--color-alpha);
+  --color-beta: var(--color-beta);
+  --color-gamma: var(--color-gamma);
+  --color-delta: var(--color-delta);
+  --color-text: var(--color-text);
+}
+
+@layer base {
+
+  h2 {
+    @apply text-xl font-bold mb-2;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  input {
+    @apply p-1 shadow-md shadow-delta rounded-md;
+  }
+
 }

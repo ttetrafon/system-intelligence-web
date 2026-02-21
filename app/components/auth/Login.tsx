@@ -1,44 +1,58 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useFetcher, useNavigate } from 'react-router';
+import { useUser, type SessionUser } from '~/context/UserContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const fetcher = useFetcher<{ error?: string; user?: SessionUser }>();
+  const { setSession } = useUser();
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const isLoading = fetcher.state !== 'idle';
+  const error = fetcher.data?.error;
 
+  useEffect(() => {
+    if (fetcher.data?.user) {
+      setSession(fetcher.data.user);
+      navigate('/dashboard');
+    }
+  }, [fetcher.data, setSession, navigate]);
+
+  const handleLogin = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    fetcher.submit({ email, password }, { method: 'post', action: '/login' });
   };
 
   return (
-    <div className="flex justify-center items-center h-max">
+    <div className="flex justify-center items-center w-full h-max">
       <div className="mt-25 w-full max-w-lg p-8 space-y-8 rounded-lg shadow-md">
-        <h2 className='text-xl font-bold w-max text-center mb-2'>Login</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            <label htmlFor="email">Email</label>
+        <h2>Login</h2>
+        <form className='flex flex-col gap-2' onSubmit={handleLogin}>
+          <div className='flex flex-row gap-2'>
+            <label htmlFor="email" className='min-w-20 flex-0'>Email</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className='flex-1'
             />
           </div>
-          <div>
-            <label htmlFor="password">Password</label>
+          <div className='flex flex-row gap-2'>
+            <label htmlFor="password" className='min-w-20 flex-0'>Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className='flex-1'
             />
           </div>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+          <button type="submit" disabled={isLoading} className='mt-2 '>
+            {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
         {error && <p style={{ color: 'red' }}>{error}</p>}

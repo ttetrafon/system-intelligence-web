@@ -5,6 +5,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigate,
 } from 'react-router';
 import { useState } from 'react';
 
@@ -24,8 +25,16 @@ function HeadWrapper({
 }: {
   toggleContents: () => void;
 }) {
-  const { session } = useUser();
-  return <Head toggleContents={toggleContents} session={session} />;
+  const { session, setSession } = useUser();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await fetch('/api/logout', { method: 'POST' });
+    setSession(null);
+    navigate('/');
+  };
+
+  return <Head toggleContents={toggleContents} session={session} onLogout={handleLogout} />;
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {

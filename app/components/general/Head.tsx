@@ -1,16 +1,14 @@
 import { Link } from 'react-router-dom';
 import MenuIcon from '../generic/MenuIcon';
+import type { SessionUser } from '~/context/UserContext';
 
 interface HeadProps {
   toggleContents: () => void;
-  session: Object | null;
+  session: SessionUser | null;
+  onLogout: () => void;
 }
 
-export default function Head({ toggleContents, session }: HeadProps) {
-  const handleLogout = async () => {
-
-  };
-
+export default function Head({ toggleContents, session, onLogout }: HeadProps) {
   return (
     <header className="w-full bg-beta p-2 flex justify-center-safe items-stretch gap-4">
       <button
@@ -24,11 +22,11 @@ export default function Head({ toggleContents, session }: HeadProps) {
       <span className="flex-1"></span>
       {session ? (
         <>
-          <span className="text-text self-center">{"TODO!"}</span>
+          <span className="text-text self-center">{session.display ?? session.username}</span>
           <button
             type="button"
             className="text-text hover:text-white"
-            onClick={handleLogout}
+            onClick={onLogout}
             aria-label="Logout"
           >
             <MenuIcon title="Logout" imageName="logout" />

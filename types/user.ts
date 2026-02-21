@@ -1,9 +1,6 @@
 export type UserRole = 'owner' | 'gm' | 'writer' | 'player' | 'observer';
-export type LoginType = 'email' | 'gmail' | 'none';
+export type LoginType = 'email' | 'gmail';
 
-/**
- * Represents a user in the system.
- */
 export interface User {
   /**
    * The unique identifier for the user (UUID).
@@ -19,12 +16,7 @@ export interface User {
   loginType: LoginType;
 
   /**
-   * The user's role within the system.
+   * The user's assigned color, represented as a hex number.
    */
-  role: UserRole | 'observer';
-
-  /**
-   * The user's assigned color, represented as a hex number (e.g., 0xFF0000 for red).
-   */
-  colour: string | '000000'; //
-}
+  colour: string | '000000';
+};

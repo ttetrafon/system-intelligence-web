@@ -5,42 +5,64 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "system-intelligence-web",
-  "compatibility_flags": [
-    "nodejs_compat",
-  ],
-  "compatibility_date": "2025-07-09",
+	"compatibility_flags": [
+		"nodejs_compat",
+	],
+	"compatibility_date": "2025-07-09",
 	"main": "./workers/app.ts",
-  "env": {
-    "staging": {
-      "vars": {
-        "PUBLIC_ENVIRONMENT": "staging"
-      },
+	"env": {
+		"staging": {
+			"vars": {
+				"PUBLIC_ENVIRONMENT": "staging"
+			},
 			"kv_namespaces": [
 				{
 					"binding": "system_intelligence_auth_kv",
 					"id": "cbdabe654e8f46049ba5a56ad96c0746"
 				}
 			],
-    },
-    "production": {
-      "vars": {
-        "PUBLIC_ENVIRONMENT": "production"
-      },
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "system-intelligence-db-staging",
+					"database_id": "2db72910-3263-4be7-be7d-8cd77b3dbe73"
+				}
+			],
+		},
+		"production": {
+			"vars": {
+				"PUBLIC_ENVIRONMENT": "production"
+			},
 			"kv_namespaces": [
 				{
 					"binding": "system_intelligence_auth_kv",
 					"id": "11f0c044120d445f98d690956df7b6ca"
 				}
 			],
-    }
-  },
-  "vars": {
-    "PUBLIC_ENVIRONMENT": "development"
-  },
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "system-intelligence-db-production",
+					"database_id": "f0be761e-6535-4450-bc28-9a0694f8501e"
+				}
+			],
+		}
+	},
+	"vars": {
+		"PUBLIC_ENVIRONMENT": "development"
+	},
 	"kv_namespaces": [
 		{
 			"binding": "system_intelligence_auth_kv",
 			"id": "cbdabe654e8f46049ba5a56ad96c0746",
+			"remote": true
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "system-intelligence-db-staging",
+			"database_id": "2db72910-3263-4be7-be7d-8cd77b3dbe73",
 			"remote": true
 		}
 	],
