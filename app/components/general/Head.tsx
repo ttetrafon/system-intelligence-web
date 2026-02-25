@@ -10,7 +10,7 @@ interface HeadProps {
 
 export default function Head({ toggleContents, session, onLogout }: HeadProps) {
   return (
-    <header className="w-full bg-beta p-2 flex justify-center-safe items-stretch gap-4">
+    <header className="w-full bg-beta p-2 flex justify-center-safe items-center gap-4">
       <button
         type="button"
         className="lg:hidden p-1 text-text hover:text-white"
@@ -19,10 +19,13 @@ export default function Head({ toggleContents, session, onLogout }: HeadProps) {
       >
         <MenuIcon title="Table of Contents" imageName="menu" />
       </button>
+      <Link to='/' className="text-text hover:text-white">
+        <MenuIcon title='Home' imageName={'home'}></MenuIcon>
+      </Link>
       <span className="flex-1"></span>
       {session ? (
         <>
-          <span className="text-text self-center">{session.display ?? session.username}</span>
+          <Link to="/dashboard" className="text-text self-center hover:text-white">{session.display ?? session.username}</Link>
           <button
             type="button"
             className="text-text hover:text-white"

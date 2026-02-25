@@ -15,7 +15,7 @@ export default function Login() {
   useEffect(() => {
     if (fetcher.data?.user) {
       setSession(fetcher.data.user);
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [fetcher.data, setSession, navigate]);
 

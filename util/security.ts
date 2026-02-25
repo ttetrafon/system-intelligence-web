@@ -211,6 +211,7 @@ export interface JWTPayload {
   username: string;
   display: string | null;
   colour: string;
+  system_role: string;
   iat: number;
   exp: number;
 }

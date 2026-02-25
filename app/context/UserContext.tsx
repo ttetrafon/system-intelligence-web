@@ -1,3 +1,4 @@
+import type { SystemRole } from '@app-types/user';
 import {
   createContext,
   useContext,
@@ -11,6 +12,7 @@ export interface SessionUser {
   username: string;
   display: string | null;
   colour: string;
+  system_role: SystemRole;
 }
 
 interface UserContextType {

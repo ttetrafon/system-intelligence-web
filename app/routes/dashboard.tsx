@@ -1,33 +1,33 @@
+import type { Route } from './+types/home';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useUser } from '../context/UserContext';
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: 'System Intelligence - Dashboard' },
+    { name: 'description', content: 'System Intelligence: User Dashboard' },
+  ];
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-
-    };
-    fetchUser();
-  }, [navigate]);
+  const { session, setSession } = useUser();
 
   const handleLogout = async () => {
-
+    await fetch('/api/logout', { method: 'POST' });
+    setSession(null);
     navigate('/login');
   };
 
-  if (!user) {
+  if (!session) {
     return <div>Loading...</div>;
   }
 
   return (
     <div>
-      <h2>Welcome to your Dashboard</h2>
-      <p>You are signed in as: ???</p>
-      <button
-        onClick={handleLogout}
-      >
+      <p>Welcome to your Dashboard</p>
+      <p>You are signed in as: {session.display ?? session.username} as {session.system_role}</p>
+      <button className='generic' onClick={handleLogout} >
         Logout
       </button>
     </div>

@@ -7,6 +7,7 @@ interface DBUser {
   username: string;
   display: string | null;
   colour: string;
+  system_role: string;
   password_hash: string | null;
 }
 
@@ -25,7 +26,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
 
   const user = await env.DB.prepare(
-    'SELECT id, username, display, colour, password_hash FROM USERS WHERE username = ? AND loginType = ?'
+    'SELECT id, username, display, colour, system_role, password_hash FROM USERS WHERE username = ? AND loginType = ?'
   )
     .bind(email, 'email')
     .first<DBUser>();
@@ -40,7 +41,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
 
   const token = await createJWT(
-    { sub: user.id, username: user.username, display: user.display, colour: user.colour },
+    { sub: user.id, username: user.username, display: user.display, colour: user.colour, system_role: user.system_role },
     env.SESSION_SECRET
   );
 
@@ -48,7 +49,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const cookie = createJWTCookie(token, isSecure);
 
   return Response.json(
-    { user: { id: user.id, username: user.username, display: user.display, colour: user.colour } },
+    { user: { id: user.id, username: user.username, display: user.display, colour: user.colour, system_role: user.system_role } },
     { headers: { 'Set-Cookie': cookie } }
   );
 }

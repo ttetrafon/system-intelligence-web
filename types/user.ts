@@ -1,4 +1,4 @@
-export type UserRole = 'owner' | 'gm' | 'writer' | 'player' | 'observer';
+export type SystemRole = 'owner' | 'admin' | 'user';
 export type LoginType = 'email' | 'gmail';
 
 export interface User {
@@ -19,4 +19,6 @@ export interface User {
    * The user's assigned color, represented as a hex number.
    */
   colour: string | '000000';
+
+  system_role: SystemRole;
 };

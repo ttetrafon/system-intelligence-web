@@ -22,24 +22,36 @@
 }
 
 @layer base {
-  /*******/
-  /* NAV */
-  /*******/
-  nav h1 {
-    @apply italic m-1;
-  }
-  nav h2 {
-    @apply text-sm m-1;
-  }
 
   /***********/
   /* GENERAL */
   /***********/
+
+  h1 {
+    @apply text-2xl font-extrabold;
+  }
+
   button {
     @apply cursor-pointer;
   }
 
   input {
     @apply p-1 shadow-md shadow-delta rounded-md;
+  }
+
+  /*******/
+  /* NAV */
+  /*******/
+  nav h1 {
+    @apply text-base font-normal italic m-1;
+  }
+  nav h2 {
+    @apply text-sm m-1;
+  }
+}
+
+@layer components {
+  button.generic {
+    @apply border border-delta rounded-md px-2 py-1;
   }
 }
