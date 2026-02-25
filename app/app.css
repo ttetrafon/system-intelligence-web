@@ -22,11 +22,19 @@
 }
 
 @layer base {
-
-  h2 {
-    @apply text-xl font-bold mb-2;
+  /*******/
+  /* NAV */
+  /*******/
+  nav h1 {
+    @apply italic m-1;
+  }
+  nav h2 {
+    @apply text-sm m-1;
   }
 
+  /***********/
+  /* GENERAL */
+  /***********/
   button {
     @apply cursor-pointer;
   }
@@ -34,5 +42,4 @@
   input {
     @apply p-1 shadow-md shadow-delta rounded-md;
   }
-
 }
