@@ -17,8 +17,8 @@
 			},
 			"kv_namespaces": [
 				{
-					"binding": "system_intelligence_auth_kv",
-					"id": "cbdabe654e8f46049ba5a56ad96c0746"
+					"binding": "system_intelligence_auth_kv_staging",
+					"id": "c45a7adfa4d94e7680f941602af79a32",
 				}
 			],
 			"d1_databases": [
@@ -35,8 +35,8 @@
 			},
 			"kv_namespaces": [
 				{
-					"binding": "system_intelligence_auth_kv",
-					"id": "11f0c044120d445f98d690956df7b6ca"
+					"binding": "system_intelligence_auth_kv_production",
+					"id": "af3d4e4455b74785bf89d4c64c5629a6"
 				}
 			],
 			"d1_databases": [
@@ -53,8 +53,8 @@
 	},
 	"kv_namespaces": [
 		{
-			"binding": "system_intelligence_auth_kv",
-			"id": "cbdabe654e8f46049ba5a56ad96c0746",
+			"binding": "system_intelligence_auth_kv_staging",
+			"id": "c45a7adfa4d94e7680f941602af79a32",
 			"remote": true
 		}
 	],
