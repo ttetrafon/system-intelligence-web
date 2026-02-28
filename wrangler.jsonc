@@ -34,7 +34,28 @@
 					"binding": "ASSETS",
 					"jurisdiction": "eu",
 				}
-			]
+			],
+			"durable_objects": {
+				"bindings": [
+					{
+						"name": "SYSTEM_NOTIFIER",
+						"class_name": "SystemNotifier"
+					},
+					{
+						"name": "GAME_SESSION",
+						"class_name": "GameSession"
+					}
+				]
+			},
+			"migrations": [
+				{
+					"tag": "v1",
+					"new_classes": [
+						"SystemNotifier",
+						"GameSession"
+					]
+				}
+			],
 		},
 		"production": {
 			"vars": {
@@ -59,7 +80,28 @@
 					"binding": "ASSETS",
 					"jurisdiction": "eu",
 				}
-			]
+			],
+			"durable_objects": {
+				"bindings": [
+					{
+						"name": "SYSTEM_NOTIFIER",
+						"class_name": "SystemNotifier"
+					},
+					{
+						"name": "GAME_SESSION",
+						"class_name": "GameSession"
+					}
+				]
+			},
+			"migrations": [
+				{
+					"tag": "v1",
+					"new_classes": [
+						"SystemNotifier",
+						"GameSession"
+					]
+				}
+			],
 		}
 	},
 	"vars": {
@@ -86,6 +128,27 @@
 			"binding": "ASSETS",
 			"remote": true,
 			"jurisdiction": "eu",
+		}
+	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "SYSTEM_NOTIFIER",
+				"class_name": "SystemNotifier"
+			},
+			{
+				"name": "GAME_SESSION",
+				"class_name": "GameSession"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_classes": [
+				"SystemNotifier",
+				"GameSession"
+			]
 		}
 	],
 	"observability": {

@@ -1,4 +1,8 @@
 import { createRequestHandler, type ServerBuild } from 'react-router';
+import { getJWTFromCookie, verifyJWT } from '../util/security';
+import { getGameSystem } from './GameSystem';
+
+export { SystemNotifier } from './SystemNotifier';
 
 declare module "react-router" {
   export interface AppLoadContext {
@@ -15,6 +19,11 @@ const requestHandler = createRequestHandler(
 );
 
 async function requireAuth(request: Request, env: Env): Promise<Response | null> {
+  const token = getJWTFromCookie(request.headers.get('Cookie'));
+  if (!token) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const payload = await verifyJWT(token, (env as unknown as { SESSION_SECRET: string }).SESSION_SECRET);
+  if (!payload) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   return null;
 }
@@ -31,12 +40,12 @@ async function handleApiRequest(
     return Response.json({ status: 'ok' });
   }
 
-  // if (path === '/categories' && request.method === 'PUT') {
-  //   const authError = await requireAuth(request, env);
-  //   if (authError) return authError;
-
-  //   return updateCategories(env.DB, request);
-  // }
+  const gameSystemMatch = path.match(/^\/game-system\/([^/]+)(?:\/(\d+))?$/)
+  if (gameSystemMatch && request.method === 'GET') {
+    const system = gameSystemMatch[1];
+    const timestamp = gameSystemMatch[2] ? parseInt(gameSystemMatch[2], 10) : Date.now();
+    return getGameSystem(env.DB, env.PUBLIC_ENVIRONMENT, system, timestamp);
+  }
 
   if (path.startsWith('/assets/') && request.method === 'GET') {
     const key = path.slice('/assets/'.length);
@@ -56,6 +65,25 @@ async function handleApiRequest(
 
 export default {
   async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+
+    if (url.pathname === '/api/system/events' && request.method === 'GET') {
+      const authError = await requireAuth(request, env);
+      if (authError) return authError;
+
+      const doEnv = env as unknown as { SYSTEM_NOTIFIER: DurableObjectNamespace };
+      const stub = doEnv.SYSTEM_NOTIFIER.get(doEnv.SYSTEM_NOTIFIER.idFromName('global'));
+      return stub.fetch(new Request('https://do/connect', { signal: request.signal }));
+    }
+
+    if (
+      url.pathname === '/api/health' ||
+      url.pathname.startsWith('/api/game-system/') ||
+      url.pathname.startsWith('/api/assets/')
+    ) {
+      return handleApiRequest(url, request, env, ctx);
+    }
+
     return requestHandler(request, {
       cloudflare: { env, ctx },
     });
