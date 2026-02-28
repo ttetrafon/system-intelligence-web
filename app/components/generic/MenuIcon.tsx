@@ -1,18 +1,18 @@
 import { Activity } from "react";
+import { Svg, type SvgName } from "./Svg";
 
 interface MenuIconProps {
-  imageName: string;
+  imageName: SvgName;
   title?: string;
+  alwaysShowText?: boolean;
 }
 
-export default function MenuIcon({ imageName, title }: MenuIconProps) {
-  const iconPath = `/icons/${imageName}.svg`;
-
+export default function MenuIcon({ imageName, title, alwaysShowText = false }: MenuIconProps) {
   return (
     <div className="flex items-center gap-2" title={title}>
-      <img src={iconPath} alt={title} className="h-6 w-6" />
-      <Activity mode={ title && title !== '' ? 'visible' : 'hidden' }>
-        <span className="hidden md:block">{title}</span>
+      <Svg className="h-6 w-6" name={imageName} />
+      <Activity mode={title && title !== '' ? 'visible' : 'hidden'}>
+        <span className={`${alwaysShowText ? 'block' : 'hidden md:block'}`}>{title}</span>
       </Activity>
     </div>
   );

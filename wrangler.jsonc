@@ -17,7 +17,7 @@
 			},
 			"kv_namespaces": [
 				{
-					"binding": "system_intelligence_auth_kv_staging",
+					"binding": "AUTH_KV",
 					"id": "c45a7adfa4d94e7680f941602af79a32",
 				}
 			],
@@ -25,9 +25,16 @@
 				{
 					"binding": "DB",
 					"database_name": "system-intelligence-db-staging",
-					"database_id": "2db72910-3263-4be7-be7d-8cd77b3dbe73"
+					"database_id": "2db72910-3263-4be7-be7d-8cd77b3dbe73",
 				}
 			],
+			"r2_buckets": [
+				{
+					"bucket_name": "system-intelligence-assets-staging",
+					"binding": "ASSETS",
+					"jurisdiction": "eu",
+				}
+			]
 		},
 		"production": {
 			"vars": {
@@ -35,8 +42,8 @@
 			},
 			"kv_namespaces": [
 				{
-					"binding": "system_intelligence_auth_kv_production",
-					"id": "af3d4e4455b74785bf89d4c64c5629a6"
+					"binding": "AUTH_KV",
+					"id": "af3d4e4455b74785bf89d4c64c5629a6",
 				}
 			],
 			"d1_databases": [
@@ -46,6 +53,13 @@
 					"database_id": "f0be761e-6535-4450-bc28-9a0694f8501e"
 				}
 			],
+			"r2_buckets": [
+				{
+					"bucket_name": "system-intelligence-assets-production",
+					"binding": "ASSETS",
+					"jurisdiction": "eu",
+				}
+			]
 		}
 	},
 	"vars": {
@@ -53,7 +67,7 @@
 	},
 	"kv_namespaces": [
 		{
-			"binding": "system_intelligence_auth_kv_staging",
+			"binding": "AUTH_KV",
 			"id": "c45a7adfa4d94e7680f941602af79a32",
 			"remote": true
 		}
@@ -63,10 +77,18 @@
 			"binding": "DB",
 			"database_name": "system-intelligence-db-staging",
 			"database_id": "2db72910-3263-4be7-be7d-8cd77b3dbe73",
-			"remote": true
+			"remote": true,
+		}
+	],
+	"r2_buckets": [
+		{
+			"bucket_name": "system-intelligence-assets-staging",
+			"binding": "ASSETS",
+			"remote": true,
+			"jurisdiction": "eu",
 		}
 	],
 	"observability": {
 		"enabled": true
-	}
+	},
 }

@@ -48,6 +48,9 @@
   nav h2 {
     @apply text-sm m-1;
   }
+  nav hr {
+    @apply mt-2;
+  }
 }
 
 @layer components {

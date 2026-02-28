@@ -1,5 +1,5 @@
 import type { Route } from './+types/login';
-import Login from '~/components/auth/Login';
+import Login from '~/components/user/Login';
 import { verifyPassword, createJWT, createJWTCookie } from '../../util/security';
 
 interface DBUser {

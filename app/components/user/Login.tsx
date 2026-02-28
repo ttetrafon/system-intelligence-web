@@ -26,7 +26,7 @@ export default function Login() {
 
   return (
     <div className="flex justify-center items-center w-full h-max">
-      <div className="mt-25 w-full max-w-lg p-8 space-y-8 rounded-lg shadow-md">
+      <div className="mt-25 w-full max-w-lg p-8 space-y-8 rounded-lg shadow-md shadow-gamma">
         <h2>Login</h2>
         <form className='flex flex-col gap-2' onSubmit={handleLogin}>
           <div className='flex flex-row gap-2'>
@@ -37,7 +37,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className='flex-1'
+              className='min-w-0 flex-1'
             />
           </div>
           <div className='flex flex-row gap-2'>
@@ -48,7 +48,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className='flex-1'
+              className='min-w-0 flex-1'
             />
           </div>
           <button type="submit" disabled={isLoading} className='mt-2 '>
