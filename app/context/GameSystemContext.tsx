@@ -24,8 +24,21 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!systemEvents) return;
 
-    const handleGameSystemUpdate = (_e: MessageEvent<string>) => {
-      // TODO: update context data with event payload
+    const handleGameSystemUpdate = (e: MessageEvent<string>) => {
+      const payload = JSON.parse(e.data) as { data: string; dataKey: string };
+      setData(prev => {
+        if (!prev) return prev;
+        const keys = payload.dataKey.split('.');
+        const updated = { ...prev };
+        let node: Record<string, unknown> = updated as unknown as Record<string, unknown>;
+        for (let i = 0; i < keys.length - 1; i++) {
+          node[keys[i]] = { ...(node[keys[i]] as Record<string, unknown>) };
+          node = node[keys[i]] as Record<string, unknown>;
+        }
+        node[keys[keys.length - 1]] = payload.data;
+        localStorage.setItem(LS_KEY, JSON.stringify(updated));
+        return updated;
+      });
     };
 
     systemEvents.addEventListener('game-system-update', handleGameSystemUpdate);

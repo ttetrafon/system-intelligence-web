@@ -70,7 +70,7 @@ async function handleApiRequest(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         event: 'game-system-update',
-        data: { system, ...body },
+        data: { system, data: body.data, dataKey: body.dataKey },
       }),
     })));
 
@@ -103,7 +103,8 @@ export default {
 
       const doEnv = env as unknown as { SYSTEM_NOTIFIER: DurableObjectNamespace };
       const stub = doEnv.SYSTEM_NOTIFIER.get(doEnv.SYSTEM_NOTIFIER.idFromName('global'));
-      return stub.fetch(new Request('https://do/connect', { signal: request.signal }));
+      const connectInit = env.PUBLIC_ENVIRONMENT !== 'development' ? { signal: request.signal } : undefined;
+      return stub.fetch(new Request('https://do/connect', connectInit));
     }
 
     if (

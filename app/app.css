@@ -6,6 +6,7 @@
   --color-gamma: #A3485A;
   --color-delta: #F5DAA7;
   --color-text: #ece3d2;
+  --color-text-darker: #b1a99a;
 }
 
 @theme {
@@ -19,6 +20,7 @@
   --color-gamma: var(--color-gamma);
   --color-delta: var(--color-delta);
   --color-text: var(--color-text);
+  --color-text-darker: var(--color-text-darker);
 }
 
 @layer base {
@@ -28,10 +30,29 @@
   /***********/
 
   h1 {
-    @apply text-2xl font-bold text-delta;
+    @apply text-3xl font-bold text-delta mt-8 mb-2;
   }
   h2 {
     @apply text-2xl font-bold;
+  }
+  p {
+    @apply mb-2;
+  }
+  blockquote {
+    @apply text-sm italic text-text-darker mx-4 mb-2;
+  }
+
+  .table-wrap {
+    @apply w-full overflow-x-auto my-4;
+  }
+  table {
+    @apply mx-auto text-sm;
+  }
+  th {
+    @apply p-1 italic text-delta text-center capitalize text-nowrap border border-gamma;
+  }
+  td {
+    @apply p-1 text-center text-balance border border-gamma;
   }
 
   button {

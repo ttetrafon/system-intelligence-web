@@ -40,10 +40,6 @@
 					{
 						"name": "SYSTEM_NOTIFIER",
 						"class_name": "SystemNotifier"
-					},
-					{
-						"name": "GAME_SESSION",
-						"class_name": "GameSession"
 					}
 				]
 			},
@@ -51,8 +47,7 @@
 				{
 					"tag": "v1",
 					"new_classes": [
-						"SystemNotifier",
-						"GameSession"
+						"SystemNotifier"
 					]
 				}
 			],
@@ -86,10 +81,6 @@
 					{
 						"name": "SYSTEM_NOTIFIER",
 						"class_name": "SystemNotifier"
-					},
-					{
-						"name": "GAME_SESSION",
-						"class_name": "GameSession"
 					}
 				]
 			},
@@ -97,8 +88,7 @@
 				{
 					"tag": "v1",
 					"new_classes": [
-						"SystemNotifier",
-						"GameSession"
+						"SystemNotifier"
 					]
 				}
 			],
@@ -135,10 +125,6 @@
 			{
 				"name": "SYSTEM_NOTIFIER",
 				"class_name": "SystemNotifier"
-			},
-			{
-				"name": "GAME_SESSION",
-				"class_name": "GameSession"
 			}
 		]
 	},
@@ -146,8 +132,7 @@
 		{
 			"tag": "v1",
 			"new_classes": [
-				"SystemNotifier",
-				"GameSession"
+				"SystemNotifier"
 			]
 		}
 	],

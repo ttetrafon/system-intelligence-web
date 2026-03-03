@@ -27,8 +27,8 @@ export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps)
 
   useEffect(() => {
     if (renderRef.current)
-      convertMkToHtml(renderData ?? '', renderRef.current);
-  }, [renderData]);
+      convertMkToHtml(renderData ?? '', renderRef.current, contextData as unknown as Record<string, unknown> ?? undefined);
+  }, [renderData, contextData]);
 
   const confirmChanges = async () => {
     if (renderRef.current)
@@ -42,6 +42,7 @@ export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps)
         dataPath: props.dataPath,
         dataProperty: props.dataProperty,
         data: textareaRef.current.value,
+        dataKey: props.dataKey,
       }),
     });
   };
@@ -58,20 +59,38 @@ export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps)
       convertMkToHtml(props.data, renderRef.current);
   }
 
+  const insertMarkdownSymbol = (symbol: string) => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const { value, selectionStart } = ta;
+    const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+    const prefix = symbol + ' ';
+    if (value.startsWith(prefix, lineStart)) {
+      ta.value = value.slice(0, lineStart) + value.slice(lineStart + prefix.length);
+      const newPos = Math.max(lineStart, selectionStart - prefix.length);
+      ta.setSelectionRange(newPos, newPos);
+    } else {
+      ta.value = value.slice(0, lineStart) + prefix + value.slice(lineStart);
+      const newPos = selectionStart + prefix.length;
+      ta.setSelectionRange(newPos, newPos);
+    }
+    ta.focus();
+  }
+
   return (
     <section className={`flex flex-col ${props.col ? 'md:flex-col' : 'md:flex-row'} flex-nowrap gap-4 w-full`}>
       {props.editable && <div id="markdown" className="flex-1 max-w-full md:max-w-1/2">
         <div className="flex flex-row flex-wrap gap-1 w-full mb-2">
-          <MkButton text="Heading 1" icon="h1" />
-          <MkButton text="Heading 2" icon="h2" />
-          <MkButton text="Heading 3" icon="h3" />
-          <MkButton text="Heading 4" icon="h4" />
-          <MkButton text="Heading 5" icon="h5" />
-          <MkButton text="Heading 6" icon="h6" />
+          <MkButton text="Heading 1" icon="h1" onClick={() => insertMarkdownSymbol('#')} />
+          <MkButton text="Heading 2" icon="h2" onClick={() => insertMarkdownSymbol('##')} />
+          <MkButton text="Heading 3" icon="h3" onClick={() => insertMarkdownSymbol('###')} />
+          <MkButton text="Heading 4" icon="h4" onClick={() => insertMarkdownSymbol('####')} />
+          <MkButton text="Heading 5" icon="h5" onClick={() => insertMarkdownSymbol('#####')} />
+          <MkButton text="Heading 6" icon="h6" onClick={() => insertMarkdownSymbol('######')} />
           <MkButton text="Text" icon="text" />
-          <MkButton text="Bulleted List" icon="format_list_bulleted" />
-          <MkButton text="Numbered List" icon="format_list_numbered" />
-          <MkButton text="Quote" icon="format_quote" />
+          <MkButton text="Bulleted List" icon="format_list_bulleted" onClick={() => insertMarkdownSymbol('-')} />
+          <MkButton text="Numbered List" icon="format_list_numbered" onClick={() => insertMarkdownSymbol('1.')} />
+          <MkButton text="Quote" icon="format_quote" onClick={() => insertMarkdownSymbol('>')} />
 
           <MkToolbarSeparator color="var(--color-gamma)" />
 
