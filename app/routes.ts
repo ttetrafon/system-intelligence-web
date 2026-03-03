@@ -9,6 +9,8 @@ export default [
     route('logout', 'routes/api.logout.tsx'),
   ]),
   ...prefix('game-system', [
-    route('checks', 'routes/game-system/checks.tsx')
+    route('aspects', 'routes/game-system/aspects.tsx'),
+    route('checks', 'routes/game-system/checks.tsx'),
+    route('morality', 'routes/game-system/morality.tsx'),
   ])
 ] satisfies RouteConfig;

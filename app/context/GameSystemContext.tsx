@@ -6,6 +6,7 @@ const LS_KEY = 'si:game-system';
 
 interface GameSystemContextType {
   data: GameSystemData | null;
+  // dataLinks: object | null;
 }
 
 const GameSystemContext = createContext<GameSystemContextType | undefined>(undefined);

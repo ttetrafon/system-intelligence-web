@@ -3,6 +3,7 @@ import { MkButton } from "./MkButton";
 import { MkToolbarSeparator } from "./MkToolbarSeparator";
 import { convertMkToHtml } from "util/MkScripts";
 import { useGameSystem } from "~/context/GameSystemContext";
+import { mkMarkers } from "util/constants";
 
 export interface MarkdownEditorProps {
   col?: boolean,
@@ -228,10 +229,14 @@ export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps)
 
           <MkToolbarSeparator color="var(--color-gamma)" />
 
-          <MkButton text="Bold" icon="format_bold" onClick={() => insertMarkdownMarker('**')} />
-          <MkButton text="Italic" icon="format_italic" onClick={() => insertMarkdownMarker('*')} />
-          <MkButton text="Underline" icon="format_underlined" onClick={() => insertMarkdownMarker('_')} />
-          <MkButton text="Strikethrough" icon="strikethrough" onClick={() => insertMarkdownMarker('--')} />
+          <MkButton text="Bold" icon="format_bold" onClick={() => insertMarkdownMarker(mkMarkers.bold)} />
+          <MkButton text="Italic" icon="format_italic" onClick={() => insertMarkdownMarker(mkMarkers.italic)} />
+          <MkButton text="Underline" icon="format_underlined" onClick={() => insertMarkdownMarker(mkMarkers.underlined)} />
+          <MkButton text="Strikethrough" icon="strikethrough" onClick={() => insertMarkdownMarker(mkMarkers.strikethrough)} />
+
+          <MkToolbarSeparator color="var(--color-gamma)" />
+
+          <MkButton text="Game System Link" icon="dataset_linked" />
 
           <MkToolbarSeparator color="var(--color-gamma)" />
 

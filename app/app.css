@@ -70,10 +70,10 @@
   /* NAV */
   /*******/
   nav h1 {
-    @apply text-base text-text font-normal italic m-1;
+    @apply text-base text-text font-normal italic m-1 text-center;
   }
   nav h2 {
-    @apply text-sm text-text font-normal m-1;
+    @apply text-sm text-text font-normal my-2;
   }
   nav hr {
     @apply mt-2;

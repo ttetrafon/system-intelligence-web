@@ -1,3 +1,5 @@
+import { mkMarkers } from "./constants";
+
 export async function convertMkToHtml(text: string, target: HTMLElement, context: Record<string, unknown> = {}) {
   target.innerHTML = "";
 
@@ -203,11 +205,11 @@ function evalMath(expr: string): number {
       consume(); // ')'
       switch (name) {
         case 'floor': return Math.floor(args[0]);
-        case 'ceil':  return Math.ceil(args[0]);
+        case 'ceil': return Math.ceil(args[0]);
         case 'round': return Math.round(args[0]);
-        case 'abs':   return Math.abs(args[0]);
-        case 'max':   return Math.max(...args);
-        case 'min':   return Math.min(...args);
+        case 'abs': return Math.abs(args[0]);
+        case 'max': return Math.max(...args);
+        case 'min': return Math.min(...args);
         default: throw new Error(`Unknown function: ${name}`);
       }
     }
@@ -260,10 +262,10 @@ function parseInline(text: string): InlineSegment[] {
   };
 
   while (i < text.length) {
-    if (text.startsWith('**', i))      { flush(); bold      = !bold;      i += 2; }
-    else if (text.startsWith('--', i)) { flush(); strike    = !strike;    i += 2; }
-    else if (text[i] === '_')          { flush(); underline = !underline; i++;    }
-    else if (text[i] === '*')          { flush(); italic    = !italic;    i++;    }
+    if (text.startsWith(mkMarkers.bold, i)) { flush(); bold = !bold; i += 2; }
+    else if (text.startsWith(mkMarkers.strikethrough, i)) { flush(); strike = !strike; i += 2; }
+    else if (text[i] === mkMarkers.underlined) { flush(); underline = !underline; i++; }
+    else if (text[i] === mkMarkers.italic) { flush(); italic = !italic; i++; }
     else { buf += text[i++]; }
   }
   flush();
@@ -275,10 +277,10 @@ function renderInline(text: string): { html: string; lineClasses: string[] } {
   const nonEmpty = segments.filter(s => s.text.length > 0);
 
   const getClasses = (s: InlineSegment): string[] => [
-    ...(s.bold      ? ['mk-bold']      : []),
-    ...(s.italic    ? ['mk-italic']    : []),
+    ...(s.bold ? ['mk-bold'] : []),
+    ...(s.italic ? ['mk-italic'] : []),
     ...(s.underline ? ['mk-underline'] : []),
-    ...(s.strike    ? ['mk-strike']    : []),
+    ...(s.strike ? ['mk-strike'] : []),
   ];
 
   // If every non-empty segment shares the same formatting, promote it to a line-level class

@@ -31,9 +31,20 @@ export async function collectGameSystemData(r2: R2Bucket, useCache = true): Prom
     });
   }
 
+  const charactersObject = await r2.get('game-system/si/characters.json');
+  let characters: GameSystemData['characters'];
+  if (charactersObject) {
+    characters = await charactersObject.json<GameSystemData['characters']>();
+  } else {
+    characters = defaultGameSystemDataObj.characters;
+    await r2.put('game-system/si/characters.json', JSON.stringify(characters), {
+      httpMetadata: { contentType: 'application/json' },
+    });
+  }
+
   const gameSystemData: GameSystemData = {
     core,
-    characters: {},
+    characters,
     adventuring: {},
     equipment: {},
     last_updated: Date.now(),

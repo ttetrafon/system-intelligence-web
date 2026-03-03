@@ -3,5 +3,5 @@ export interface MkToolbarSeparatorProps {
 }
 
 export function MkToolbarSeparator({ color = "black" }: MkToolbarSeparatorProps) {
-  return <div className="mx-1 w-px self-stretch" style={{ backgroundColor: color }} />;
+  return <div className="mx-3 w-px self-stretch" style={{ backgroundColor: color }} />;
 }

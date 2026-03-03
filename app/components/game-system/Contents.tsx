@@ -13,20 +13,33 @@ export default function Contents({ isContentsVisible, toggleContents }: Contents
       <hr />
       <div>
         <h2>Game System</h2>
-        <MenuIcon imageName="dictionary" title="Core" alwaysShowText={true} />
+
+        <MenuIcon imageName="dictionary" title="Core" alwaysShowText={true} className="mt-1" />
         <div className="ml-4">
           <Link to={"/game-system/checks"} onClick={toggleContents}>
             <MenuIcon imageName="casino" title="Checks" alwaysShowText={true} />
+          </Link>
+        </div>
+
+        <MenuIcon imageName="person_celebrate" title="Creatures" alwaysShowText={true} className="mt-1" />
+        <div className="ml-4">
+          <Link to={"/game-system/aspects"} onClick={toggleContents}>
+            <MenuIcon imageName="digital_wellbeing" title="Aspects" alwaysShowText={true} />
+          </Link>
+          <Link to={"/game-system/morality"} onClick={toggleContents}>
+            <MenuIcon imageName="candle" title="Morality" alwaysShowText={true} />
           </Link>
         </div>
       </div>
       <hr />
       <div>
         <h2>World</h2>
+
       </div>
       <hr />
       <div>
         <h2>Campaign</h2>
+
       </div>
       <hr />
       <button className="lg:hidden self-center border-2 border-alpha rounded-sm m-1" onClick={toggleContents}>
