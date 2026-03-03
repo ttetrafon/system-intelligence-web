@@ -1,6 +1,7 @@
 import { createRequestHandler, type ServerBuild } from 'react-router';
 import { getJWTFromCookie, verifyJWT } from '../util/security';
-import { getGameSystem } from './GameSystem';
+import { getGameSystem, updateGameSystemData } from './GameSystem';
+import type { UpdateBody } from '@app-types/requests';
 
 export { SystemNotifier } from './SystemNotifier';
 
@@ -44,7 +45,36 @@ async function handleApiRequest(
   if (gameSystemMatch && request.method === 'GET') {
     const system = gameSystemMatch[1];
     const timestamp = gameSystemMatch[2] ? parseInt(gameSystemMatch[2], 10) : Date.now();
-    return getGameSystem(env.DB, env.PUBLIC_ENVIRONMENT, system, timestamp);
+    return getGameSystem(env.DB, env.ASSETS, env.PUBLIC_ENVIRONMENT, system, timestamp);
+  }
+
+  if (gameSystemMatch && request.method === 'POST') {
+    const token = getJWTFromCookie(request.headers.get('Cookie'));
+    if (!token) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const payload = await verifyJWT(token, (env as unknown as { SESSION_SECRET: string }).SESSION_SECRET);
+    if (!payload) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+    if (payload.system_role !== 'admin' && payload.system_role !== 'owner') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const system = gameSystemMatch[1];
+    const body = await request.json<UpdateBody>();
+    const response = await updateGameSystemData(env.ASSETS, system, body, env.PUBLIC_ENVIRONMENT);
+
+    const doEnv = env as unknown as { SYSTEM_NOTIFIER: DurableObjectNamespace };
+    const stub = doEnv.SYSTEM_NOTIFIER.get(doEnv.SYSTEM_NOTIFIER.idFromName('global'));
+    ctx.waitUntil(stub.fetch(new Request('https://do/broadcast', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'game-system-update',
+        data: { system, ...body },
+      }),
+    })));
+
+    return response;
   }
 
   if (path.startsWith('/assets/') && request.method === 'GET') {

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { GameSystemData } from "../../types/gameSystem";
+import { useUser } from "./UserContext";
 
 const LS_KEY = 'si:game-system';
 
@@ -10,6 +11,7 @@ interface GameSystemContextType {
 const GameSystemContext = createContext<GameSystemContextType | undefined>(undefined);
 
 export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
+  const { systemEvents } = useUser();
   const [data, setData] = useState<GameSystemData | null>(() => {
     try {
       const cached = localStorage.getItem(LS_KEY);
@@ -18,6 +20,17 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
       return null;
     }
   });
+
+  useEffect(() => {
+    if (!systemEvents) return;
+
+    const handleGameSystemUpdate = (_e: MessageEvent<string>) => {
+      // TODO: update context data with event payload
+    };
+
+    systemEvents.addEventListener('game-system-update', handleGameSystemUpdate);
+    return () => systemEvents.removeEventListener('game-system-update', handleGameSystemUpdate);
+  }, [systemEvents]);
 
   useEffect(() => {
     const cached = localStorage.getItem(LS_KEY);

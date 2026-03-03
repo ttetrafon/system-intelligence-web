@@ -28,7 +28,10 @@
   /***********/
 
   h1 {
-    @apply text-2xl font-extrabold;
+    @apply text-2xl font-bold text-delta;
+  }
+  h2 {
+    @apply text-2xl font-bold;
   }
 
   button {
