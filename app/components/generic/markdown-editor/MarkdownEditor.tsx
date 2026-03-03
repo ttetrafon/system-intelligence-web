@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MkButton } from "./MkButton";
 import { MkToolbarSeparator } from "./MkToolbarSeparator";
 import { convertMkToHtml } from "util/MkScripts";
@@ -18,6 +18,7 @@ export interface MarkdownEditorProps {
 export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps) {
   const renderRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const { data: contextData } = useGameSystem();
   const renderData = props.dataKey.split('.').reduce<unknown>(
@@ -45,6 +46,8 @@ export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps)
         dataKey: props.dataKey,
       }),
     });
+
+    setIsEditing(false);
   };
 
   const previewChanges = () => {
@@ -57,6 +60,8 @@ export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps)
       textareaRef.current.value = props.data;
     if (renderRef.current)
       convertMkToHtml(props.data, renderRef.current);
+
+    setIsEditing(false);
   }
 
   const insertMarkdownSymbol = (symbol: string) => {
@@ -208,7 +213,7 @@ export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps)
 
   return (
     <section className={`flex flex-col ${props.col ? 'md:flex-col' : 'md:flex-row'} flex-nowrap gap-4 w-full`}>
-      {props.editable && <div id="markdown" className="flex-1 max-w-full md:max-w-1/2">
+      {props.editable && isEditing && <div id="markdown" className={`flex-1 max-w-full ${isEditing ?? 'md:max-w-1/2'}`}>
         <div className="flex flex-row flex-wrap gap-1 w-full mb-2">
           <MkButton text="Heading 1" icon="h1" onClick={() => insertMarkdownSymbol('#')} />
           <MkButton text="Heading 2" icon="h2" onClick={() => insertMarkdownSymbol('##')} />
@@ -245,9 +250,9 @@ export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps)
           <MkButton text="Revert Changes" icon="undo" onClick={cancelChanges} />
         </div>
       </div>}
-      <div className="flex-1 max-w-full md:max-w-1/2 p-2">
-        {props.editable && <div className="flex flex-row w-full">
-          {/* TODO: controls for when this is editable! */}
+      <div className={`flex-1 max-w-full p-2 ${isEditing ?? 'md:max-w-1/2'}`}>
+        {props.editable && <div className="flex flex-row w-full justify-end">
+          <MkButton text="Edit Section" icon="edit" onClick={() => setIsEditing(e => !e)} />
         </div>}
         <div id="render" ref={renderRef}></div>
       </div>
