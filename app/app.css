@@ -33,7 +33,10 @@
     @apply text-3xl font-bold text-delta mt-8 mb-2;
   }
   h2 {
-    @apply text-2xl font-bold;
+    @apply text-2xl font-bold text-delta italic mt-4 mb-2;
+  }
+  h3 {
+    @apply text-2xl text-delta italic mt-4 mb-2;
   }
   p {
     @apply mb-2;
@@ -67,10 +70,10 @@
   /* NAV */
   /*******/
   nav h1 {
-    @apply text-base font-normal italic m-1;
+    @apply text-base text-text font-normal italic m-1;
   }
   nav h2 {
-    @apply text-sm m-1;
+    @apply text-sm text-text font-normal m-1;
   }
   nav hr {
     @apply mt-2;
@@ -81,4 +84,10 @@
   button.generic {
     @apply border border-delta rounded-md px-2 py-1;
   }
+
+  /* Inline markdown formatting */
+  .mk-bold      { @apply font-bold; }
+  .mk-italic    { @apply italic; }
+  .mk-underline { @apply underline; }
+  .mk-strike    { @apply line-through; }
 }

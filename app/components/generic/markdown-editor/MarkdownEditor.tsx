@@ -77,6 +77,135 @@ export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps)
     ta.focus();
   }
 
+  const insertMarkdownMarker = (marker: string) => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const { value, selectionStart, selectionEnd } = ta;
+    const hasSelection = selectionStart !== selectionEnd;
+
+    // True if a line is wrapped by exactly one marker pair with no nested markers inside.
+    const isMarkedLine = (line: string) =>
+      line.startsWith(marker) && line.endsWith(marker) &&
+      line.length >= marker.length * 2 &&
+      !line.slice(marker.length, line.length - marker.length).includes(marker);
+
+    if (hasSelection) {
+      const selected = value.slice(selectionStart, selectionEnd);
+      const lines = selected.split('\n');
+
+      // Case 1: the selected text itself has markers on each line (e.g. user selected "**text**").
+      if (lines.every(isMarkedLine)) {
+        const unmarked = lines.map(line => line.slice(marker.length, line.length - marker.length)).join('\n');
+        ta.value = value.slice(0, selectionStart) + unmarked + value.slice(selectionEnd);
+        ta.setSelectionRange(selectionStart, selectionStart + unmarked.length);
+        ta.focus();
+        return;
+      }
+
+      // Case 2: the full lines spanning the selection are all singly marked (user selected
+      // content without the outer markers, e.g. selected "text" inside "**text**").
+      const selStartLineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+      const selEndLineEndIdx = value.indexOf('\n', selectionEnd);
+      const selEndLineEnd = selEndLineEndIdx === -1 ? value.length : selEndLineEndIdx;
+      const fullLines = value.slice(selStartLineStart, selEndLineEnd).split('\n');
+      if (fullLines.every(isMarkedLine)) {
+        const unmarkedLines = fullLines.map(line => line.slice(marker.length, line.length - marker.length)).join('\n');
+        ta.value = value.slice(0, selStartLineStart) + unmarkedLines + value.slice(selEndLineEnd);
+        ta.setSelectionRange(selStartLineStart, selStartLineStart + unmarkedLines.length);
+        ta.focus();
+        return;
+      }
+
+      // Case 3: single-line selection is immediately enclosed by markers (e.g. selected "text"
+      // inside "some **text** more" where the line itself is not fully marked).
+      if (!selected.includes('\n') && selectionStart >= marker.length) {
+        const charsBefore = value.slice(selectionStart - marker.length, selectionStart);
+        const charsAfter = value.slice(selectionEnd, selectionEnd + marker.length);
+        if (charsBefore === marker && charsAfter === marker) {
+          ta.value = value.slice(0, selectionStart - marker.length) + selected + value.slice(selectionEnd + marker.length);
+          ta.setSelectionRange(selectionStart - marker.length, selectionEnd - marker.length);
+          ta.focus();
+          return;
+        }
+      }
+
+      // Case 4: intersection - selection crosses exactly one marker boundary.
+      // Case 4A: selection starts inside a marked region and extends past the closing marker.
+      //   e.g. `**hel[lo** wor]ld` → `**hello wor**ld`
+      // Case 4B: selection starts before a marked region and ends inside it.
+      //   e.g. `wor[ld **hel]lo**` → `**world hello**`
+      // Only handled for single-line selections to avoid cross-line ambiguity.
+      if (!selected.includes('\n')) {
+        const markerRe = new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+
+        // Case 4A: find opening marker before selection; verify exactly one closing marker
+        // sits between that opening and selectionEnd (so the pair is unambiguous).
+        const beforeSel = value.slice(selStartLineStart, selectionStart);
+        const openPosInBefore = beforeSel.lastIndexOf(marker);
+        if (openPosInBefore !== -1) {
+          const openAbsPos = selStartLineStart + openPosInBefore;
+          const afterOpenToSelEnd = value.slice(openAbsPos + marker.length, selectionEnd);
+          const markerMatches = [...afterOpenToSelEnd.matchAll(markerRe)];
+          if (markerMatches.length === 1) {
+            const closeAbsPos = openAbsPos + marker.length + markerMatches[0].index!;
+            if (closeAbsPos >= selectionStart && selectionEnd > closeAbsPos + marker.length) {
+              ta.value = value.slice(0, closeAbsPos) + value.slice(closeAbsPos + marker.length, selectionEnd) + marker + value.slice(selectionEnd);
+              ta.setSelectionRange(openAbsPos + marker.length, selectionEnd - marker.length);
+              ta.focus();
+              return;
+            }
+          }
+        }
+
+        // Case 4B: find closing marker after selection; verify exactly one opening marker
+        // sits between selectionStart and that closing marker (so the pair is unambiguous).
+        const afterSel = value.slice(selectionEnd, selEndLineEnd);
+        const closePosInAfter = afterSel.indexOf(marker);
+        if (closePosInAfter !== -1) {
+          const closeAbsPos = selectionEnd + closePosInAfter;
+          const selStartToClose = value.slice(selectionStart, closeAbsPos);
+          const markerMatches = [...selStartToClose.matchAll(markerRe)];
+          if (markerMatches.length === 1) {
+            const openAbsPos = selectionStart + markerMatches[0].index!;
+            if (openAbsPos > selectionStart) {
+              ta.value = value.slice(0, selectionStart) + marker + value.slice(selectionStart, openAbsPos) + value.slice(openAbsPos + marker.length);
+              ta.setSelectionRange(selectionStart + marker.length, closeAbsPos);
+              ta.focus();
+              return;
+            }
+          }
+        }
+      }
+
+      // Default: add markers per line.
+      const marked = lines.map(line => marker + line + marker).join('\n');
+      ta.value = value.slice(0, selectionStart) + marked + value.slice(selectionEnd);
+      ta.setSelectionRange(selectionStart + marker.length, selectionStart + marked.length - marker.length);
+    } else {
+      // No selection: check if cursor is within a marker pair on this line.
+      const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+      const lineEndIdx = value.indexOf('\n', selectionStart);
+      const lineEnd = lineEndIdx === -1 ? value.length : lineEndIdx;
+      const beforeCursor = value.slice(lineStart, selectionStart);
+      const afterCursor = value.slice(selectionStart, lineEnd);
+      const openIdx = beforeCursor.lastIndexOf(marker);
+      const closeIdx = afterCursor.indexOf(marker);
+
+      if (openIdx !== -1 && closeIdx !== -1) {
+        const openAbsPos = lineStart + openIdx;
+        const closeAbsPos = selectionStart + closeIdx;
+        ta.value = value.slice(0, openAbsPos) + value.slice(openAbsPos + marker.length, closeAbsPos) + value.slice(closeAbsPos + marker.length);
+        const newPos = selectionStart - marker.length;
+        ta.setSelectionRange(newPos, newPos);
+      } else {
+        ta.value = value.slice(0, selectionStart) + marker + marker + value.slice(selectionStart);
+        const newPos = selectionStart + marker.length;
+        ta.setSelectionRange(newPos, newPos);
+      }
+    }
+    ta.focus();
+  }
+
   return (
     <section className={`flex flex-col ${props.col ? 'md:flex-col' : 'md:flex-row'} flex-nowrap gap-4 w-full`}>
       {props.editable && <div id="markdown" className="flex-1 max-w-full md:max-w-1/2">
@@ -94,9 +223,10 @@ export function MarkdownEditor({ editRows = 15, ...props }: MarkdownEditorProps)
 
           <MkToolbarSeparator color="var(--color-gamma)" />
 
-          <MkButton text="Bold" icon="format_bold" />
-          <MkButton text="Italic" icon="format_italic" />
-          <MkButton text="Underline" icon="format_underlined" />
+          <MkButton text="Bold" icon="format_bold" onClick={() => insertMarkdownMarker('**')} />
+          <MkButton text="Italic" icon="format_italic" onClick={() => insertMarkdownMarker('*')} />
+          <MkButton text="Underline" icon="format_underlined" onClick={() => insertMarkdownMarker('_')} />
+          <MkButton text="Strikethrough" icon="strikethrough" onClick={() => insertMarkdownMarker('--')} />
 
           <MkToolbarSeparator color="var(--color-gamma)" />
 

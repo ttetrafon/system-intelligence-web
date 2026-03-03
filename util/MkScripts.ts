@@ -13,7 +13,8 @@ export async function convertMkToHtml(text: string, target: HTMLElement, context
     if (headingMatch) {
       if (inList) { html += `</${inList}>`; inList = null; }
       const level = headingMatch[1].length;
-      html += `<h${level}>${escapeHtml(headingMatch[2])}</h${level}>`;
+      const { html: inner, lineClasses } = renderInline(headingMatch[2]);
+      html += `<h${level}${cls(lineClasses)}>${inner}</h${level}>`;
       continue;
     }
 
@@ -21,7 +22,8 @@ export async function convertMkToHtml(text: string, target: HTMLElement, context
     const quoteMatch = line.match(/^(\>)\s+(.+)$/);
     if (quoteMatch) {
       if (inList) { html += `</${inList}>`; inList = null; }
-      html += `<blockquote>${escapeHtml(quoteMatch[2])}</blockquote>`;
+      const { html: inner, lineClasses } = renderInline(quoteMatch[2]);
+      html += `<blockquote${cls(lineClasses)}>${inner}</blockquote>`;
       continue;
     }
 
@@ -43,7 +45,8 @@ export async function convertMkToHtml(text: string, target: HTMLElement, context
     if (ulMatch) {
       if (inList === "ol") { html += "</ol>"; inList = null; }
       if (!inList) { html += "<ul>"; inList = "ul"; }
-      html += `<li>${escapeHtml(ulMatch[1])}</li>`;
+      const { html: inner, lineClasses } = renderInline(ulMatch[1]);
+      html += `<li${cls(lineClasses)}>${inner}</li>`;
       continue;
     }
 
@@ -52,7 +55,8 @@ export async function convertMkToHtml(text: string, target: HTMLElement, context
     if (olMatch) {
       if (inList === "ul") { html += "</ul>"; inList = null; }
       if (!inList) { html += "<ol>"; inList = "ol"; }
-      html += `<li>${escapeHtml(olMatch[1])}</li>`;
+      const { html: inner, lineClasses } = renderInline(olMatch[1]);
+      html += `<li${cls(lineClasses)}>${inner}</li>`;
       continue;
     }
 
@@ -63,7 +67,8 @@ export async function convertMkToHtml(text: string, target: HTMLElement, context
     if (line.trim() === "") continue;
 
     // Plain text as paragraph
-    html += `<p>${escapeHtml(line)}</p>`;
+    const { html: inner, lineClasses } = renderInline(line);
+    html += `<p${cls(lineClasses)}>${inner}</p>`;
   }
 
   // Close any trailing open list
@@ -241,4 +246,63 @@ function escapeHtml(text: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+type InlineSegment = { text: string; bold: boolean; italic: boolean; underline: boolean; strike: boolean };
+
+function parseInline(text: string): InlineSegment[] {
+  const segments: InlineSegment[] = [];
+  let bold = false, italic = false, underline = false, strike = false;
+  let i = 0, buf = '';
+
+  const flush = () => {
+    if (buf) { segments.push({ text: buf, bold, italic, underline, strike }); buf = ''; }
+  };
+
+  while (i < text.length) {
+    if (text.startsWith('**', i))      { flush(); bold      = !bold;      i += 2; }
+    else if (text.startsWith('--', i)) { flush(); strike    = !strike;    i += 2; }
+    else if (text[i] === '_')          { flush(); underline = !underline; i++;    }
+    else if (text[i] === '*')          { flush(); italic    = !italic;    i++;    }
+    else { buf += text[i++]; }
+  }
+  flush();
+  return segments;
+}
+
+function renderInline(text: string): { html: string; lineClasses: string[] } {
+  const segments = parseInline(text);
+  const nonEmpty = segments.filter(s => s.text.length > 0);
+
+  const getClasses = (s: InlineSegment): string[] => [
+    ...(s.bold      ? ['mk-bold']      : []),
+    ...(s.italic    ? ['mk-italic']    : []),
+    ...(s.underline ? ['mk-underline'] : []),
+    ...(s.strike    ? ['mk-strike']    : []),
+  ];
+
+  // If every non-empty segment shares the same formatting, promote it to a line-level class
+  // so the parent element gets the class instead of a wrapper span.
+  if (nonEmpty.length > 0) {
+    const firstClasses = getClasses(nonEmpty[0]);
+    const allSame = nonEmpty.every(s => {
+      const c = getClasses(s);
+      return c.length === firstClasses.length && c.every((v, j) => v === firstClasses[j]);
+    });
+    if (allSame && firstClasses.length > 0) {
+      return { html: escapeHtml(nonEmpty.map(s => s.text).join('')), lineClasses: firstClasses };
+    }
+  }
+
+  const html = segments.map(s => {
+    const classes = getClasses(s);
+    const escaped = escapeHtml(s.text);
+    return classes.length > 0 ? `<span class="${classes.join(' ')}">${escaped}</span>` : escaped;
+  }).join('');
+
+  return { html, lineClasses: [] };
+}
+
+function cls(classes: string[]): string {
+  return classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
 }
