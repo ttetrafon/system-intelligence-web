@@ -1,21 +1,25 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { GameSystemData } from "../../types/gameSystem";
+import type { BlockDocument, DataLinks, GameSystemData } from "../../types/game";
+import type { AnyDocumentCommand } from "../../types/requests";
+import { addBlockToDocument, removeBlockFromDocument, reorderBlocksInDocument, updateBlockInDocument } from "../../util/data";
+import { buildDataLinks } from "../../util/game";
 import { useUser } from "./UserContext";
 
-const LS_KEY = 'si:game-system';
+const LS_KEY_GAME_SYSTEM = 'si:game-system';
 
 interface GameSystemContextType {
   data: GameSystemData | null;
-  // dataLinks: object | null;
+  dataLinks: DataLinks | null;
 }
 
 const GameSystemContext = createContext<GameSystemContextType | undefined>(undefined);
 
 export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
   const { systemEvents } = useUser();
+  const [dataLinks, setDataLinks] = useState<DataLinks | null>(null);
   const [data, setData] = useState<GameSystemData | null>(() => {
     try {
-      const cached = localStorage.getItem(LS_KEY);
+      const cached = localStorage.getItem(LS_KEY_GAME_SYSTEM);
       return cached ? (JSON.parse(cached) as GameSystemData) : null;
     } catch {
       return null;
@@ -26,7 +30,7 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
     if (!systemEvents) return;
 
     const handleGameSystemUpdate = (e: MessageEvent<string>) => {
-      const payload = JSON.parse(e.data) as { data: string; dataKey: string };
+      const payload = JSON.parse(e.data) as { dataKey: string; commands: AnyDocumentCommand[] };
       setData(prev => {
         if (!prev) return prev;
         const keys = payload.dataKey.split('.');
@@ -36,8 +40,22 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
           node[keys[i]] = { ...(node[keys[i]] as Record<string, unknown>) };
           node = node[keys[i]] as Record<string, unknown>;
         }
-        node[keys[keys.length - 1]] = payload.data;
-        localStorage.setItem(LS_KEY, JSON.stringify(updated));
+        const docKey = keys[keys.length - 1];
+        const existing = node[docKey] as BlockDocument;
+        const doc: BlockDocument = { order: [...existing.order], blocks: { ...existing.blocks } };
+        for (const cmd of payload.commands) {
+          if ('block' in cmd) {
+            addBlockToDocument(doc, cmd.block, cmd.position);
+          } else if ('blockId' in cmd) {
+            removeBlockFromDocument(doc, cmd.blockId);
+          } else if ('updatedOrder' in cmd) {
+            reorderBlocksInDocument(doc, cmd.updatedOrder);
+          } else if ('updatedBlock' in cmd) {
+            updateBlockInDocument(doc, cmd.updatedBlock);
+          }
+        }
+        node[docKey] = doc;
+        localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(updated));
         return updated;
       });
     };
@@ -47,7 +65,7 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
   }, [systemEvents]);
 
   useEffect(() => {
-    const cached = localStorage.getItem(LS_KEY);
+    const cached = localStorage.getItem(LS_KEY_GAME_SYSTEM);
     const lastUpdated = cached ? (JSON.parse(cached) as GameSystemData).last_updated : null;
     const url = lastUpdated ? `/api/game-system/si/${lastUpdated}` : '/api/game-system/si';
 
@@ -56,13 +74,20 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
       .then((fresh) => {
         if (!fresh) return;
         setData(fresh);
-        localStorage.setItem(LS_KEY, JSON.stringify(fresh));
+        localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(fresh));
       })
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (!data) return;
+    buildDataLinks(data).then(setDataLinks).catch(() => {});
+  }, [data]);
+
   return (
-    <GameSystemContext.Provider value={{ data }}>{children}</GameSystemContext.Provider>
+    <GameSystemContext.Provider value={{ data, dataLinks }}>
+      {children}
+    </GameSystemContext.Provider>
   );
 };
 

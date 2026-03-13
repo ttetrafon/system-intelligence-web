@@ -3,7 +3,7 @@ import type { Route } from '../+types/home';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: 'System Intelligence: Checks' },
+    { title: 'System Intelligence: Morality' },
     { name: 'description', content: 'System Intelligence - Morality' },
   ];
 }

@@ -70,7 +70,7 @@ async function handleApiRequest(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         event: 'game-system-update',
-        data: { system, data: body.data, dataKey: body.dataKey },
+        data: { system, dataKey: body.dataKey, commands: body.data },
       }),
     })));
 

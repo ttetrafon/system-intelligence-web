@@ -81,6 +81,14 @@
 }
 
 @layer components {
+  /* Block editor */
+  .block-editor-contents {
+    @apply outline-none;
+  }
+  .block-editor-contents :focus-visible {
+    @apply shadow-md shadow-delta rounded-sm w-full;
+  }
+
   button.generic {
     @apply border border-delta rounded-md px-2 py-1;
   }

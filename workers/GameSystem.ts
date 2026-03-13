@@ -1,6 +1,18 @@
 import { cacheRequestData, invalidateCache } from "util/cache";
-import { defaultGameSystemDataObj, type GameSystemData } from "@app-types/gameSystem";
-import type { UpdateBody } from "@app-types/requests";
+import { defaultGameSystemDataObj, type BlockDocument, type GameSystemData } from "@app-types/game";
+import type {
+  addBlockToDocumentCommand,
+  removeBlockFromDocument,
+  reorderBlocksInDocument,
+  UpdateBody,
+  updateBlockInDocument,
+} from "@app-types/requests";
+import {
+  addBlockToDocument,
+  removeBlockFromDocument as removeBlockFromDoc,
+  reorderBlocksInDocument as reorderBlocksInDoc,
+  updateBlockInDocument as updateBlockInDoc,
+} from "util/data";
 
 const CACHE_KEY = new Request('https://cache.internal/game-system');
 
@@ -63,7 +75,22 @@ export async function updateGameSystemData(r2: R2Bucket, system: string, body: u
   const object = await r2.get(key);
   const fileData: Record<string, unknown> = object ? await object.json<Record<string, unknown>>() : {};
 
-  fileData[dataProperty] = data;
+  const doc = (fileData[dataProperty] ?? { order: [], blocks: {} }) as BlockDocument;
+
+  for (const cmd of data) {
+    if ('block' in cmd) {
+      const c = cmd as addBlockToDocumentCommand;
+      addBlockToDocument(doc, c.block, c.position);
+    } else if ('blockId' in cmd) {
+      removeBlockFromDoc(doc, (cmd as removeBlockFromDocument).blockId);
+    } else if ('updatedOrder' in cmd) {
+      reorderBlocksInDoc(doc, (cmd as reorderBlocksInDocument).updatedOrder);
+    } else if ('updatedBlock' in cmd) {
+      updateBlockInDoc(doc, (cmd as updateBlockInDocument).updatedBlock);
+    }
+  }
+
+  fileData[dataProperty] = doc;
 
   await r2.put(key, JSON.stringify(fileData), {
     httpMetadata: { contentType: 'application/json' },

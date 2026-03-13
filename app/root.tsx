@@ -54,12 +54,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <GameSystemProvider>
           <body className="w-full h-dvh antialiased bg-alpha text-text flex flex-col flex-nowrap justify-stretch">
             <HeadWrapper toggleContents={toggleContents} />
-            <main className="flex-1 flex flex-row flex-nowrap justify-stretch">
+            <main className="flex-1 flex flex-row flex-nowrap justify-stretch overflow-hidden">
               <Contents
                 isContentsVisible={isContentsVisible}
                 toggleContents={toggleContents}
               />
-              <article className="flex-1 p-2 overflow-auto">{children}</article>
+              <section className="flex flex-col flex-nowrap justify-stretch items-stretch flex-1 p-2 overflow-hidden">{children}</section>
               <Side />
             </main>
             <Footer />
