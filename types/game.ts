@@ -22,11 +22,43 @@ export interface BlockDocument {
   blocks: Record<string, Block>;
 }
 
-export interface Block {
+export interface ContentBlock {
   id: string;
-  type: "paragraph" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "listItemOrdered" | "listItemUnordered" | "blockquote";
+  type: "paragraph"
+  | "h1"
+  | "h2"
+  | "h3"
+  | "h4"
+  | "h5"
+  | "h6"
+  | "listItemOrdered"
+  | "listItemUnordered"
+  | "blockquote"
+  | "moralityPairs";
   content: InlineNode[];
 }
+
+export interface MoralityBlock {
+
+}
+
+export interface TableCell {
+  id: string;
+  content: InlineNode[];
+}
+
+export interface TableRow {
+  id: string;
+  cells: TableCell[];
+}
+
+export interface TableBlock {
+  id: string;
+  type: "table";
+  rows: TableRow[];
+}
+
+export type Block = ContentBlock | TableBlock;
 
 export interface InlineNode {
   text: string;

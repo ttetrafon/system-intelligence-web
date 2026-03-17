@@ -1,5 +1,12 @@
-export type ElementChangedCommand = {
-  type: 'element-changed';
+export type ElementChangedContentsCommand = {
+  type: 'element-changed-contents';
+  id: string;
+  before: string;
+  after: string;
+};
+
+export type ElementChangedTypeCommand = {
+  type: 'element-changed-type';
   id: string;
   before: string;
   after: string;
@@ -28,7 +35,8 @@ export type OrderChangedCommand = {
 };
 
 export type EditorCommand =
-  | ElementChangedCommand
+  | ElementChangedContentsCommand
+  | ElementChangedTypeCommand
   | ElementCreatedCommand
   | ElementDeletedCommand
   | OrderChangedCommand;

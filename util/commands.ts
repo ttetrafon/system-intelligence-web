@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import type { EditorCommand } from '@app-types/editor';
-import type { Block, BlockDocument, InlineNode } from '@app-types/game';
+import type { Block, ContentBlock, BlockDocument, InlineNode } from '@app-types/game';
 import type { documentCommand, UpdateBody } from '@app-types/requests';
 
 export function useCommandHistory() {
@@ -12,6 +12,8 @@ export function useCommandHistory() {
     history.current = history.current.slice(0, pointer.current + 1);
     history.current.push(cmd);
     pointer.current = history.current.length - 1;
+    console.log("--- --- --- --- --- --- --- --- --- --- ---")
+    console.log(history.current);
   }, []);
 
   const undo = useCallback((): EditorCommand | null => {
@@ -29,11 +31,16 @@ export function useCommandHistory() {
     return history.current.slice(0, pointer.current + 1);
   }, []);
 
-  return { push, undo, redo, getApplied };
+  const clear = useCallback(() => {
+    history.current = [];
+    pointer.current = 0;
+  }, []);
+
+  return { push, undo, redo, getApplied, clear };
 }
 
-function tagToBlockType(tag: string, fallback: Block['type'] = 'listItemUnordered'): Block['type'] {
-  const map: Record<string, Block['type']> = {
+function tagToBlockType(tag: string, fallback: ContentBlock['type'] = 'listItemUnordered'): ContentBlock['type'] {
+  const map: Record<string, ContentBlock['type']> = {
     p: 'paragraph',
     h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6',
     blockquote: 'blockquote',
@@ -77,13 +84,28 @@ export function buildCommandsFromHistory(
       case 'element-created': {
         const afterIndex = cmd.afterId ? workingOrder.indexOf(cmd.afterId) : -1;
         const position = afterIndex + 1;
-        const afterBlock = cmd.afterId ? workingBlocks[cmd.afterId] : null;
-        const liType = afterBlock?.type === 'listItemOrdered' ? 'listItemOrdered' : 'listItemUnordered';
-        const block: Block = {
-          id: cmd.id,
-          type: tagToBlockType(cmd.tag, liType),
-          content: parseInlineNodes(cmd.content),
-        };
+        let block: Block;
+        if (cmd.tag === 'table') {
+          block = {
+            id: cmd.id,
+            type: 'table',
+            rows: Array.from({ length: 3 }, () => ({
+              id: crypto.randomUUID(),
+              cells: Array.from({ length: 3 }, () => ({
+                id: crypto.randomUUID(),
+                content: [],
+              })),
+            })),
+          };
+        } else {
+          const afterBlock = cmd.afterId ? workingBlocks[cmd.afterId] : null;
+          const liType = afterBlock?.type === 'listItemOrdered' ? 'listItemOrdered' : 'listItemUnordered';
+          block = {
+            id: cmd.id,
+            type: tagToBlockType(cmd.tag, liType),
+            content: parseInlineNodes(cmd.content),
+          };
+        }
         workingOrder.splice(position, 0, cmd.id);
         workingBlocks[cmd.id] = block;
         data.push({ ...context, block, position });
@@ -96,12 +118,25 @@ export function buildCommandsFromHistory(
         data.push({ ...context, blockId: cmd.id });
         break;
       }
-      case 'element-changed': {
+      case 'element-changed-contents': {
         const existing = workingBlocks[cmd.id];
-        const updatedBlock: Block = {
+        if (!existing || existing.type === 'table') break;
+        const updatedBlock: ContentBlock = {
           id: cmd.id,
-          type: existing?.type ?? 'paragraph',
+          type: existing.type,
           content: parseInlineNodes(cmd.after),
+        };
+        workingBlocks[cmd.id] = updatedBlock;
+        data.push({ ...context, updatedBlock });
+        break;
+      }
+      case 'element-changed-type': {
+        const existing = workingBlocks[cmd.id];
+        if (!existing || existing.type === 'table') break;
+        const updatedBlock: ContentBlock = {
+          id: cmd.id,
+          type: tagToBlockType(cmd.after),
+          content: existing.content,
         };
         workingBlocks[cmd.id] = updatedBlock;
         data.push({ ...context, updatedBlock });

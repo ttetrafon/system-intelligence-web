@@ -38,6 +38,15 @@
   h3 {
     @apply text-2xl text-delta italic mt-4 mb-2;
   }
+  h4 {
+    @apply text-xl font-bold text-delta  mt-4 mb-2;
+  }
+  h5 {
+    @apply text-xl text-delta italic mt-2 mb-2;
+  }
+  h6 {
+    @apply text-base font-bold text-delta italic mt-2 mb-2;
+  }
   p {
     @apply mb-2;
   }
@@ -55,7 +64,7 @@
     @apply p-1 italic text-delta text-center capitalize text-nowrap border border-gamma;
   }
   td {
-    @apply p-1 text-center text-balance border border-gamma;
+    @apply p-1 text-center text-balance border border-gamma h-8 min-w-8;
   }
 
   button {
@@ -85,8 +94,14 @@
   .block-editor-contents {
     @apply outline-none;
   }
-  .block-editor-contents :focus-visible {
-    @apply shadow-md shadow-delta rounded-sm w-full;
+  .block-editor-contents .be-focused {
+    @apply outline-none bg-beta rounded-sm;
+  }
+  .block-editor-contents * {
+    -webkit-user-drag: none;
+  }
+  .block-editor-button button {
+    @apply m-1 border border-delta p-1 rounded-sm;
   }
 
   button.generic {
