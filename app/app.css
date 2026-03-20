@@ -94,6 +94,9 @@
   .block-editor-contents {
     @apply outline-none;
   }
+  .block-editor-contents > * {
+    min-height: 1.5em;
+  }
   .block-editor-contents .be-focused {
     @apply outline-none bg-beta rounded-sm;
   }

@@ -4,6 +4,7 @@ import { type ComponentType, useCallback, useEffect, useRef, useState } from "re
 import { createRoot, type Root } from "react-dom/client";
 import { BlockEditorButton } from "./BlockEditorButton";
 import { BlockEditorToolbarSeparator } from "./BlockEditorToolbarSeparator";
+import { Tooltip } from "~/components/generic/Tooltip";
 import { buildHtml, changeBlockType, insertTable, handleKeyDown, handleKeyUp, insertMoralityPairsBlock } from "util/blockEditorScripts";
 import { buildSingleCommand, useCommandHistory } from "util/commands";
 import MoralityPairs from "~/components/game-system/MoralityPairs";
@@ -90,6 +91,29 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
     }
   }, []);
 
+  // Gutter line numbers (edit mode only)
+  const [gutterItems, setGutterItems] = useState<{ id: string; index: number }[]>([]);
+  const gutterRef = useRef<HTMLDivElement>(null);
+
+  const updateGutterItems = useCallback(() => {
+    if (!contentsRef.current) return;
+    const items = Array.from(contentsRef.current.children).map((child, i) => ({
+      id: (child as HTMLElement).id,
+      index: i + 1,
+    }));
+    setGutterItems(items);
+  }, []);
+
+  const syncGutterHeights = useCallback(() => {
+    if (!gutterRef.current || !contentsRef.current) return;
+    const gutterChildren = gutterRef.current.children;
+    const contentChildren = contentsRef.current.children;
+    for (let i = 0; i < Math.min(gutterChildren.length, contentChildren.length); i++) {
+      const blockHeight = contentChildren[i].getBoundingClientRect().height;
+      (gutterChildren[i] as HTMLElement).style.height = `${blockHeight}px`;
+    }
+  }, []);
+
   const buildContents = () => {
     if (!contentsRef.current) return;
     const el = contentsRef.current;
@@ -97,7 +121,12 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
     el.innerHTML = "";
     buildHtml(props.data).then(fragment => {
       el.appendChild(fragment);
+      for (const child of el.children) {
+        const htmlChild = child as HTMLElement;
+        htmlChild.contentEditable = (!htmlChild.dataset.reactComponent && props.editable) ? 'true' : 'false';
+      }
       mountReactPlaceholders(props.editable);
+      updateGutterItems();
     });
   }
 
@@ -107,13 +136,14 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
 
   // Cleanup roots on unmount
   useEffect(() => {
-    return () => unmountReactRoots();
+    return () => unmountReactRoots(true);
   }, []);
 
   useEffect(() => {
     if (!contentsRef.current) return;
     for (const child of contentsRef.current.children) {
-      (child as HTMLElement).contentEditable = props.editable ? 'true' : 'false';
+      const htmlChild = child as HTMLElement;
+      htmlChild.contentEditable = (!htmlChild.dataset.reactComponent && props.editable) ? 'true' : 'false';
     }
     if (reactRootsRef.current.size > 0) {
       renderReactRoots(props.editable);
@@ -126,6 +156,30 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
       renderReactRoots(props.editable);
     }
   }, [props.gameData]);
+
+  // Watch for block additions/removals to keep gutter in sync
+  useEffect(() => {
+    if (!props.editable || !contentsRef.current) return;
+    const observer = new MutationObserver(() => updateGutterItems());
+    observer.observe(contentsRef.current, { childList: true });
+    return () => observer.disconnect();
+  }, [props.editable, props.data]);
+
+  // Sync gutter entry heights after items render
+  useEffect(() => {
+    if (!props.editable || gutterItems.length === 0) return;
+    requestAnimationFrame(() => syncGutterHeights());
+  }, [gutterItems, props.editable]);
+
+  // Re-sync gutter heights when blocks resize
+  useEffect(() => {
+    if (!props.editable || !contentsRef.current) return;
+    const observer = new ResizeObserver(() => requestAnimationFrame(() => syncGutterHeights()));
+    for (const child of contentsRef.current.children) {
+      observer.observe(child);
+    }
+    return () => observer.disconnect();
+  }, [gutterItems, props.editable]);
 
   return (
     <>
@@ -163,69 +217,82 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
         <BlockEditorButton text="Increase Indent" icon="format_indent_increase" onClick={() => { }} />
       </section>}
       {/* contents */}
-      <section
-        className="block-editor-contents overflow-auto min-h-0"
-        ref={contentsRef}
-        onKeyDownCapture={(e) => {
-          if (props.editable) handleKeyDown(e, {
-            alt: keyModifierAlt,
-            ctrl: keyModifierCtrl,
-            shift: keyModifierShift,
-          }, pushAndSend);
-        }}
-        onKeyUpCapture={(e) => {
-          if (props.editable) handleKeyUp(e, {
-            alt: keyModifierAlt,
-            ctrl: keyModifierCtrl,
-            shift: keyModifierShift,
-          });
-        }}
-        onFocus={(e) => {
-          if (e.target === contentsRef.current) return;
-          const target = e.target as HTMLElement;
-          // Move up to the direct child of contentsRef (the block element)
-          let block = target;
-          while (block.parentElement && block.parentElement !== contentsRef.current) {
-            block = block.parentElement;
-          }
-          if (props.editable && lastFocusedRef.current !== block) {
-            lastFocusedRef.current?.classList.remove('be-focused');
-            lastFocusedRef.current = block;
-            block.classList.add('be-focused');
-          }
-          // Track focused cell within a table
-          if (props.editable && target.tagName === 'TD' && lastFocusedCellRef.current !== target) {
-            lastFocusedCellRef.current?.classList.remove('be-focused');
-            lastFocusedCellRef.current = target;
-            target.classList.add('be-focused');
-          } else if (target.tagName !== 'TD') {
-            lastFocusedCellRef.current?.classList.remove('be-focused');
-            lastFocusedCellRef.current = null;
-          }
-          beforeContentRef.current = target.innerHTML;
-        }}
-        onBlur={(e) => {
-          if (!props.editable) return;
-          const target = e.target as HTMLElement;
-          if (target === contentsRef.current) return;
-          if (!contentsRef.current?.contains(target)) return;
-          const after = target.innerHTML;
-          if (after !== beforeContentRef.current) {
-            const cmd: EditorCommand = { type: 'element-changed-contents', id: target.id, before: beforeContentRef.current, after };
-            history.push(cmd);
-            // Send content update on blur via WebSocket
-            const docCommand = buildSingleCommand(cmd, props.data, commandContext);
-            if (docCommand) {
-              sendCommand({
-                type: 'command',
-                system: props.dataSystem,
-                dataKey: props.dataKey,
-                command: docCommand,
-              });
+      <div className="flex flex-row overflow-auto min-h-0">
+        {props.editable && (
+          <div ref={gutterRef} className="flex flex-col select-none pr-2 text-right text-xs shrink-0 border-r border-delta mr-2" style={{ color: 'var(--color-delta)' }}>
+            {gutterItems.map(item => (
+              <div key={item.id} className="flex items-start justify-end overflow-hidden">
+                <Tooltip content={item.id} position="right">
+                  <span className="cursor-default opacity-50 hover:opacity-100 font-mono">{item.index}</span>
+                </Tooltip>
+              </div>
+            ))}
+          </div>
+        )}
+        <section
+          className="block-editor-contents flex-1 min-w-0"
+          ref={contentsRef}
+          onKeyDownCapture={(e) => {
+            if (props.editable) handleKeyDown(e, {
+              alt: keyModifierAlt,
+              ctrl: keyModifierCtrl,
+              shift: keyModifierShift,
+            }, pushAndSend);
+          }}
+          onKeyUpCapture={(e) => {
+            if (props.editable) handleKeyUp(e, {
+              alt: keyModifierAlt,
+              ctrl: keyModifierCtrl,
+              shift: keyModifierShift,
+            });
+          }}
+          onFocus={(e) => {
+            if (e.target === contentsRef.current) return;
+            const target = e.target as HTMLElement;
+            // Move up to the direct child of contentsRef (the block element)
+            let block = target;
+            while (block.parentElement && block.parentElement !== contentsRef.current) {
+              block = block.parentElement;
             }
-          }
-        }}
-      ></section>
+            if (props.editable && lastFocusedRef.current !== block) {
+              lastFocusedRef.current?.classList.remove('be-focused');
+              lastFocusedRef.current = block;
+              block.classList.add('be-focused');
+            }
+            // Track focused cell within a table
+            if (props.editable && target.tagName === 'TD' && lastFocusedCellRef.current !== target) {
+              lastFocusedCellRef.current?.classList.remove('be-focused');
+              lastFocusedCellRef.current = target;
+              target.classList.add('be-focused');
+            } else if (target.tagName !== 'TD') {
+              lastFocusedCellRef.current?.classList.remove('be-focused');
+              lastFocusedCellRef.current = null;
+            }
+            beforeContentRef.current = target.innerHTML;
+          }}
+          onBlur={(e) => {
+            if (!props.editable) return;
+            const target = e.target as HTMLElement;
+            if (target === contentsRef.current) return;
+            if (!contentsRef.current?.contains(target)) return;
+            const after = target.innerHTML;
+            if (after !== beforeContentRef.current) {
+              const cmd: EditorCommand = { type: 'element-changed-contents', id: target.id, before: beforeContentRef.current, after };
+              history.push(cmd);
+              // Send content update on blur via WebSocket
+              const docCommand = buildSingleCommand(cmd, props.data, commandContext);
+              if (docCommand) {
+                sendCommand({
+                  type: 'command',
+                  system: props.dataSystem,
+                  dataKey: props.dataKey,
+                  command: docCommand,
+                });
+              }
+            }
+          }}
+        ></section>
+      </div>
     </>
   );
 }
