@@ -13,10 +13,9 @@ export default function Checks() {
     <BlockEditor
       editable={editable}
       dataSystem='si'
-      dataPath='core.json'
-      dataProperty='checks'
-      data={core?.checks ?? emptyDocument()}
-      dataKey="core.checks" >
+      dataKey="core.checks.document"
+      data={core?.checks.document ?? emptyDocument()}
+      gameData={data} >
     </BlockEditor>
   );
 }

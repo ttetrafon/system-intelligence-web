@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { BlockDocument, DataLinks, GameSystemData } from "../../types/game";
 import type { AnyDocumentCommand } from "../../types/requests";
+import type { WsIncoming } from "../../types/websocket";
 import { addBlockToDocument, removeBlockFromDocument, reorderBlocksInDocument, updateBlockInDocument } from "../../util/data";
 import { buildDataLinks } from "../../util/game";
-import { useUser } from "./UserContext";
+import { useWebSocket } from "./WebSocketContext";
 
 const LS_KEY_GAME_SYSTEM = 'si:game-system';
 
@@ -15,7 +16,7 @@ interface GameSystemContextType {
 const GameSystemContext = createContext<GameSystemContextType | undefined>(undefined);
 
 export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
-  const { systemEvents } = useUser();
+  const { subscribe, status } = useWebSocket();
   const [dataLinks, setDataLinks] = useState<DataLinks | null>(null);
   const [data, setData] = useState<GameSystemData | null>(() => {
     try {
@@ -27,10 +28,9 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
   });
 
   useEffect(() => {
-    if (!systemEvents) return;
-
-    const handleGameSystemUpdate = (e: MessageEvent<string>) => {
-      const payload = JSON.parse(e.data) as { dataKey: string; commands: AnyDocumentCommand[] };
+    const unsub = subscribe((msg: WsIncoming) => {
+      if (msg.type !== 'game-system-update') return;
+      const payload = msg as { dataKey: string; commands: AnyDocumentCommand[] };
       setData(prev => {
         if (!prev) return prev;
         const keys = payload.dataKey.split('.');
@@ -58,18 +58,15 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(updated));
         return updated;
       });
-    };
+    });
+    return unsub;
+  }, [subscribe]);
 
-    systemEvents.addEventListener('game-system-update', handleGameSystemUpdate);
-    return () => systemEvents.removeEventListener('game-system-update', handleGameSystemUpdate);
-  }, [systemEvents]);
-
+  // Fetch full data on initial load and on WebSocket reconnect (to catch missed messages)
   useEffect(() => {
-    const cached = localStorage.getItem(LS_KEY_GAME_SYSTEM);
-    const lastUpdated = cached ? (JSON.parse(cached) as GameSystemData).last_updated : null;
-    const url = lastUpdated ? `/api/game-system/si/${lastUpdated}` : '/api/game-system/si';
+    if (status !== 'connected' && data !== null) return;
 
-    fetch(url)
+    fetch('/api/game-system/si')
       .then((res) => (res.ok ? (res.json() as Promise<GameSystemData>) : null))
       .then((fresh) => {
         if (!fresh) return;
@@ -77,7 +74,7 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(fresh));
       })
       .catch(() => {});
-  }, []);
+  }, [status]);
 
   useEffect(() => {
     if (!data) return;

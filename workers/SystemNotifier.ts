@@ -1,12 +1,20 @@
-interface Connection {
-  writer: WritableStreamDefaultWriter<Uint8Array>;
-  heartbeat: ReturnType<typeof setInterval>;
-}
+import type { BlockDocument } from '@app-types/game';
+import type {
+  addBlockToDocumentCommand,
+  removeBlockFromDocument as RemoveBlockCmd,
+  reorderBlocksInDocument as ReorderBlocksCmd,
+  updateBlockInDocument as UpdateBlockCmd,
+} from '@app-types/requests';
+import type { WsClientMessage, WsServerMessage, WsServerError } from '@app-types/websocket';
+import {
+  addBlockToDocument,
+  removeBlockFromDocument,
+  reorderBlocksInDocument,
+  updateBlockInDocument,
+} from 'util/data';
+import { r2Key, invalidateDocumentCache } from './GameSystem';
 
 export class SystemNotifier {
-  private connections = new Map<string, Connection>();
-  private encoder = new TextEncoder();
-
   constructor(
     private state: DurableObjectState,
     private env: Env,
@@ -15,73 +23,112 @@ export class SystemNotifier {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
 
-    if (request.method === 'GET' && url.pathname === '/connect') {
-      return this.handleConnect(request);
-    }
+    if (url.pathname === '/connect') {
+      if (request.headers.get('Upgrade') !== 'websocket') {
+        return new Response('Expected WebSocket upgrade', { status: 426 });
+      }
 
-    if (request.method === 'POST' && url.pathname === '/broadcast') {
-      return this.handleBroadcast(request);
+      const pair = new WebSocketPair();
+      const [client, server] = Object.values(pair);
+
+      // Attach user info passed from the worker via query param
+      const userInfo = url.searchParams.get('user');
+      this.state.acceptWebSocket(server);
+      if (userInfo) {
+        server.serializeAttachment({ user: JSON.parse(userInfo) });
+      }
+
+      return new Response(null, { status: 101, webSocket: client });
     }
 
     return new Response('Not found', { status: 404 });
   }
 
-  private handleConnect(request: Request): Response {
-    const id = crypto.randomUUID();
-    const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
-    const writer = writable.getWriter();
+  async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer): Promise<void> {
+    if (typeof message !== 'string') return;
 
-    // Confirm connection
-    writer.write(this.encoder.encode(': connected\n\n')).catch(() => {});
+    let parsed: WsClientMessage;
+    try {
+      parsed = JSON.parse(message) as WsClientMessage;
+    } catch {
+      this.sendError(ws, 'Invalid JSON');
+      return;
+    }
 
-    // Keep-alive ping every 25s (browser/CF timeout is typically 30s+)
-    const heartbeat = setInterval(() => {
-      writer.write(this.encoder.encode(': ping\n\n')).catch(() => {
-        clearInterval(heartbeat);
-        this.connections.delete(id);
-        writer.close().catch(() => {});
-      });
-    }, 25_000);
+    if (parsed.type !== 'command') {
+      this.sendError(ws, `Unknown message type: ${parsed.type}`);
+      return;
+    }
 
-    this.connections.set(id, { writer, heartbeat });
+    // Apply the command to R2 storage
+    try {
+      await this.processCommand(parsed);
+    } catch (err) {
+      console.log('Error processing command:', err);
+      this.sendError(ws, 'Failed to process command');
+      return;
+    }
 
-    request.signal.addEventListener('abort', () => {
-      clearInterval(heartbeat);
-      this.connections.delete(id);
-      writer.close().catch(() => {});
-    });
-
-    return new Response(readable, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-      },
-    });
+    // Broadcast to all OTHER connected sockets
+    const outgoing: WsServerMessage = {
+      type: 'game-system-update',
+      system: parsed.system,
+      dataKey: parsed.dataKey,
+      commands: [parsed.command],
+    };
+    const payload = JSON.stringify(outgoing);
+    for (const socket of this.state.getWebSockets()) {
+      if (socket !== ws) {
+        try {
+          socket.send(payload);
+        } catch {
+          // Socket is dead, Cloudflare will clean it up
+        }
+      }
+    }
   }
 
-  private async handleBroadcast(request: Request): Promise<Response> {
-    const { event, data } = await request.json<{ event: string; data: unknown }>();
-    const message = this.encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+  async webSocketClose(): Promise<void> {
+    // Cloudflare handles cleanup automatically
+  }
 
-    const dead: string[] = [];
-    for (const [id, { writer }] of this.connections) {
-      try {
-        await writer.write(message);
-      } catch {
-        dead.push(id);
-      }
+  async webSocketError(ws: WebSocket): Promise<void> {
+    ws.close();
+  }
+
+  private sendError(ws: WebSocket, message: string): void {
+    const error: WsServerError = { type: 'error', message };
+    try {
+      ws.send(JSON.stringify(error));
+    } catch {
+      // Socket is dead
+    }
+  }
+
+  private async processCommand(msg: WsClientMessage): Promise<void> {
+    const key = r2Key(msg.system, msg.dataKey);
+    const object = await this.env.ASSETS.get(key);
+    const doc: BlockDocument = object
+      ? await object.json<BlockDocument>()
+      : { order: [], blocks: {} };
+
+    const cmd = msg.command;
+
+    if ('block' in cmd) {
+      const c = cmd as addBlockToDocumentCommand;
+      addBlockToDocument(doc, c.block, c.position);
+    } else if ('blockId' in cmd) {
+      removeBlockFromDocument(doc, (cmd as RemoveBlockCmd).blockId);
+    } else if ('updatedOrder' in cmd) {
+      reorderBlocksInDocument(doc, (cmd as ReorderBlocksCmd).updatedOrder);
+    } else if ('updatedBlock' in cmd) {
+      updateBlockInDocument(doc, (cmd as UpdateBlockCmd).updatedBlock);
     }
 
-    for (const id of dead) {
-      const conn = this.connections.get(id);
-      if (conn) {
-        clearInterval(conn.heartbeat);
-        conn.writer.close().catch(() => {});
-        this.connections.delete(id);
-      }
-    }
+    await this.env.ASSETS.put(key, JSON.stringify(doc), {
+      httpMetadata: { contentType: 'application/json' },
+    });
 
-    return Response.json({ sent: this.connections.size, pruned: dead.length });
+    await invalidateDocumentCache(msg.system, msg.dataKey);
   }
 }

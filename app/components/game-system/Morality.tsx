@@ -13,10 +13,9 @@ export default function Morality() {
     <BlockEditor
       editable={editable}
       dataSystem='si'
-      dataPath='characters.json'
-      dataProperty='morality'
-      data={characters?.morality ?? emptyDocument()}
-      dataKey="characters.morality" >
+      dataKey="characters.morality.document"
+      data={characters?.morality.document ?? emptyDocument()}
+      gameData={data} >
     </BlockEditor>
   );
 }

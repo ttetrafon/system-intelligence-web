@@ -18,6 +18,7 @@ import Contents from './components/game-system/Contents';
 import Footer from './components/general/Footer';
 import Side from './components/game-system/Side';
 import { GameSystemProvider } from './context/GameSystemContext';
+import { WebSocketProvider } from './context/WebSocketContext';
 
 export const links: Route.LinksFunction = () => [];
 
@@ -51,22 +52,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Meta />
           <Links />
         </head>
-        <GameSystemProvider>
-          <body className="w-full h-dvh antialiased bg-alpha text-text flex flex-col flex-nowrap justify-stretch">
-            <HeadWrapper toggleContents={toggleContents} />
-            <main className="flex-1 flex flex-row flex-nowrap justify-stretch overflow-hidden">
-              <Contents
-                isContentsVisible={isContentsVisible}
-                toggleContents={toggleContents}
-              />
-              <section className="flex flex-col flex-nowrap justify-stretch items-stretch flex-1 p-2 overflow-hidden">{children}</section>
-              <Side />
-            </main>
-            <Footer />
-            <ScrollRestoration />
-            <Scripts />
-          </body>
-        </GameSystemProvider>
+        <WebSocketProvider>
+          <GameSystemProvider>
+            <body className="w-full h-dvh antialiased bg-alpha text-text flex flex-col flex-nowrap justify-stretch">
+              <HeadWrapper toggleContents={toggleContents} />
+              <main className="flex-1 flex flex-row flex-nowrap justify-stretch overflow-hidden">
+                <Contents
+                  isContentsVisible={isContentsVisible}
+                  toggleContents={toggleContents}
+                />
+                <section className="flex flex-col flex-nowrap justify-stretch items-stretch flex-1 p-2 overflow-hidden">{children}</section>
+                <Side />
+              </main>
+              <Footer />
+              <ScrollRestoration />
+              <Scripts />
+            </body>
+          </GameSystemProvider>
+        </WebSocketProvider>
       </html>
     </UserProvider>
   );

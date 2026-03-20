@@ -1,20 +1,42 @@
 export interface GameSystemData {
   core: {
-    checks: BlockDocument;
-    resources: BlockDocument;
-    'skill-challenges': BlockDocument;
-    tasks: BlockDocument;
-    'bonuses-penalties': BlockDocument;
-    'advantage-disadvantage': BlockDocument;
-    tags: BlockDocument;
+    checks: {
+      document: BlockDocument
+    };
+    resources: {
+      document: BlockDocument
+    };
+    skillChallenges: {
+      document: BlockDocument
+    };
+    tasks: {
+      document: BlockDocument
+    };
+    bonusesPenalties: {
+      document: BlockDocument
+    };
+    advantageDisadvantage: {
+      document: BlockDocument
+    };
+    tags: {
+      document: BlockDocument
+    };
   };
   characters: {
-    aspects: BlockDocument;
-    morality: BlockDocument;
+    aspects: {
+      document: BlockDocument
+    };
+    morality: {
+      document: BlockDocument,
+      pairs: {
+        id: string;
+        first: string;
+        second: string;
+      }[];
+    };
   };
   adventuring: object;
   equipment: object;
-  last_updated: number;
 };
 
 export interface BlockDocument {
@@ -36,10 +58,6 @@ export interface ContentBlock {
   | "blockquote"
   | "moralityPairs";
   content: InlineNode[];
-}
-
-export interface MoralityBlock {
-
 }
 
 export interface TableCell {
@@ -84,21 +102,39 @@ export function emptyDocument(): BlockDocument {
 
 export const defaultGameSystemDataObj: GameSystemData = {
   core: {
-    checks: emptyDocument(),
-    resources: emptyDocument(),
-    "skill-challenges": emptyDocument(),
-    tasks: emptyDocument(),
-    "bonuses-penalties": emptyDocument(),
-    "advantage-disadvantage": emptyDocument(),
-    tags: emptyDocument(),
+    checks: {
+      document: emptyDocument()
+    },
+    resources: {
+      document: emptyDocument()
+    },
+    skillChallenges: {
+      document: emptyDocument()
+    },
+    tasks: {
+      document: emptyDocument()
+    },
+    bonusesPenalties: {
+      document: emptyDocument()
+    },
+    advantageDisadvantage: {
+      document: emptyDocument()
+    },
+    tags: {
+      document: emptyDocument()
+    },
   },
   characters: {
-    aspects: emptyDocument(),
-    morality: emptyDocument(),
+    aspects: {
+      document: emptyDocument()
+    },
+    morality: {
+      document: emptyDocument(),
+      pairs: []
+    },
   },
   adventuring: {},
   equipment: {},
-  last_updated: 0,
 };
 
 export interface DataLinks {

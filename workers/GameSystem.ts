@@ -1,102 +1,80 @@
 import { cacheRequestData, invalidateCache } from "util/cache";
 import { defaultGameSystemDataObj, type BlockDocument, type GameSystemData } from "@app-types/game";
-import type {
-  addBlockToDocumentCommand,
-  removeBlockFromDocument,
-  reorderBlocksInDocument,
-  UpdateBody,
-  updateBlockInDocument,
-} from "@app-types/requests";
-import {
-  addBlockToDocument,
-  removeBlockFromDocument as removeBlockFromDoc,
-  reorderBlocksInDocument as reorderBlocksInDoc,
-  updateBlockInDocument as updateBlockInDoc,
-} from "util/data";
 
-const CACHE_KEY = new Request('https://cache.internal/game-system');
-
-export async function clearCategoriesCache() {
-  await invalidateCache(CACHE_KEY);
+/** Maps a dataKey (dot-notation) to the R2 object key */
+export function r2Key(system: string, dataKey: string): string {
+  return `game-system/${system}/${dataKey.replace(/\./g, '/')}`;
 }
 
-export async function getGameSystem(_db: D1Database, r2: R2Bucket, environment?: string, _system?: string, _timestamp?: number): Promise<Response> {
+/** Cache key per R2 document */
+function cacheKeyFor(r2Path: string): Request {
+  return new Request(`https://cache.internal/${r2Path}`);
+}
+
+/**
+ * Read a single R2 document with optional CF Cache API caching.
+ * Returns the parsed value, or the default if the key doesn't exist yet.
+ */
+async function readDocument<T>(
+  r2: R2Bucket,
+  r2Path: string,
+  defaultValue: T,
+  useCache: boolean,
+): Promise<T> {
+  const key = cacheKeyFor(r2Path);
+
+  if (useCache) {
+    const cache = (caches as unknown as { default: Cache }).default;
+    const cached = await cache.match(key);
+    if (cached) return cached.json<T>();
+  }
+
+  const object = await r2.get(r2Path);
+  if (object) {
+    const value = await object.json<T>();
+    if (useCache) await cacheRequestData(key, JSON.stringify(value));
+    return value;
+  }
+
+  // Key doesn't exist — write the default and cache it
+  await r2.put(r2Path, JSON.stringify(defaultValue), {
+    httpMetadata: { contentType: 'application/json' },
+  });
+  if (useCache) await cacheRequestData(key, JSON.stringify(defaultValue));
+  return defaultValue;
+}
+
+export async function getGameSystem(_db: D1Database, r2: R2Bucket, environment?: string): Promise<Response> {
   const useCache = environment !== 'development';
   return collectGameSystemData(r2, useCache);
 }
 
 export async function collectGameSystemData(r2: R2Bucket, useCache = true): Promise<Response> {
-  if (useCache) {
-    const cache = (caches as unknown as { default: Cache }).default;
-    const cached = await cache.match(CACHE_KEY);
-    if (cached) return cached.clone();
-  }
-
-  const coreObject = await r2.get('game-system/si/core.json');
-  let core: GameSystemData['core'];
-  if (coreObject) {
-    core = await coreObject.json<GameSystemData['core']>();
-  } else {
-    core = defaultGameSystemDataObj.core;
-    await r2.put('game-system/si/core.json', JSON.stringify(core), {
-      httpMetadata: { contentType: 'application/json' },
-    });
-  }
-
-  const charactersObject = await r2.get('game-system/si/characters.json');
-  let characters: GameSystemData['characters'];
-  if (charactersObject) {
-    characters = await charactersObject.json<GameSystemData['characters']>();
-  } else {
-    characters = defaultGameSystemDataObj.characters;
-    await r2.put('game-system/si/characters.json', JSON.stringify(characters), {
-      httpMetadata: { contentType: 'application/json' },
-    });
-  }
+  // Read the three active documents in parallel
+  const [checksDoc, moralityDoc, moralityPairs] = await Promise.all([
+    readDocument<BlockDocument>(r2, 'game-system/si/core/checks/document', defaultGameSystemDataObj.core.checks.document, useCache),
+    readDocument<BlockDocument>(r2, 'game-system/si/characters/morality/document', defaultGameSystemDataObj.characters.morality.document, useCache),
+    readDocument<GameSystemData['characters']['morality']['pairs']>(r2, 'game-system/si/characters/morality/pairs', defaultGameSystemDataObj.characters.morality.pairs, useCache),
+  ]);
 
   const gameSystemData: GameSystemData = {
-    core,
-    characters,
-    adventuring: {},
-    equipment: {},
-    last_updated: Date.now(),
+    ...defaultGameSystemDataObj,
+    core: {
+      ...defaultGameSystemDataObj.core,
+      checks: { document: checksDoc },
+    },
+    characters: {
+      ...defaultGameSystemDataObj.characters,
+      morality: { document: moralityDoc, pairs: moralityPairs },
+    },
   };
-
-  const json = JSON.stringify(gameSystemData);
-  if (useCache) await cacheRequestData(CACHE_KEY, json);
 
   return Response.json(gameSystemData);
 }
 
-export async function updateGameSystemData(r2: R2Bucket, system: string, body: unknown, _environment?: string): Promise<Response> {
-  const { dataPath, dataProperty, data } = body as UpdateBody;
-
-  const key = `game-system/${system}/${dataPath}`;
-  const object = await r2.get(key);
-  const fileData: Record<string, unknown> = object ? await object.json<Record<string, unknown>>() : {};
-
-  const doc = (fileData[dataProperty] ?? { order: [], blocks: {} }) as BlockDocument;
-
-  for (const cmd of data) {
-    if ('block' in cmd) {
-      const c = cmd as addBlockToDocumentCommand;
-      addBlockToDocument(doc, c.block, c.position);
-    } else if ('blockId' in cmd) {
-      removeBlockFromDoc(doc, (cmd as removeBlockFromDocument).blockId);
-    } else if ('updatedOrder' in cmd) {
-      reorderBlocksInDoc(doc, (cmd as reorderBlocksInDocument).updatedOrder);
-    } else if ('updatedBlock' in cmd) {
-      updateBlockInDoc(doc, (cmd as updateBlockInDocument).updatedBlock);
-    }
-  }
-
-  fileData[dataProperty] = doc;
-
-  await r2.put(key, JSON.stringify(fileData), {
-    httpMetadata: { contentType: 'application/json' },
-  });
-
-  await invalidateCache(CACHE_KEY);
-
-  return Response.json({ success: true });
+/**
+ * Invalidate the cache for a specific dataKey.
+ */
+export async function invalidateDocumentCache(system: string, dataKey: string): Promise<void> {
+  await invalidateCache(cacheKeyFor(r2Key(system, dataKey)));
 }

@@ -1,8 +1,6 @@
 import type { Block } from "./game";
 
 export interface documentCommand {
-  dataPath: string;
-  dataProperty: string;
   dataKey: string;
 }
 
@@ -28,10 +26,3 @@ export type AnyDocumentCommand =
   | removeBlockFromDocument
   | reorderBlocksInDocument
   | updateBlockInDocument;
-
-export interface UpdateBody {
-  dataPath: string;
-  dataProperty: string;
-  dataKey: string;
-  data: AnyDocumentCommand[];
-}

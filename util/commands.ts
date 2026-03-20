@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import type { EditorCommand } from '@app-types/editor';
 import type { Block, ContentBlock, BlockDocument, InlineNode } from '@app-types/game';
-import type { documentCommand, UpdateBody } from '@app-types/requests';
+import type { AnyDocumentCommand, documentCommand } from '@app-types/requests';
 
 export function useCommandHistory() {
   const history = useRef<EditorCommand[]>([]);
@@ -70,85 +70,72 @@ function parseInlineNodes(html: string): InlineNode[] {
   return extractInlineNodes(el);
 }
 
-export function buildCommandsFromHistory(
-  commands: EditorCommand[],
+/**
+ * Converts a single EditorCommand into a single AnyDocumentCommand for immediate WebSocket dispatch.
+ * Returns null if the command cannot be converted (e.g. table content change).
+ */
+export function buildSingleCommand(
+  cmd: EditorCommand,
   blockDocument: BlockDocument,
   context: documentCommand,
-): UpdateBody {
-  const data: UpdateBody['data'] = [];
+): AnyDocumentCommand | null {
   const workingOrder = [...blockDocument.order];
   const workingBlocks: Record<string, Block> = { ...blockDocument.blocks };
 
-  for (const cmd of commands) {
-    switch (cmd.type) {
-      case 'element-created': {
-        const afterIndex = cmd.afterId ? workingOrder.indexOf(cmd.afterId) : -1;
-        const position = afterIndex + 1;
-        let block: Block;
-        if (cmd.tag === 'table') {
-          block = {
-            id: cmd.id,
-            type: 'table',
-            rows: Array.from({ length: 3 }, () => ({
+  switch (cmd.type) {
+    case 'element-created': {
+      const afterIndex = cmd.afterId ? workingOrder.indexOf(cmd.afterId) : -1;
+      const position = afterIndex + 1;
+      let block: Block;
+      if (cmd.tag === 'table') {
+        block = {
+          id: cmd.id,
+          type: 'table',
+          rows: Array.from({ length: 3 }, () => ({
+            id: crypto.randomUUID(),
+            cells: Array.from({ length: 3 }, () => ({
               id: crypto.randomUUID(),
-              cells: Array.from({ length: 3 }, () => ({
-                id: crypto.randomUUID(),
-                content: [],
-              })),
+              content: [],
             })),
-          };
-        } else {
-          const afterBlock = cmd.afterId ? workingBlocks[cmd.afterId] : null;
-          const liType = afterBlock?.type === 'listItemOrdered' ? 'listItemOrdered' : 'listItemUnordered';
-          block = {
-            id: cmd.id,
-            type: tagToBlockType(cmd.tag, liType),
-            content: parseInlineNodes(cmd.content),
-          };
-        }
-        workingOrder.splice(position, 0, cmd.id);
-        workingBlocks[cmd.id] = block;
-        data.push({ ...context, block, position });
-        break;
-      }
-      case 'element-deleted': {
-        const idx = workingOrder.indexOf(cmd.id);
-        if (idx !== -1) workingOrder.splice(idx, 1);
-        delete workingBlocks[cmd.id];
-        data.push({ ...context, blockId: cmd.id });
-        break;
-      }
-      case 'element-changed-contents': {
-        const existing = workingBlocks[cmd.id];
-        if (!existing || existing.type === 'table') break;
-        const updatedBlock: ContentBlock = {
-          id: cmd.id,
-          type: existing.type,
-          content: parseInlineNodes(cmd.after),
+          })),
         };
-        workingBlocks[cmd.id] = updatedBlock;
-        data.push({ ...context, updatedBlock });
-        break;
-      }
-      case 'element-changed-type': {
-        const existing = workingBlocks[cmd.id];
-        if (!existing || existing.type === 'table') break;
-        const updatedBlock: ContentBlock = {
+      } else {
+        const afterBlock = cmd.afterId ? workingBlocks[cmd.afterId] : null;
+        const liType = afterBlock?.type === 'listItemOrdered' ? 'listItemOrdered' : 'listItemUnordered';
+        block = {
           id: cmd.id,
-          type: tagToBlockType(cmd.after),
-          content: existing.content,
+          type: tagToBlockType(cmd.tag, liType),
+          content: parseInlineNodes(cmd.content),
         };
-        workingBlocks[cmd.id] = updatedBlock;
-        data.push({ ...context, updatedBlock });
-        break;
       }
-      case 'order-changed': {
-        workingOrder.splice(0, workingOrder.length, ...cmd.after);
-        data.push({ ...context, updatedOrder: cmd.after });
-        break;
-      }
+      return { ...context, block, position };
+    }
+    case 'element-deleted': {
+      return { ...context, blockId: cmd.id };
+    }
+    case 'element-changed-contents': {
+      const existing = workingBlocks[cmd.id];
+      if (!existing || existing.type === 'table') return null;
+      const updatedBlock: ContentBlock = {
+        id: cmd.id,
+        type: existing.type,
+        content: parseInlineNodes(cmd.after),
+      };
+      return { ...context, updatedBlock };
+    }
+    case 'element-changed-type': {
+      const existing = workingBlocks[cmd.id];
+      if (!existing || existing.type === 'table') return null;
+      const updatedBlock: ContentBlock = {
+        id: cmd.id,
+        type: tagToBlockType(cmd.after),
+        content: existing.content,
+      };
+      return { ...context, updatedBlock };
+    }
+    case 'order-changed': {
+      return { ...context, updatedOrder: cmd.after };
     }
   }
-
-  return { ...context, data };
 }
+

@@ -18,14 +18,12 @@ export interface SessionUser {
 interface UserContextType {
   session: SessionUser | null;
   setSession: (user: SessionUser | null) => void;
-  systemEvents: EventSource | null;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<SessionUser | null>(null);
-  const [systemEvents, setSystemEvents] = useState<EventSource | null>(null);
 
   useEffect(() => {
     fetch('/api/me')
@@ -36,20 +34,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    if (!session) return;
-
-    const es = new EventSource('/api/system/events');
-    setSystemEvents(es);
-
-    return () => {
-      es.close();
-      setSystemEvents(null);
-    };
-  }, [session?.id]);
-
   return (
-    <UserContext.Provider value={{ session, setSession, systemEvents }}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ session, setSession }}>{children}</UserContext.Provider>
   );
 };
 
