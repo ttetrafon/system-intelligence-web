@@ -1,5 +1,5 @@
 import { cacheRequestData, invalidateCache } from "util/cache";
-import { defaultGameSystemDataObj, type BlockDocument, type GameSystemData } from "@app-types/game";
+import { defaultGameSystemData, type BlockDocument, type GameSystemData } from "@app-types/game";
 
 /** Maps a dataKey (dot-notation) to the R2 object key */
 export function r2Key(system: string, dataKey: string): string {
@@ -50,21 +50,23 @@ export async function getGameSystem(_db: D1Database, r2: R2Bucket, environment?:
 }
 
 export async function collectGameSystemData(r2: R2Bucket, useCache = true): Promise<Response> {
+  const defaults = defaultGameSystemData();
+
   // Read the three active documents in parallel
   const [checksDoc, moralityDoc, moralityPairs] = await Promise.all([
-    readDocument<BlockDocument>(r2, 'game-system/si/core/checks/document', defaultGameSystemDataObj.core.checks.document, useCache),
-    readDocument<BlockDocument>(r2, 'game-system/si/characters/morality/document', defaultGameSystemDataObj.characters.morality.document, useCache),
-    readDocument<GameSystemData['characters']['morality']['pairs']>(r2, 'game-system/si/characters/morality/pairs', defaultGameSystemDataObj.characters.morality.pairs, useCache),
+    readDocument<BlockDocument>(r2, 'game-system/si/core/checks/document', defaults.core.checks.document, useCache),
+    readDocument<BlockDocument>(r2, 'game-system/si/characters/morality/document', defaults.characters.morality.document, useCache),
+    readDocument<GameSystemData['characters']['morality']['pairs']>(r2, 'game-system/si/characters/morality/pairs', defaults.characters.morality.pairs, useCache),
   ]);
 
   const gameSystemData: GameSystemData = {
-    ...defaultGameSystemDataObj,
+    ...defaults,
     core: {
-      ...defaultGameSystemDataObj.core,
+      ...defaults.core,
       checks: { document: checksDoc },
     },
     characters: {
-      ...defaultGameSystemDataObj.characters,
+      ...defaults.characters,
       morality: { document: moralityDoc, pairs: moralityPairs },
     },
   };

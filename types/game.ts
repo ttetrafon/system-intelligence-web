@@ -100,42 +100,44 @@ export function emptyDocument(): BlockDocument {
   }
 };
 
-export const defaultGameSystemDataObj: GameSystemData = {
-  core: {
-    checks: {
-      document: emptyDocument()
+export function defaultGameSystemData(): GameSystemData {
+  return {
+    core: {
+      checks: {
+        document: emptyDocument()
+      },
+      resources: {
+        document: emptyDocument()
+      },
+      skillChallenges: {
+        document: emptyDocument()
+      },
+      tasks: {
+        document: emptyDocument()
+      },
+      bonusesPenalties: {
+        document: emptyDocument()
+      },
+      advantageDisadvantage: {
+        document: emptyDocument()
+      },
+      tags: {
+        document: emptyDocument()
+      },
     },
-    resources: {
-      document: emptyDocument()
+    characters: {
+      aspects: {
+        document: emptyDocument()
+      },
+      morality: {
+        document: emptyDocument(),
+        pairs: []
+      },
     },
-    skillChallenges: {
-      document: emptyDocument()
-    },
-    tasks: {
-      document: emptyDocument()
-    },
-    bonusesPenalties: {
-      document: emptyDocument()
-    },
-    advantageDisadvantage: {
-      document: emptyDocument()
-    },
-    tags: {
-      document: emptyDocument()
-    },
-  },
-  characters: {
-    aspects: {
-      document: emptyDocument()
-    },
-    morality: {
-      document: emptyDocument(),
-      pairs: []
-    },
-  },
-  adventuring: {},
-  equipment: {},
-};
+    adventuring: {},
+    equipment: {},
+  };
+}
 
 export interface DataLinks {
   gameSystem: string[];
