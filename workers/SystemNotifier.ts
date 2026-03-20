@@ -18,7 +18,7 @@ export class SystemNotifier {
   constructor(
     private state: DurableObjectState,
     private env: Env,
-  ) {}
+  ) { }
 
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
@@ -113,6 +113,7 @@ export class SystemNotifier {
       : { order: [], blocks: {} };
 
     const cmd = msg.command;
+    console.log(`--->  processCommand(key=${key})`, doc, cmd);
 
     if ('block' in cmd) {
       const c = cmd as addBlockToDocumentCommand;
