@@ -28,16 +28,18 @@ export interface GameSystemData {
     };
     morality: {
       document: BlockDocument,
-      pairs: {
-        id: string;
-        first: string;
-        second: string;
-      }[];
+      pairs: MoralityPair[];
     };
   };
   adventuring: object;
   equipment: object;
 };
+
+export interface MoralityPair {
+  id: string;
+  first: string;
+  second: string;
+}
 
 export interface BlockDocument {
   order: string[],

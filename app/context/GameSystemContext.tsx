@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { BlockDocument, DataLinks, GameSystemData } from "../../types/game";
+import type { BlockDocument, DataLinks, GameSystemData, MoralityPair } from "../../types/game";
 import type { AnyDocumentCommand } from "../../types/requests";
 import type { WsIncoming } from "../../types/websocket";
 import { addBlockToDocument, removeBlockFromDocument, reorderBlocksInDocument, updateBlockInDocument } from "../../util/data";
@@ -41,20 +41,38 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
           node = node[keys[i]] as Record<string, unknown>;
         }
         const docKey = keys[keys.length - 1];
-        const existing = node[docKey] as BlockDocument;
-        const doc: BlockDocument = { order: [...existing.order], blocks: { ...existing.blocks } };
-        for (const cmd of payload.commands) {
-          if ('block' in cmd) {
-            addBlockToDocument(doc, cmd.block, cmd.position);
-          } else if ('blockId' in cmd) {
-            removeBlockFromDocument(doc, cmd.blockId);
-          } else if ('updatedOrder' in cmd) {
-            reorderBlocksInDocument(doc, cmd.updatedOrder);
-          } else if ('updatedBlock' in cmd) {
-            updateBlockInDocument(doc, cmd.updatedBlock);
-          }
+
+        const firstCmd = payload.commands[0];
+        // Handle non-block-document commands
+        if (firstCmd && firstCmd.commandType === 'add-morality-pair' && 'id' in firstCmd) {
+          const existing = (node[docKey] as MoralityPair[]) ?? [];
+          node[docKey] = [...existing, { id: firstCmd.id, first: '', second: '' }];
         }
-        node[docKey] = doc;
+        else if (firstCmd && firstCmd.commandType === 'delete-morality-pair' && 'id' in firstCmd) {
+          const existing = (node[docKey] as MoralityPair[]) ?? [];
+          node[docKey] = existing.filter(p => p.id !== firstCmd.id);
+        }
+        else if (firstCmd && firstCmd.commandType === 'update-morality-pair' && 'id' in firstCmd && 'field' in firstCmd && 'value' in firstCmd) {
+          const existing = (node[docKey] as MoralityPair[]) ?? [];
+          node[docKey] = existing.map(p => p.id === firstCmd.id ? { ...p, [firstCmd.field as 'first' | 'second']: firstCmd.value as string } : p);
+        }
+        // Handle block-document commands
+        else {
+          const existing = node[docKey] as BlockDocument;
+          const doc: BlockDocument = { order: [...existing.order], blocks: { ...existing.blocks } };
+          for (const cmd of payload.commands) {
+            if ('block' in cmd) {
+              addBlockToDocument(doc, cmd.block, cmd.position);
+            } else if ('blockId' in cmd) {
+              removeBlockFromDocument(doc, cmd.blockId);
+            } else if ('updatedOrder' in cmd) {
+              reorderBlocksInDocument(doc, cmd.updatedOrder);
+            } else if ('updatedBlock' in cmd) {
+              updateBlockInDocument(doc, cmd.updatedBlock);
+            }
+          }
+          node[docKey] = doc;
+        }
         localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(updated));
         return updated;
       });
@@ -73,12 +91,12 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
         setData(fresh);
         localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(fresh));
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [status]);
 
   useEffect(() => {
     if (!data) return;
-    buildDataLinks(data).then(setDataLinks).catch(() => {});
+    buildDataLinks(data).then(setDataLinks).catch(() => { });
   }, [data]);
 
   return (

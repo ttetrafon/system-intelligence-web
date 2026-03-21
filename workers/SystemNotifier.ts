@@ -1,6 +1,9 @@
-import type { BlockDocument } from '@app-types/game';
+import type { BlockDocument, MoralityPair } from '@app-types/game';
 import type {
   addBlockToDocumentCommand,
+  moralityPairAdded,
+  moralityPairDeleted,
+  moralityPairUpdated,
   removeBlockFromDocument as RemoveBlockCmd,
   reorderBlocksInDocument as ReorderBlocksCmd,
   updateBlockInDocument as UpdateBlockCmd,
@@ -69,7 +72,7 @@ export class SystemNotifier {
       return;
     }
 
-    // Broadcast to all OTHER connected sockets
+    // Broadcast to all connected sockets (including sender, so their local state updates)
     const outgoing: WsServerMessage = {
       type: 'game-system-update',
       system: parsed.system,
@@ -78,12 +81,10 @@ export class SystemNotifier {
     };
     const payload = JSON.stringify(outgoing);
     for (const socket of this.state.getWebSockets()) {
-      if (socket !== ws) {
-        try {
-          socket.send(payload);
-        } catch {
-          // Socket is dead, Cloudflare will clean it up
-        }
+      try {
+        socket.send(payload);
+      } catch {
+        // Socket is dead, Cloudflare will clean it up
       }
     }
   }
@@ -107,23 +108,68 @@ export class SystemNotifier {
 
   private async processCommand(msg: WsClientMessage): Promise<void> {
     const key = r2Key(msg.system, msg.dataKey);
+    const cmd = msg.command;
+    console.log(`--->  processCommand(key=${key})`, cmd);
+
+    // Handle non-block-document commands
+    switch (cmd.commandType) {
+      case 'add-morality-pair':
+        const objectAMP = await this.env.ASSETS.get(key);
+        const pairsAMP: MoralityPair[] = objectAMP ? await objectAMP.json<MoralityPair[]>() : [];
+        pairsAMP.push({ id: (cmd as moralityPairAdded).id, first: '', second: '' });
+        await this.env.ASSETS.put(key, JSON.stringify(pairsAMP), {
+          httpMetadata: { contentType: 'application/json' },
+        });
+        await invalidateDocumentCache(msg.system, msg.dataKey);
+        return;
+      case 'delete-morality-pair':
+        const c = cmd as moralityPairDeleted;
+        const objectDMP = await this.env.ASSETS.get(key);
+        let pairsDMP: MoralityPair[] = objectDMP ? await objectDMP.json<MoralityPair[]>() : [];
+        const indexDMP = pairsDMP.findIndex(p => p.id === c.id);
+        if (indexDMP >= 0) {
+          pairsDMP.splice(indexDMP, 1);
+          await this.env.ASSETS.put(key, JSON.stringify(pairsDMP), {
+            httpMetadata: { contentType: 'application/json' },
+          });
+          await invalidateDocumentCache(msg.system, msg.dataKey);
+        }
+        return;
+      case 'update-morality-pair':
+        const u = cmd as moralityPairUpdated;
+        const objectUMP = await this.env.ASSETS.get(key);
+        const pairsUMP: MoralityPair[] = objectUMP ? await objectUMP.json<MoralityPair[]>() : [];
+        const target = pairsUMP.find(p => p.id === u.id);
+        if (target) {
+          target[u.field] = u.value;
+          await this.env.ASSETS.put(key, JSON.stringify(pairsUMP), {
+            httpMetadata: { contentType: 'application/json' },
+          });
+          await invalidateDocumentCache(msg.system, msg.dataKey);
+        }
+        return;
+    }
+
+    // Handle block-document commands
     const object = await this.env.ASSETS.get(key);
     const doc: BlockDocument = object
       ? await object.json<BlockDocument>()
       : { order: [], blocks: {} };
 
-    const cmd = msg.command;
-    console.log(`--->  processCommand(key=${key})`, doc, cmd);
-
-    if ('block' in cmd) {
-      const c = cmd as addBlockToDocumentCommand;
-      addBlockToDocument(doc, c.block, c.position);
-    } else if ('blockId' in cmd) {
-      removeBlockFromDocument(doc, (cmd as RemoveBlockCmd).blockId);
-    } else if ('updatedOrder' in cmd) {
-      reorderBlocksInDocument(doc, (cmd as ReorderBlocksCmd).updatedOrder);
-    } else if ('updatedBlock' in cmd) {
-      updateBlockInDocument(doc, (cmd as UpdateBlockCmd).updatedBlock);
+    switch (cmd.commandType) {
+      case 'add-block':
+        const c = cmd as addBlockToDocumentCommand;
+        addBlockToDocument(doc, c.block, c.position);
+        break;
+      case 'remove-block':
+        removeBlockFromDocument(doc, (cmd as RemoveBlockCmd).blockId);
+        break;
+      case 'reorder-blocks':
+        reorderBlocksInDocument(doc, (cmd as ReorderBlocksCmd).updatedOrder);
+        break;
+      case 'update-block':
+        updateBlockInDocument(doc, (cmd as UpdateBlockCmd).updatedBlock);
+        break;
     }
 
     await this.env.ASSETS.put(key, JSON.stringify(doc), {

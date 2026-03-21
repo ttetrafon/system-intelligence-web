@@ -177,6 +177,9 @@ export function handleKeyUp(
   // Skip if the event fired on the section itself rather than a block element
   if (target === e.currentTarget) return;
 
+  // Let native inputs handle their own keyboard events
+  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) return;
+
   // Capture modifier keys
   if (["Alt", "Ctrl", "Shift"].includes(e.key)) {
     switch (e.key) {
@@ -212,6 +215,9 @@ export function handleKeyDown(
 
   // Skip if the event fired on the section itself rather than a block element
   if (target === e.currentTarget) return;
+
+  // Let native inputs handle their own keyboard events
+  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) return;
 
   // Capture modifier keys
   if (["Alt", "Ctrl", "Shift"].includes(e.key)) {

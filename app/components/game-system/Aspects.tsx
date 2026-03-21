@@ -1,6 +1,6 @@
 import { useGameSystem } from "~/context/GameSystemContext";
 import { useUser } from "~/context/UserContext";
-import { BlockEditor } from "../generic/block-editor/BlockEditor";
+import { BlockEditor } from "../generic/BlockEditor";
 
 export default function Aspects() {
   const { session } = useUser();

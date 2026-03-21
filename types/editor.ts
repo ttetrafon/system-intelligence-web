@@ -34,9 +34,29 @@ export type OrderChangedCommand = {
   after: string[];
 };
 
+export type MoralityPairAddedCommand = {
+  type: 'morality-pair-added';
+  id: string;
+};
+
+export type MoralityPairDeletedCommand = {
+  type: 'morality-pair-deleted';
+  id: string;
+};
+
+export type MoralityPairUpdatedCommand = {
+  type: 'morality-pair-updated';
+  id: string;
+  field: 'first' | 'second';
+  value: string;
+};
+
 export type EditorCommand =
   | ElementChangedContentsCommand
   | ElementChangedTypeCommand
   | ElementCreatedCommand
   | ElementDeletedCommand
-  | OrderChangedCommand;
+  | OrderChangedCommand
+  | MoralityPairAddedCommand
+  | MoralityPairDeletedCommand
+  | MoralityPairUpdatedCommand;

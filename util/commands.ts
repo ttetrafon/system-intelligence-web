@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import type { EditorCommand } from '@app-types/editor';
 import type { Block, ContentBlock, BlockDocument, InlineNode } from '@app-types/game';
-import type { AnyDocumentCommand, documentCommand } from '@app-types/requests';
+import type { AnyDocumentCommand, documentCommand, documentCommandType } from '@app-types/requests';
 
 export function useCommandHistory() {
   const history = useRef<EditorCommand[]>([]);
@@ -78,7 +78,7 @@ function parseInlineNodes(html: string): InlineNode[] {
 export function buildSingleCommand(
   cmd: EditorCommand,
   blockDocument: BlockDocument,
-  context: documentCommand,
+  context: Omit<documentCommand, 'commandType'>,
 ): AnyDocumentCommand | null {
   const workingOrder = [...blockDocument.order];
   const workingBlocks: Record<string, Block> = { ...blockDocument.blocks };
@@ -109,10 +109,10 @@ export function buildSingleCommand(
           content: parseInlineNodes(cmd.content),
         };
       }
-      return { ...context, block, position };
+      return { ...context, commandType: 'add-block', block, position };
     }
     case 'element-deleted': {
-      return { ...context, blockId: cmd.id };
+      return { ...context, commandType: 'remove-block', blockId: cmd.id };
     }
     case 'element-changed-contents': {
       const existing = workingBlocks[cmd.id];
@@ -122,7 +122,7 @@ export function buildSingleCommand(
         type: existing.type,
         content: parseInlineNodes(cmd.after),
       };
-      return { ...context, updatedBlock };
+      return { ...context, commandType: 'update-block', updatedBlock };
     }
     case 'element-changed-type': {
       const existing = workingBlocks[cmd.id];
@@ -132,11 +132,19 @@ export function buildSingleCommand(
         type: tagToBlockType(cmd.after),
         content: existing.content,
       };
-      return { ...context, updatedBlock };
+      return { ...context, commandType: 'update-block', updatedBlock };
     }
     case 'order-changed': {
-      return { ...context, updatedOrder: cmd.after };
+      return { ...context, commandType: 'reorder-blocks', updatedOrder: cmd.after };
+    }
+    case 'morality-pair-added': {
+      return { ...context, commandType: 'add-morality-pair', id: crypto.randomUUID() };
+    }
+    case 'morality-pair-deleted': {
+      return { ...context, commandType: 'delete-morality-pair', id: cmd.id }
+    }
+    case 'morality-pair-updated': {
+      return { ...context, commandType: 'update-morality-pair', id: cmd.id, field: cmd.field, value: cmd.value }
     }
   }
 }
-

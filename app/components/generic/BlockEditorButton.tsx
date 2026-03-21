@@ -1,5 +1,5 @@
 import React, { useState, type ReactNode } from 'react';
-import { Svg, type SvgName } from "../Svg";
+import { Svg, type SvgName } from "./Svg";
 
 export interface BlockEditorButtonProps {
   text: string;

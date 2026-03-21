@@ -49,8 +49,49 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
   const keyModifierShift = useState<boolean>(false);
   const reactRootsRef = useRef<Map<string, Root>>(new Map());
 
+  const handleAddMoralityPair = useCallback(() => {
+    sendCommand({
+      type: 'command',
+      system: props.dataSystem,
+      dataKey: 'characters.morality.pairs',
+      command: {
+        commandType: 'add-morality-pair',
+        dataKey: 'characters.morality.pairs',
+        id: crypto.randomUUID(),
+      },
+    });
+  }, [sendCommand, props.dataSystem]);
+
+  const handleDeleteMoralityPair = useCallback((id: string) => {
+    sendCommand({
+      type: 'command',
+      system: props.dataSystem,
+      dataKey: 'characters.morality.pairs',
+      command: {
+        commandType: 'delete-morality-pair',
+        dataKey: 'characters.morality.pairs',
+        id,
+      },
+    });
+  }, [sendCommand, props.dataSystem]);
+
+  const handleUpdateMoralityPair = useCallback((id: string, field: 'first' | 'second', value: string) => {
+    sendCommand({
+      type: 'command',
+      system: props.dataSystem,
+      dataKey: 'characters.morality.pairs',
+      command: {
+        commandType: 'update-morality-pair',
+        dataKey: 'characters.morality.pairs',
+        id,
+        field,
+        value,
+      },
+    });
+  }, [sendCommand, props.dataSystem]);
+
   // Map of data-react-component values to their React components
-  const reactComponentMap: Record<string, ComponentType<{ editing: boolean, gameData: GameSystemData | null }>> = {
+  const reactComponentMap: Record<string, ComponentType<{ editing: boolean, gameData: GameSystemData | null, onAddPair?: () => void, onDeletePair?: (id: string) => void, onUpdatePair?: (id: string, field: 'first' | 'second', value: string) => void }>> = {
     'morality-pairs': MoralityPairs,
   };
 
@@ -62,7 +103,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
       if (!componentName) continue;
       const Component = reactComponentMap[componentName];
       if (!Component) continue;
-      root.render(<Component editing={isEditing} gameData={props.gameData} />);
+      root.render(<Component editing={isEditing} gameData={props.gameData} onAddPair={handleAddMoralityPair} onDeletePair={handleDeleteMoralityPair} onUpdatePair={handleUpdateMoralityPair} />);
     }
   }, [props.gameData]);
 
@@ -75,7 +116,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
       const Component = reactComponentMap[componentName];
       if (!Component) continue;
       const root = createRoot(el);
-      root.render(<Component editing={isEditing} gameData={props.gameData} />);
+      root.render(<Component editing={isEditing} gameData={props.gameData} onAddPair={handleAddMoralityPair} onDeletePair={handleDeleteMoralityPair} onUpdatePair={handleUpdateMoralityPair} />);
       reactRootsRef.current.set(el.id, root);
     }
   }, [props.gameData]);

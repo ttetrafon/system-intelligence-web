@@ -49,7 +49,7 @@ export async function getGameSystem(_db: D1Database, r2: R2Bucket, environment?:
   return collectGameSystemData(r2, useCache);
 }
 
-export async function collectGameSystemData(r2: R2Bucket, useCache = true): Promise<Response> {
+export async function collectGameSystemData(r2: R2Bucket, useCache: boolean): Promise<Response> {
   const defaults = defaultGameSystemData();
 
   // Read the three active documents in parallel
