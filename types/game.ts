@@ -28,12 +28,24 @@ export interface GameSystemData {
     };
     morality: {
       document: BlockDocument,
-      pairs: MoralityPair[];
+      pairs: MoralityPairs;
     };
   };
   adventuring: object;
   equipment: object;
 };
+
+export interface UnorderedEntity {
+  // this exists only to group similar entities to easily differentiate between ordered and unordered entities
+}
+
+export interface OrderedEntity {
+  order: string[];
+}
+
+export interface MoralityPairs extends OrderedEntity {
+  items: Record<string, MoralityPair>;
+}
 
 export interface MoralityPair {
   id: string;
@@ -133,7 +145,10 @@ export function defaultGameSystemData(): GameSystemData {
       },
       morality: {
         document: emptyDocument(),
-        pairs: []
+        pairs: {
+          order: [],
+          items: {}
+        }
       },
     },
     adventuring: {},
@@ -142,12 +157,26 @@ export function defaultGameSystemData(): GameSystemData {
 }
 
 export interface DataLinks {
-  gameSystem: string[];
+  gameSystem: DataLink[];
 };
+
+export type DataLinkType = 'document' | 'section' | 'entity';
 
 export interface DataLink {
   id: string;
+  // document/page: dot.notation.path (without the .document)
+  // section: title-uuid
+  // entity: entity-uuid
   label: string;
-  type: "page" | "section" | "entity";
+  // document/page:
+  // section: title's text
+  // entity: depending on the entity
+  // - MoralityPair: 'first-second'
+  type: DataLinkType;
   address: string;
+  // document/page: dot.notation.path
+  // section: dot.notation.path#title-uuid
+  // entity:
+  // - ordered entities: dot.notation.path.items#entity-uuid
+  // - unordered entities:dot.notation.path#entity-uuid
 };
