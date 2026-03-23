@@ -88,13 +88,16 @@ export function insertMoralityPairsBlock(
 ) {
   const anchor = lastFocusedRef.current;
   const el = buildReactPlaceholder(crypto.randomUUID(), 'morality-pairs');
+  const elWrapper = wrapBlock(el, 0);
   if (anchor) {
-    anchor.insertAdjacentElement('afterend', el);
+    const anchorWrapper = anchor.parentElement!;
+    anchorWrapper.insertAdjacentElement('afterend', elWrapper);
     dispatch({ type: 'element-created', id: el.id, tag: 'morality-pairs', afterId: anchor.id || null, content: '' });
   } else if (contentsRef.current) {
-    const lastSibling = contentsRef.current.lastElementChild as HTMLElement | null;
-    contentsRef.current.appendChild(el);
-    dispatch({ type: 'element-created', id: el.id, tag: 'morality-pairs', afterId: lastSibling?.id || null, content: '' });
+    const lastWrapper = contentsRef.current.lastElementChild as HTMLElement | null;
+    const lastBlock = lastWrapper ? getBlockFromWrapper(lastWrapper) : null;
+    contentsRef.current.appendChild(elWrapper);
+    dispatch({ type: 'element-created', id: el.id, tag: 'morality-pairs', afterId: lastBlock?.id || null, content: '' });
   }
 }
 
@@ -106,13 +109,16 @@ export function insertTable(
   const anchor = lastFocusedRef.current;
   const table = createTableDom(3, 3);
   table.contentEditable = 'true';
+  const tableWrapper = wrapBlock(table, 0);
   if (anchor) {
-    anchor.insertAdjacentElement('afterend', table);
+    const anchorWrapper = anchor.parentElement!;
+    anchorWrapper.insertAdjacentElement('afterend', tableWrapper);
     dispatch({ type: 'element-created', id: table.id, tag: 'table', afterId: anchor.id || null, content: '' });
   } else if (contentsRef.current) {
-    const lastSibling = contentsRef.current.lastElementChild as HTMLElement | null;
-    contentsRef.current.appendChild(table);
-    dispatch({ type: 'element-created', id: table.id, tag: 'table', afterId: lastSibling?.id || null, content: '' });
+    const lastWrapper = contentsRef.current.lastElementChild as HTMLElement | null;
+    const lastBlock = lastWrapper ? getBlockFromWrapper(lastWrapper) : null;
+    contentsRef.current.appendChild(tableWrapper);
+    dispatch({ type: 'element-created', id: table.id, tag: 'table', afterId: lastBlock?.id || null, content: '' });
   }
 }
 
@@ -158,6 +164,36 @@ export function clearFocusedBlock(lastFocusedRef: React.RefObject<HTMLElement | 
     lastFocusedCellRef.current = null;
   }
 };
+
+/// --- WRAPPER HELPERS --- ///
+export function wrapBlock(block: HTMLElement, index: number): HTMLElement {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'block-line';
+
+  const gutter = document.createElement('div');
+  gutter.className = 'block-gutter';
+  gutter.contentEditable = 'false';
+  gutter.textContent = String(index);
+  gutter.title = block.id;
+  gutter.dataset.tooltip = block.id;
+
+  wrapper.appendChild(gutter);
+  wrapper.appendChild(block);
+  return wrapper;
+}
+
+export function getBlockFromWrapper(wrapper: HTMLElement): HTMLElement | null {
+  return wrapper.lastElementChild as HTMLElement | null;
+}
+
+export function renumberGutters(container: HTMLElement): void {
+  let index = 1;
+  for (const child of container.children) {
+    const gutter = (child as HTMLElement).querySelector(':scope > .block-gutter');
+    if (gutter) gutter.textContent = String(index);
+    index++;
+  }
+}
 
 /// --- EVENTS --- ///
 export function handleKeyUp(
@@ -290,12 +326,14 @@ export function handleKeyDown(
 
       e.preventDefault();
 
-      const parent = target.parentElement;
+      const wrapper = target.parentElement;
+      const container = wrapper?.parentElement;
 
       // Only element in the document — nothing to merge into
-      if (!parent || parent.children.length <= 1) return;
+      if (!container || container.children.length <= 1) return;
 
-      const prev = target.previousElementSibling as HTMLElement | null;
+      const prevWrapper = wrapper!.previousElementSibling as HTMLElement | null;
+      const prev = prevWrapper ? getBlockFromWrapper(prevWrapper) : null;
       if (!prev) return;
 
       // Save cursor position at the end of the previous element (the join point)
@@ -306,7 +344,7 @@ export function handleKeyDown(
       if (target.textContent === '') {
         // Empty line: just remove it
         dispatch({ type: 'element-deleted', id: target.id, tag: elementType, afterId: prev.id || null, content: '' });
-        target.remove();
+        wrapper!.remove();
       } else {
         // Non-empty line: capture content before the merge, then move into previous element
         const targetContent = target.innerHTML;
@@ -314,7 +352,7 @@ export function handleKeyDown(
         while (target.firstChild) {
           prev.appendChild(target.firstChild);
         }
-        target.remove();
+        wrapper!.remove();
         dispatch({ type: 'element-deleted', id: target.id, tag: elementType, afterId: prev.id || null, content: targetContent });
         dispatch({ type: 'element-changed-contents', id: prev.id, before: prevBefore, after: prev.innerHTML });
       }
@@ -326,8 +364,8 @@ export function handleKeyDown(
     case "Enter": {
       e.preventDefault();
 
-      const parent = target.parentElement;
-      if (!parent) return;
+      const wrapper = target.parentElement;
+      if (!wrapper?.parentElement) return;
 
       // Headings drop back to paragraph; everything else continues as the same type
       const headingTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
@@ -344,7 +382,8 @@ export function handleKeyDown(
         newElement.appendChild(afterRange.extractContents());
       }
 
-      target.insertAdjacentElement('afterend', newElement);
+      const newWrapper = wrapBlock(newElement, 0);
+      wrapper.insertAdjacentElement('afterend', newWrapper);
       dispatch({ type: 'element-created', id: newElement.id, tag: newTag, afterId: target.id || null, content: newElement.innerHTML });
 
       // Move cursor to the start of the new element

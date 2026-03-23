@@ -94,7 +94,36 @@
   .block-editor-contents {
     @apply outline-none;
   }
-  .block-editor-contents > * {
+  .block-editor-contents .block-line {
+    @apply flex flex-row;
+  }
+  .block-editor-contents .block-gutter {
+    @apply select-none shrink-0 pr-2 text-right text-xs font-mono hidden relative;
+    color: var(--color-delta);
+    opacity: 0.5;
+    min-width: 2em;
+  }
+  .block-editor-contents .block-gutter:hover {
+    opacity: 1;
+  }
+  .block-editor-contents .block-gutter.tooltip-visible {
+    @apply overflow-visible;
+    opacity: 1;
+  }
+  .block-editor-contents .block-gutter.tooltip-visible::after {
+    content: attr(data-tooltip);
+    @apply absolute text-xs px-2 py-1 rounded-sm whitespace-nowrap z-50 pointer-events-none;
+    background: var(--color-alpha);
+    color: var(--color-delta);
+    border: 1px solid var(--color-delta);
+    left: 100%;
+    top: 0;
+  }
+  .block-editor-contents.editing .block-gutter {
+    @apply flex items-start justify-end;
+  }
+  .block-editor-contents .block-line > :last-child {
+    @apply flex-1 min-w-0;
     min-height: 1.5em;
   }
   .block-editor-contents .be-focused {

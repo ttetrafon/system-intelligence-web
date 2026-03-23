@@ -4,8 +4,7 @@ import { type ComponentType, useCallback, useEffect, useRef, useState } from "re
 import { createRoot, type Root } from "react-dom/client";
 import { BlockEditorButton } from "./BlockEditorButton";
 import { BlockEditorToolbarSeparator } from "./BlockEditorToolbarSeparator";
-import { Tooltip } from "~/components/generic/Tooltip";
-import { buildHtml, changeBlockType, insertTable, handleKeyDown, handleKeyUp, insertMoralityPairsBlock } from "util/blockEditorScripts";
+import { buildHtml, changeBlockType, insertTable, handleKeyDown, handleKeyUp, insertMoralityPairsBlock, wrapBlock, getBlockFromWrapper, renumberGutters } from "util/blockEditorScripts";
 import { buildSingleCommand, useCommandHistory } from "util/commands";
 import MoralityPairs from "~/components/game-system/MoralityPairs";
 import { useWebSocket } from "~/context/WebSocketContext";
@@ -48,6 +47,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
   const keyModifierCtrl = useState<boolean>(false);
   const keyModifierShift = useState<boolean>(false);
   const reactRootsRef = useRef<Map<string, Root>>(new Map());
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleAddMoralityPair = useCallback(() => {
     sendCommand({
@@ -132,28 +132,6 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
     }
   }, []);
 
-  // Gutter line numbers (edit mode only)
-  const [gutterItems, setGutterItems] = useState<{ id: string; index: number }[]>([]);
-  const gutterRef = useRef<HTMLDivElement>(null);
-
-  const updateGutterItems = useCallback(() => {
-    if (!contentsRef.current) return;
-    const items = Array.from(contentsRef.current.children).map((child, i) => ({
-      id: (child as HTMLElement).id,
-      index: i + 1,
-    }));
-    setGutterItems(items);
-  }, []);
-
-  const syncGutterHeights = useCallback(() => {
-    if (!gutterRef.current || !contentsRef.current) return;
-    const gutterChildren = gutterRef.current.children;
-    const contentChildren = contentsRef.current.children;
-    for (let i = 0; i < Math.min(gutterChildren.length, contentChildren.length); i++) {
-      const blockHeight = contentChildren[i].getBoundingClientRect().height;
-      (gutterChildren[i] as HTMLElement).style.height = `${blockHeight}px`;
-    }
-  }, []);
 
   const buildContents = () => {
     if (!contentsRef.current) return;
@@ -161,13 +139,17 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
     unmountReactRoots(true);
     el.innerHTML = "";
     buildHtml(props.data).then(fragment => {
-      el.appendChild(fragment);
-      for (const child of el.children) {
-        const htmlChild = child as HTMLElement;
-        htmlChild.contentEditable = (!htmlChild.dataset.reactComponent && props.editable) ? 'true' : 'false';
+      const blocks = Array.from(fragment.children) as HTMLElement[];
+      blocks.forEach((block, i) => {
+        el.appendChild(wrapBlock(block, i + 1));
+      });
+      for (const wrapper of el.children) {
+        const block = getBlockFromWrapper(wrapper as HTMLElement);
+        if (block) {
+          block.contentEditable = (!block.dataset.reactComponent && props.editable) ? 'true' : 'false';
+        }
       }
       mountReactPlaceholders(props.editable);
-      updateGutterItems();
     });
   }
 
@@ -182,9 +164,11 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
 
   useEffect(() => {
     if (!contentsRef.current) return;
-    for (const child of contentsRef.current.children) {
-      const htmlChild = child as HTMLElement;
-      htmlChild.contentEditable = (!htmlChild.dataset.reactComponent && props.editable) ? 'true' : 'false';
+    for (const wrapper of contentsRef.current.children) {
+      const block = getBlockFromWrapper(wrapper as HTMLElement);
+      if (block) {
+        block.contentEditable = (!block.dataset.reactComponent && props.editable) ? 'true' : 'false';
+      }
     }
     if (reactRootsRef.current.size > 0) {
       renderReactRoots(props.editable);
@@ -198,29 +182,17 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
     }
   }, [props.gameData]);
 
-  // Watch for block additions/removals to keep gutter in sync
+  // Renumber gutters when wrappers are added/removed
   useEffect(() => {
-    if (!props.editable || !contentsRef.current) return;
-    const observer = new MutationObserver(() => updateGutterItems());
+    if (!contentsRef.current) return;
+    const observer = new MutationObserver(() => {
+      requestAnimationFrame(() => {
+        if (contentsRef.current) renumberGutters(contentsRef.current);
+      });
+    });
     observer.observe(contentsRef.current, { childList: true });
     return () => observer.disconnect();
-  }, [props.editable, props.data]);
-
-  // Sync gutter entry heights after items render
-  useEffect(() => {
-    if (!props.editable || gutterItems.length === 0) return;
-    requestAnimationFrame(() => syncGutterHeights());
-  }, [gutterItems, props.editable]);
-
-  // Re-sync gutter heights when blocks resize
-  useEffect(() => {
-    if (!props.editable || !contentsRef.current) return;
-    const observer = new ResizeObserver(() => requestAnimationFrame(() => syncGutterHeights()));
-    for (const child of contentsRef.current.children) {
-      observer.observe(child);
-    }
-    return () => observer.disconnect();
-  }, [gutterItems, props.editable]);
+  }, [props.data]);
 
   return (
     <>
@@ -258,20 +230,9 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
         <BlockEditorButton text="Increase Indent" icon="format_indent_increase" onClick={() => { }} />
       </section>}
       {/* contents */}
-      <div className="flex flex-row overflow-auto min-h-0">
-        {props.editable && (
-          <div ref={gutterRef} className="flex flex-col select-none pr-2 text-right text-xs shrink-0 border-r border-delta mr-2" style={{ color: 'var(--color-delta)' }}>
-            {gutterItems.map(item => (
-              <div key={item.id} className="flex items-start justify-end overflow-hidden">
-                <Tooltip content={item.id} position="right">
-                  <span className="cursor-default opacity-50 hover:opacity-100 font-mono">{item.index}</span>
-                </Tooltip>
-              </div>
-            ))}
-          </div>
-        )}
+      <div className="overflow-auto min-h-0">
         <section
-          className="block-editor-contents flex-1 min-w-0"
+          className={`block-editor-contents${props.editable ? ' editing' : ''}`}
           ref={contentsRef}
           onKeyDownCapture={(e) => {
             if (props.editable) handleKeyDown(e, {
@@ -287,14 +248,38 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
               shift: keyModifierShift,
             });
           }}
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.classList.contains('block-gutter') && target.dataset.tooltip) {
+              // Close any other open tooltip
+              contentsRef.current?.querySelectorAll('.block-gutter.tooltip-visible').forEach(el => {
+                if (el !== target) el.classList.remove('tooltip-visible');
+              });
+              const isNowVisible = target.classList.toggle('tooltip-visible');
+              if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current);
+              if (isNowVisible) {
+                tooltipTimerRef.current = setTimeout(() => {
+                  target.classList.remove('tooltip-visible');
+                  tooltipTimerRef.current = null;
+                }, 5000);
+              }
+            } else {
+              // Click outside a gutter closes all tooltips
+              if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current);
+              contentsRef.current?.querySelectorAll('.block-gutter.tooltip-visible').forEach(el => {
+                el.classList.remove('tooltip-visible');
+              });
+            }
+          }}
           onFocus={(e) => {
             if (e.target === contentsRef.current) return;
             const target = e.target as HTMLElement;
-            // Move up to the direct child of contentsRef (the block element)
-            let block = target;
-            while (block.parentElement && block.parentElement !== contentsRef.current) {
-              block = block.parentElement;
+            // Walk up to the wrapper (direct child of contentsRef), then get the actual block
+            let wrapper = target;
+            while (wrapper.parentElement && wrapper.parentElement !== contentsRef.current) {
+              wrapper = wrapper.parentElement;
             }
+            const block = getBlockFromWrapper(wrapper) ?? wrapper;
             if (props.editable && lastFocusedRef.current !== block) {
               lastFocusedRef.current?.classList.remove('be-focused');
               lastFocusedRef.current = block;
