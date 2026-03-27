@@ -72,7 +72,7 @@ export class SystemNotifier {
       return;
     }
 
-    // Broadcast to all connected sockets (including sender, so their local state updates)
+    // Broadcast to all connected sockets except the sender (sender applies optimistically)
     const outgoing: WsServerMessage = {
       type: 'game-system-update',
       system: parsed.system,
@@ -81,6 +81,7 @@ export class SystemNotifier {
     };
     const payload = JSON.stringify(outgoing);
     for (const socket of this.state.getWebSockets()) {
+      if (socket === ws) continue;
       try {
         socket.send(payload);
       } catch {

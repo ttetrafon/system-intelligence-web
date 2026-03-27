@@ -1,4 +1,4 @@
-import React, { type ReactNode } from 'react';
+import React, { useEffect, useRef, type ReactNode } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -7,21 +7,26 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, children }: ModalProps) {
-  if (!isOpen) {
-    return null;
-  }
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (isOpen) {
+      dialog.showModal();
+    } else {
+      dialog.close();
+    }
+  }, [isOpen]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={onClose}
+    <dialog
+      ref={dialogRef}
+      className="items-stretch m-auto p-6 bg-base rounded-lg shadow-xl backdrop:bg-background/50"
+      onCancel={onClose}
+      onClick={(e) => { if (e.target === dialogRef.current) onClose(); }}
     >
-      <div
-        className="p-6 bg-gray-800 rounded-lg shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {children}
-      </div>
-    </div>
+      {children}
+    </dialog>
   );
 }

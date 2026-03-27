@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import type { EditorCommand } from '@app-types/editor';
 import type { Block, ContentBlock, BlockDocument, InlineNode } from '@app-types/game';
 import type { AnyDocumentCommand, documentCommand, documentCommandType } from '@app-types/requests';
+import { addBlockToDocument, removeBlockFromDocument, reorderBlocksInDocument, updateBlockInDocument } from './data';
 
 export function useCommandHistory() {
   const history = useRef<EditorCommand[]>([]);
@@ -146,5 +147,21 @@ export function buildSingleCommand(
     case 'morality-pair-updated': {
       return { ...context, commandType: 'update-morality-pair', id: cmd.id, field: cmd.field, value: cmd.value }
     }
+  }
+}
+
+/**
+ * Applies an AnyDocumentCommand to a BlockDocument in place, keeping a local
+ * copy in sync with commands that have been sent but not yet acknowledged.
+ */
+export function applyCommandToDocument(doc: BlockDocument, cmd: AnyDocumentCommand): void {
+  if ('block' in cmd && 'position' in cmd) {
+    addBlockToDocument(doc, cmd.block, cmd.position);
+  } else if ('blockId' in cmd) {
+    removeBlockFromDocument(doc, cmd.blockId);
+  } else if ('updatedOrder' in cmd) {
+    reorderBlocksInDocument(doc, cmd.updatedOrder);
+  } else if ('updatedBlock' in cmd) {
+    updateBlockInDocument(doc, cmd.updatedBlock);
   }
 }

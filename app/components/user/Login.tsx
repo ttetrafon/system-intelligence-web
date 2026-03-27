@@ -26,7 +26,7 @@ export default function Login() {
 
   return (
     <div className="flex justify-center items-center w-full h-max">
-      <div className="mt-25 w-full max-w-lg p-8 space-y-8 rounded-lg shadow-md shadow-gamma">
+      <div className="mt-25 w-full max-w-lg p-8 space-y-8 rounded-lg shadow-md shadow-action">
         <h2>Login</h2>
         <form className='flex flex-col gap-2' onSubmit={handleLogin}>
           <div className='flex flex-row gap-2'>

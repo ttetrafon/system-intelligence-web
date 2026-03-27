@@ -1,12 +1,10 @@
 @import "tailwindcss" source(".");
 
 :root {
-  --color-alpha: #662222;
-  --color-beta: #842A3B;
-  --color-gamma: #A3485A;
-  --color-delta: #F5DAA7;
-  --color-text: #ece3d2;
-  --color-text-darker: #b1a99a;
+  --colour-typography: #F5DAA7;
+  --colour-action: #A3485A;
+  --colour-base: #842A3B;
+  --colour-background: #662222;
 }
 
 @theme {
@@ -15,12 +13,10 @@
 
   --spacing: 4px;
 
-  --color-alpha: var(--color-alpha);
-  --color-beta: var(--color-beta);
-  --color-gamma: var(--color-gamma);
-  --color-delta: var(--color-delta);
-  --color-text: var(--color-text);
-  --color-text-darker: var(--color-text-darker);
+  --color-typography: var(--colour-typography);
+  --color-action: var(--colour-action);
+  --color-base: var(--colour-base);
+  --color-background: var(--colour-background);
 }
 
 @layer base {
@@ -28,30 +24,29 @@
   /***********/
   /* GENERAL */
   /***********/
-
   h1 {
-    @apply text-3xl font-bold text-delta mt-8 mb-2;
+    @apply text-3xl text-typography font-bold mt-8 mb-2;
   }
   h2 {
-    @apply text-2xl font-bold text-delta italic mt-4 mb-2;
+    @apply text-2xl text-typography font-bold italic mt-4 mb-2;
   }
   h3 {
-    @apply text-2xl text-delta italic mt-4 mb-2;
+    @apply text-2xl text-typography italic mt-4 mb-2;
   }
   h4 {
-    @apply text-xl font-bold text-delta  mt-4 mb-2;
+    @apply text-xl text-typography font-bold  mt-4 mb-2;
   }
   h5 {
-    @apply text-xl text-delta italic mt-2 mb-2;
+    @apply text-xl text-typography italic mt-2 mb-2;
   }
   h6 {
-    @apply text-base font-bold text-delta italic mt-2 mb-2;
+    @apply font-bold text-typography italic mt-2 mb-2;
   }
   p {
-    @apply mb-2;
+    @apply text-typography mb-2;
   }
   blockquote {
-    @apply text-sm italic text-text-darker mx-4 mb-2;
+    @apply text-sm italic mx-4 mb-2;
   }
 
   .table-wrap {
@@ -61,28 +56,28 @@
     @apply mx-auto text-sm;
   }
   th {
-    @apply p-1 italic text-delta text-center capitalize text-nowrap border border-gamma;
+    @apply p-1 italic text-center capitalize text-nowrap border border-action;
   }
   td {
-    @apply p-1 text-center text-balance border border-gamma h-8 min-w-8;
+    @apply p-1 text-center text-balance border border-action h-8 min-w-8;
   }
 
   button {
-    @apply cursor-pointer;
+    @apply text-typography cursor-pointer;
   }
 
   input {
-    @apply p-1 shadow-md shadow-delta rounded-md;
+    @apply p-1 text-typography border border-typography rounded-md;
   }
 
   /*******/
   /* NAV */
   /*******/
   nav h1 {
-    @apply text-base text-text font-normal italic m-1 text-center;
+    @apply font-normal italic m-1 text-center;
   }
   nav h2 {
-    @apply text-sm text-text font-normal my-2;
+    @apply text-sm font-normal my-2;
   }
   nav hr {
     @apply mt-2;
@@ -99,7 +94,7 @@
   }
   .block-editor-contents .block-gutter {
     @apply select-none shrink-0 pr-2 text-right text-xs font-mono hidden relative;
-    color: var(--color-delta);
+    color: var(--color-typography);
     opacity: 0.5;
     min-width: 2em;
   }
@@ -113,31 +108,31 @@
   .block-editor-contents .block-gutter.tooltip-visible::after {
     content: attr(data-tooltip);
     @apply absolute text-xs px-2 py-1 rounded-sm whitespace-nowrap z-50 pointer-events-none;
-    background: var(--color-alpha);
-    color: var(--color-delta);
-    border: 1px solid var(--color-delta);
+    background: var(--color-background);
+    color: var(--color-typography);
+    border: 1px solid var(--color-typography);
     left: 100%;
     top: 0;
   }
   .block-editor-contents.editing .block-gutter {
-    @apply flex items-start justify-end;
+    @apply flex items-center justify-end;
   }
   .block-editor-contents .block-line > :last-child {
     @apply flex-1 min-w-0;
     min-height: 1.5em;
   }
   .block-editor-contents .be-focused {
-    @apply outline-none bg-beta rounded-sm;
+    @apply outline-none bg-base rounded-sm;
   }
   .block-editor-contents * {
     -webkit-user-drag: none;
   }
   .block-editor-button button {
-    @apply m-1 border border-delta p-1 rounded-sm;
+    @apply m-1 border border-typography p-1 rounded-sm;
   }
 
   button.generic {
-    @apply border border-delta rounded-md px-2 py-1;
+    @apply border border-typography rounded-md px-2 py-1;
   }
 
   /* Inline markdown formatting */

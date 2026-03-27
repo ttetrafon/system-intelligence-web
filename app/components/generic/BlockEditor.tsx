@@ -4,9 +4,11 @@ import { type ComponentType, useCallback, useEffect, useRef, useState } from "re
 import { createRoot, type Root } from "react-dom/client";
 import { BlockEditorButton } from "./BlockEditorButton";
 import { BlockEditorToolbarSeparator } from "./BlockEditorToolbarSeparator";
+import { GameLinkModalInsert } from "./GameLinkModalInsert";
 import { buildHtml, changeBlockType, insertTable, handleKeyDown, handleKeyUp, insertMoralityPairsBlock, wrapBlock, getBlockFromWrapper, renumberGutters } from "util/blockEditorScripts";
 import { buildSingleCommand, useCommandHistory } from "util/commands";
 import MoralityPairs from "~/components/game-system/MoralityPairs";
+import { useGameSystem } from "~/context/GameSystemContext";
 import { useWebSocket } from "~/context/WebSocketContext";
 
 export interface BlockEditorProps {
@@ -20,6 +22,7 @@ export interface BlockEditorProps {
 export function BlockEditor({ ...props }: BlockEditorProps) {
   const history = useCommandHistory();
   const { sendCommand } = useWebSocket();
+  const { applyCommand } = useGameSystem();
 
   const commandContext = { dataKey: props.dataKey };
 
@@ -28,7 +31,11 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
     history.push(cmd);
     if (cmd.type === 'element-changed-contents') return;
     const docCommand = buildSingleCommand(cmd, props.data, commandContext);
+    console.log(`pushAndSend: type=${cmd.type}, id=${'id' in cmd ? cmd.id : '?'}, docCommand=`, docCommand);
     if (docCommand) {
+      // Apply optimistically to local state; server will not echo back to sender
+      applyCommand(props.dataKey, docCommand);
+      skipNextRebuildRef.current = true;
       sendCommand({
         type: 'command',
         system: props.dataSystem,
@@ -36,12 +43,15 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
         command: docCommand,
       });
     }
-  }, [sendCommand, props.data, props.dataSystem, props.dataKey]);
+  }, [sendCommand, applyCommand, props.data, props.dataSystem, props.dataKey]);
   const contentsRef = useRef<HTMLElement>(null);
   const beforeContentRef = useRef<string>('');
   const beforeTypeRef = useRef<string>('');
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const lastFocusedCellRef = useRef<HTMLElement | null>(null);
+  const skipNextRebuildRef = useRef<boolean>(false);
+
+  const [gameLinkModalOpen, setGameLinkModalOpen] = useState(false);
 
   const keyModifierAlt = useState<boolean>(false);
   const keyModifierCtrl = useState<boolean>(false);
@@ -91,7 +101,13 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
   }, [sendCommand, props.dataSystem]);
 
   // Map of data-react-component values to their React components
-  const reactComponentMap: Record<string, ComponentType<{ editing: boolean, gameData: GameSystemData | null, onAddPair?: () => void, onDeletePair?: (id: string) => void, onUpdatePair?: (id: string, field: 'first' | 'second', value: string) => void }>> = {
+  const reactComponentMap: Record<string, ComponentType<{
+    editing: boolean,
+    gameData: GameSystemData | null,
+    onAddPair?: () => void,
+    onDeletePair?: (id: string) => void,
+    onUpdatePair?: (id: string, field: 'first' | 'second', value: string) => void
+  }>> = {
     'morality-pairs': MoralityPairs,
   };
 
@@ -154,6 +170,10 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
   }
 
   useEffect(() => {
+    if (skipNextRebuildRef.current) {
+      skipNextRebuildRef.current = false;
+      return;
+    }
     buildContents();
   }, [props.data]);
 
@@ -196,8 +216,13 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
 
   return (
     <>
+      <GameLinkModalInsert
+        isOpen={gameLinkModalOpen}
+        onOk={() => setGameLinkModalOpen(false)}
+        onCancel={() => setGameLinkModalOpen(false)}
+      />
       {/* editor controls */}
-      {props.editable && <section className="flex flex-row flex-wrap gap-1 justify-center w-full mb-2">
+      {props.editable && <section className="flex flex-row flex-wrap md:gap-1 justify-center w-full mb-2">
         <BlockEditorButton text="Heading 1" icon="h1" onClick={() => changeBlockType(lastFocusedRef, 'h1', pushAndSend)} />
         <BlockEditorButton text="Heading 2" icon="h2" onClick={() => changeBlockType(lastFocusedRef, 'h2', pushAndSend)} />
         <BlockEditorButton text="Heading 3" icon="h3" onClick={() => changeBlockType(lastFocusedRef, 'h3', pushAndSend)} />
@@ -209,22 +234,22 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
         <BlockEditorButton text="Numbered List" icon="format_list_numbered" onClick={() => { }} />
         <BlockEditorButton text="Quote" icon="format_quote" onClick={() => changeBlockType(lastFocusedRef, 'blockquote', pushAndSend)} />
 
-        <BlockEditorToolbarSeparator color="var(--color-gamma)" />
+        <BlockEditorToolbarSeparator color="var(--color-action)" />
 
         <BlockEditorButton text="Bold" icon="format_bold" onClick={() => { }} />
         <BlockEditorButton text="Italic" icon="format_italic" onClick={() => { }} />
         <BlockEditorButton text="Underline" icon="format_underlined" onClick={() => { }} />
         <BlockEditorButton text="Strikethrough" icon="strikethrough" onClick={() => { }} />
 
-        <BlockEditorToolbarSeparator color="var(--color-gamma)" />
+        <BlockEditorToolbarSeparator color="var(--color-action)" />
 
         <BlockEditorButton text="Table" icon="table" onClick={() => insertTable(lastFocusedRef, contentsRef, pushAndSend)} />
-        <BlockEditorButton text="Game System Link" icon="dataset_linked" onClick={() => { }} />
+        <BlockEditorButton text="Game System Link" icon="dataset_linked" onClick={() => setGameLinkModalOpen(true)} />
         <BlockEditorButton text="Special Block" icon="folder_special" >
           <button className="text-nowrap" onClick={() => { insertMoralityPairsBlock(lastFocusedCellRef, contentsRef, pushAndSend); mountReactPlaceholders(props.editable); }}>Morality Pairs</button>
         </BlockEditorButton>
 
-        <BlockEditorToolbarSeparator color="var(--color-gamma)" />
+        <BlockEditorToolbarSeparator color="var(--color-action)" />
 
         <BlockEditorButton text="Decrease Indent" icon="format_intent_decrease" onClick={() => { }} />
         <BlockEditorButton text="Increase Indent" icon="format_indent_increase" onClick={() => { }} />
@@ -308,6 +333,8 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
               // Send content update on blur via WebSocket
               const docCommand = buildSingleCommand(cmd, props.data, commandContext);
               if (docCommand) {
+                applyCommand(props.dataKey, docCommand);
+                skipNextRebuildRef.current = true;
                 sendCommand({
                   type: 'command',
                   system: props.dataSystem,

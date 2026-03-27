@@ -20,8 +20,24 @@ export default function MoralityPairs({ editing, gameData, onAddPair, onDeletePa
         <tbody>
           {order.map((id) => items[id]).filter(Boolean).map((pair) => (
             <tr key={pair.id}>
-              <td className="p-0"><input className='shadow-none border-none text-right px-2' type='text' defaultValue={pair.first} onBlur={(e) => { if (e.target.value !== pair.first) onUpdatePair?.(pair.id, 'first', e.target.value); }} /></td>
-              <td className="p-0"><input className='shadow-none border-none text-left px-2' type='text' defaultValue={pair.second} onBlur={(e) => { if (e.target.value !== pair.second) onUpdatePair?.(pair.id, 'second', e.target.value); }} /></td>
+              <td className="p-0"><input
+                className='shadow-none border-none text-right px-2'
+                type='text'
+                defaultValue={pair.first}
+                onBlur={(e) => {
+                  if (e.target.value !== pair.first)
+                    onUpdatePair?.(pair.id, 'first', e.target.value);
+                }} />
+              </td>
+              <td className="p-0"><input
+                className='shadow-none border-none text-left px-2'
+                type='text'
+                defaultValue={pair.second}
+                onBlur={(e) => {
+                  if (e.target.value !== pair.second)
+                    onUpdatePair?.(pair.id, 'second', e.target.value);
+                }} />
+              </td>
               <td className="p-0"><BlockEditorButton text="Delete Morality Pair" icon="delete" onClick={() => onDeletePair?.(pair.id)} /></td>
             </tr>
           ))}

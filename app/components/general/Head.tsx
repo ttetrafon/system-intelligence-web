@@ -10,25 +10,25 @@ interface HeadProps {
 
 export default function Head({ toggleContents, session, onLogout }: HeadProps) {
   return (
-    <header className="w-full bg-beta p-2 flex justify-center-safe items-center gap-4">
+    <header className="w-full bg-base p-2 flex justify-center-safe items-center gap-4 border-b border-background">
       <button
         type="button"
-        className="lg:hidden p-1 text-text hover:text-white"
+        className="lg:hidden p-1 text-typography hover:shadow shadow-action"
         onClick={toggleContents}
         aria-label="Toggle table of contents"
       >
         <MenuIcon title="Table of Contents" imageName="menu" />
       </button>
-      <Link to='/' className="text-text hover:text-white">
+      <Link to='/' className="text-typography rounded hover:shadow shadow-action">
         <MenuIcon title='Home' imageName={'home'}></MenuIcon>
       </Link>
       <span className="flex-1"></span>
       {session ? (
         <>
-          <Link to="/dashboard" className="text-text self-center hover:text-white">{session.display ?? session.username}</Link>
+          <Link to="/dashboard" className="text-typography self-center rounded hover:shadow shadow-action">{session.display ?? session.username}</Link>
           <button
             type="button"
-            className="text-text hover:text-white"
+            className="text-typography rounded hover:shadow shadow-action"
             onClick={onLogout}
             aria-label="Logout"
           >
@@ -36,7 +36,7 @@ export default function Head({ toggleContents, session, onLogout }: HeadProps) {
           </button>
         </>
       ) : (
-        <Link to="/login" className="text-text hover:text-white" aria-label="Login">
+        <Link to="/login" className="text-typography rounded hover:shadow shadow-action" aria-label="Login">
           <MenuIcon title="Login" imageName="login" />
         </Link>
       )}

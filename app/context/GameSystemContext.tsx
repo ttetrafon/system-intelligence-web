@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { BlockDocument, DataLinks, GameSystemData, MoralityPair } from "../../types/game";
 import type { AnyDocumentCommand } from "../../types/requests";
 import type { WsIncoming } from "../../types/websocket";
-import { addBlockToDocument, removeBlockFromDocument, reorderBlocksInDocument, updateBlockInDocument } from "../../util/data";
+import { applyCommandToDocument } from "../../util/commands";
 import { buildDataLinks } from "../../util/game";
 import { useWebSocket } from "./WebSocketContext";
 
@@ -11,6 +11,7 @@ const LS_KEY_GAME_SYSTEM = 'si:game-system';
 interface GameSystemContextType {
   data: GameSystemData | null;
   dataLinks: DataLinks | null;
+  applyCommand: (dataKey: string, command: AnyDocumentCommand) => void;
 }
 
 const GameSystemContext = createContext<GameSystemContextType | undefined>(undefined);
@@ -27,58 +28,55 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
     }
   });
 
+  // Apply a command optimistically to local state (used by the sender before the server echoes back)
+  const applyCommand = useCallback((dataKey: string, command: AnyDocumentCommand) => {
+    setData(prev => {
+      if (!prev) return prev;
+      const keys = dataKey.split('.');
+      const updated = { ...prev };
+      let node: Record<string, unknown> = updated as unknown as Record<string, unknown>;
+      for (let i = 0; i < keys.length - 1; i++) {
+        node[keys[i]] = { ...(node[keys[i]] as Record<string, unknown>) };
+        node = node[keys[i]] as Record<string, unknown>;
+      }
+      const docKey = keys[keys.length - 1];
+
+      // Handle non-block-document commands
+      if (command.commandType === 'add-morality-pair' && 'id' in command) {
+        const existing = (node[docKey] as MoralityPair[]) ?? [];
+        node[docKey] = [...existing, { id: command.id, first: '', second: '' }];
+      }
+      else if (command.commandType === 'delete-morality-pair' && 'id' in command) {
+        const existing = (node[docKey] as MoralityPair[]) ?? [];
+        node[docKey] = existing.filter(p => p.id !== command.id);
+      }
+      else if (command.commandType === 'update-morality-pair' && 'id' in command && 'field' in command && 'value' in command) {
+        const existing = (node[docKey] as MoralityPair[]) ?? [];
+        node[docKey] = existing.map(p => p.id === command.id ? { ...p, [command.field as 'first' | 'second']: command.value as string } : p);
+      }
+      // Handle block-document commands
+      else {
+        const existing = node[docKey] as BlockDocument;
+        const doc: BlockDocument = { order: [...existing.order], blocks: { ...existing.blocks } };
+        applyCommandToDocument(doc, command);
+        node[docKey] = doc;
+      }
+
+      localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
   useEffect(() => {
     const unsub = subscribe((msg: WsIncoming) => {
       if (msg.type !== 'game-system-update') return;
       const payload = msg as { dataKey: string; commands: AnyDocumentCommand[] };
-      setData(prev => {
-        if (!prev) return prev;
-        const keys = payload.dataKey.split('.');
-        const updated = { ...prev };
-        let node: Record<string, unknown> = updated as unknown as Record<string, unknown>;
-        for (let i = 0; i < keys.length - 1; i++) {
-          node[keys[i]] = { ...(node[keys[i]] as Record<string, unknown>) };
-          node = node[keys[i]] as Record<string, unknown>;
-        }
-        const docKey = keys[keys.length - 1];
-
-        const firstCmd = payload.commands[0];
-        // Handle non-block-document commands
-        if (firstCmd && firstCmd.commandType === 'add-morality-pair' && 'id' in firstCmd) {
-          const existing = (node[docKey] as MoralityPair[]) ?? [];
-          node[docKey] = [...existing, { id: firstCmd.id, first: '', second: '' }];
-        }
-        else if (firstCmd && firstCmd.commandType === 'delete-morality-pair' && 'id' in firstCmd) {
-          const existing = (node[docKey] as MoralityPair[]) ?? [];
-          node[docKey] = existing.filter(p => p.id !== firstCmd.id);
-        }
-        else if (firstCmd && firstCmd.commandType === 'update-morality-pair' && 'id' in firstCmd && 'field' in firstCmd && 'value' in firstCmd) {
-          const existing = (node[docKey] as MoralityPair[]) ?? [];
-          node[docKey] = existing.map(p => p.id === firstCmd.id ? { ...p, [firstCmd.field as 'first' | 'second']: firstCmd.value as string } : p);
-        }
-        // Handle block-document commands
-        else {
-          const existing = node[docKey] as BlockDocument;
-          const doc: BlockDocument = { order: [...existing.order], blocks: { ...existing.blocks } };
-          for (const cmd of payload.commands) {
-            if ('block' in cmd) {
-              addBlockToDocument(doc, cmd.block, cmd.position);
-            } else if ('blockId' in cmd) {
-              removeBlockFromDocument(doc, cmd.blockId);
-            } else if ('updatedOrder' in cmd) {
-              reorderBlocksInDocument(doc, cmd.updatedOrder);
-            } else if ('updatedBlock' in cmd) {
-              updateBlockInDocument(doc, cmd.updatedBlock);
-            }
-          }
-          node[docKey] = doc;
-        }
-        localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(updated));
-        return updated;
-      });
+      for (const cmd of payload.commands) {
+        applyCommand(payload.dataKey, cmd);
+      }
     });
     return unsub;
-  }, [subscribe]);
+  }, [subscribe, applyCommand]);
 
   // Fetch full data on initial load and on WebSocket reconnect (to catch missed messages)
   useEffect(() => {
@@ -100,7 +98,7 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
   }, [data]);
 
   return (
-    <GameSystemContext.Provider value={{ data, dataLinks }}>
+    <GameSystemContext.Provider value={{ data, dataLinks, applyCommand }}>
       {children}
     </GameSystemContext.Provider>
   );

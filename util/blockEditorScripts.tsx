@@ -177,6 +177,11 @@ export function wrapBlock(block: HTMLElement, index: number): HTMLElement {
   gutter.title = block.id;
   gutter.dataset.tooltip = block.id;
 
+  const after = document.createElement('div');
+  after.className = 'block-after';
+  after.contentEditable = 'false';
+  // ... create button to delete line
+
   wrapper.appendChild(gutter);
   wrapper.appendChild(block);
   return wrapper;

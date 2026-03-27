@@ -54,7 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </head>
         <WebSocketProvider>
           <GameSystemProvider>
-            <body className="w-full h-dvh antialiased bg-alpha text-text flex flex-col flex-nowrap justify-stretch">
+            <body className="w-full h-dvh antialiased bg-background text-typography flex flex-col flex-nowrap justify-stretch">
               <HeadWrapper toggleContents={toggleContents} />
               <main className="flex-1 flex flex-row flex-nowrap justify-stretch overflow-hidden">
                 <Contents

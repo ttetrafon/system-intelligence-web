@@ -1,5 +1,5 @@
 {
-  "version": "1.1.6",
+  "version": "0.1.7",
   "name": "system-intelligence-web",
   "private": true,
   "type": "module",
@@ -16,7 +16,6 @@
     "deploy:staging": "pnpm run build:staging && wrangler deploy",
     "deploy:production": "pnpm run build:production && wrangler deploy"
   },
-  "packageManager": "pnpm@10.26.2",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "isbot": "^5.1.36",
@@ -36,5 +35,9 @@
     "typescript": "^6.0.2",
     "vite": "^8.0.2",
     "wrangler": "^4.76.0"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
   }
 }

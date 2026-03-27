@@ -44,7 +44,7 @@ export function Tooltip({ content, children, position = 'right' }: TooltipProps)
       {visible && (
         <div
           ref={tooltipRef}
-          className={`absolute z-50 px-2 py-1 text-xs rounded shadow-lg bg-gamma text-alpha whitespace-nowrap ${positionClasses[position]}`}
+          className={`absolute z-50 px-2 py-1 text-xs rounded shadow-lg bg-action text-background whitespace-nowrap ${positionClasses[position]}`}
         >
           {content}
         </div>
