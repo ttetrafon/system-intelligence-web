@@ -24,6 +24,10 @@
   /***********/
   /* GENERAL */
   /***********/
+  body {
+    @apply text-sans;
+  }
+
   h1 {
     @apply text-3xl text-typography font-bold mt-8 mb-2;
   }
