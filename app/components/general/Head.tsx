@@ -10,7 +10,7 @@ interface HeadProps {
 
 export default function Head({ toggleContents, session, onLogout }: HeadProps) {
   return (
-    <header className="w-full bg-base p-2 flex justify-center-safe items-center gap-4 border-b border-background">
+    <header className="w-full bg-basis p-2 flex justify-center-safe items-center gap-4 border-b border-background">
       <button
         type="button"
         className="lg:hidden p-1 text-typography hover:shadow shadow-action"

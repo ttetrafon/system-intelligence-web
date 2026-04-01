@@ -21,7 +21,7 @@ export function BlockEditorButton({ text, icon, onClick, children }: BlockEditor
         }}>
         <Svg name={icon} fill='var(--color-typography)' />
       </button>
-      {children && sub && <div className='absolute left-1/2 -translate-x-1/2 bg-base py-1 px-2 rounded-md'>
+      {children && sub && <div className='absolute left-1/2 -translate-x-1/2 bg-basis py-1 px-2 rounded-md'>
         {children}
       </div>}
     </div>

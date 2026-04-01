@@ -8,7 +8,7 @@ interface ContentsProps {
 
 export default function Contents({ isContentsVisible, toggleContents }: ContentsProps) {
   return (
-    <nav className={`${isContentsVisible ? 'block' : 'hidden'} lg:block fixed inset-0 z-99 bg-base p-2 lg:static lg:z-auto flex flex-col flex-nowrap items-stretch overflow-y-auto`} >
+    <nav className={`${isContentsVisible ? 'block' : 'hidden'} lg:block fixed inset-0 z-99 bg-basis p-2 lg:static lg:z-auto flex flex-col flex-nowrap items-stretch overflow-y-auto`} >
       <h1>Table of Contents</h1>
       <hr />
       <div>
