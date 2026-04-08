@@ -123,6 +123,16 @@ export function insertTable(
 }
 
 function buildInlineNode(node: InlineNode): Node {
+  // check for special nodes first
+  if (node.dataLink) {
+    const span = document.createElement('span');
+    span.dataset.reactComponent = 'inline-data-link';
+    span.dataset.link = JSON.stringify(node.dataLink);
+    if (node.text) span.dataset.givenLabel = node.text;
+    return span;
+  }
+
+  // ... then create a basic html inline node
   const text = document.createTextNode(node.text);
   if (!node.bold && !node.italic) return text;
 
@@ -259,6 +269,27 @@ export function handleKeyDown(
 
   // Let native inputs handle their own keyboard events
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) return;
+
+  // If a printable character is typed while the caret is inside a non-editable inline element
+  // (e.g. an InlineDataLink span), escape the caret to just after that element first so the
+  // character is inserted in the surrounding editable block rather than being swallowed.
+  if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      let node: Node | null = sel.getRangeAt(0).startContainer;
+      while (node && node !== e.currentTarget) {
+        if (node instanceof HTMLElement && node.contentEditable === 'false') {
+          const escaped = document.createRange();
+          escaped.setStartAfter(node);
+          escaped.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(escaped);
+          break;
+        }
+        node = node.parentNode;
+      }
+    }
+  }
 
   // Capture modifier keys
   if (["Alt", "Ctrl", "Shift"].includes(e.key)) {
@@ -412,6 +443,7 @@ function isAtStart(range: Range, element: HTMLElement): boolean {
   }
   return true;
 }
+
 function isInTable(element: HTMLElement): boolean {
   return element.tagName === 'TABLE';
 }

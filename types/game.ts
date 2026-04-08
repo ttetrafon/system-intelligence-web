@@ -98,6 +98,7 @@ export interface InlineNode {
   italic?: boolean;
   link?: string;
   colour?: string;
+  dataLink?: DataLink;
 }
 
 export function emptyDocument(): BlockDocument {

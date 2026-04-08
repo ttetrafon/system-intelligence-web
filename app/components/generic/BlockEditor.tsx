@@ -1,4 +1,4 @@
-import type { BlockDocument, GameSystemData } from "@app-types/game";
+import type { BlockDocument, DataLink, GameSystemData } from "@app-types/game";
 import type { EditorCommand } from "@app-types/editor";
 import { type ComponentType, useCallback, useEffect, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -8,6 +8,7 @@ import { GameLinkModalInsert } from "./GameLinkModalInsert";
 import { buildHtml, changeBlockType, insertTable, handleKeyDown, handleKeyUp, insertMoralityPairsBlock, wrapBlock, getBlockFromWrapper, renumberGutters } from "util/blockEditorScripts";
 import { buildSingleCommand, useCommandHistory } from "util/commands";
 import MoralityPairs from "~/components/game-system/MoralityPairs";
+import { InlineDataLink } from "~/components/game-system/InlineDataLink";
 import { useGameSystem } from "~/context/GameSystemContext";
 import { useWebSocket } from "~/context/WebSocketContext";
 
@@ -50,6 +51,8 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const lastFocusedCellRef = useRef<HTMLElement | null>(null);
   const skipNextRebuildRef = useRef<boolean>(false);
+  const savedSelectionRef = useRef<Range | null>(null);
+  const [isWithinText, setIsWithinText] = useState<boolean>(false);
 
   const [gameLinkModalOpen, setGameLinkModalOpen] = useState(false);
 
@@ -58,6 +61,45 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
   const keyModifierShift = useState<boolean>(false);
   const reactRootsRef = useRef<Map<string, Root>>(new Map());
   const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const insertDataLinkAtCaret = useCallback((link: DataLink, givenLabel?: string) => {
+    const range = savedSelectionRef.current;
+    if (!range) return;
+
+    // Remove any selected content (handles replace-selection case)
+    range.deleteContents();
+
+    // Build the placeholder span
+    const span = document.createElement('span');
+    span.id = crypto.randomUUID();
+    span.dataset.reactComponent = 'inline-data-link';
+    span.dataset.link = JSON.stringify(link);
+    if (givenLabel !== undefined) span.dataset.givenLabel = givenLabel;
+    span.contentEditable = 'false';
+
+    range.insertNode(span);
+
+    // Mount a React root immediately (bypasses the next mountReactPlaceholders pass)
+    const root = createRoot(span);
+    root.render(<InlineDataLink link={link} {...(givenLabel !== undefined && { givenLabel })} />);
+    reactRootsRef.current.set(span.id, root);
+
+    // Re-focus the contenteditable block (lost when the modal opened) before restoring the selection,
+    // otherwise the browser has no anchor and may place the caret inside the non-editable span.
+    const editableParent = span.closest<HTMLElement>('[contenteditable="true"]');
+    editableParent?.focus();
+
+    // Move caret to just after the inserted span
+    const sel = window.getSelection();
+    if (sel) {
+      const afterRange = document.createRange();
+      afterRange.setStartAfter(span);
+      afterRange.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(afterRange);
+      savedSelectionRef.current = afterRange.cloneRange();
+    }
+  }, []);
 
   const handleAddMoralityPair = useCallback(() => {
     sendCommand({
@@ -129,6 +171,18 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
     for (const el of placeholders) {
       const componentName = el.dataset.reactComponent;
       if (!componentName || reactRootsRef.current.has(el.id)) continue;
+
+      if (componentName === 'inline-data-link') {
+        const rawLink = el.dataset.link;
+        if (!rawLink) continue;
+        const link: DataLink = JSON.parse(rawLink);
+        const givenLabel = el.dataset.givenLabel;
+        const root = createRoot(el);
+        root.render(<InlineDataLink link={link} {...(givenLabel !== undefined && { givenLabel })} />);
+        reactRootsRef.current.set(el.id, root);
+        continue;
+      }
+
       const Component = reactComponentMap[componentName];
       if (!Component) continue;
       const root = createRoot(el);
@@ -147,7 +201,6 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
       for (const root of roots) root.unmount();
     }
   }, []);
-
 
   const buildContents = () => {
     if (!contentsRef.current) return;
@@ -202,6 +255,27 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
     }
   }, [props.gameData]);
 
+  // Track caret position and whether it's within an editable element
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      const sel = document.getSelection();
+      if (!sel || sel.rangeCount === 0) {
+        setIsWithinText(false);
+        return;
+      }
+      const activeEl = document.activeElement as HTMLElement | null;
+      const withinEditable = !!activeEl?.isContentEditable && !!contentsRef.current?.contains(activeEl);
+      if (withinEditable) {
+        savedSelectionRef.current = sel.getRangeAt(0).cloneRange();
+        setIsWithinText(true);
+      } else {
+        setIsWithinText(false);
+      }
+    };
+    document.addEventListener('selectionchange', handleSelectionChange);
+    return () => document.removeEventListener('selectionchange', handleSelectionChange);
+  }, []);
+
   // Renumber gutters when wrappers are added/removed
   useEffect(() => {
     if (!contentsRef.current) return;
@@ -218,7 +292,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
     <>
       <GameLinkModalInsert
         isOpen={gameLinkModalOpen}
-        onOk={() => setGameLinkModalOpen(false)}
+        onOk={(link, givenLabel) => { setGameLinkModalOpen(false); insertDataLinkAtCaret(link, givenLabel); }}
         onCancel={() => setGameLinkModalOpen(false)}
       />
       {/* editor controls */}
@@ -244,7 +318,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
         <BlockEditorToolbarSeparator color="var(--color-action)" />
 
         <BlockEditorButton text="Table" icon="table" onClick={() => insertTable(lastFocusedRef, contentsRef, pushAndSend)} />
-        <BlockEditorButton text="Game System Link" icon="dataset_linked" onClick={() => setGameLinkModalOpen(true)} />
+        <BlockEditorButton text="Game System Link" icon="dataset_linked" onClick={() => setGameLinkModalOpen(true)} disabled={!isWithinText} />
         <BlockEditorButton text="Special Block" icon="folder_special" >
           <button className="text-nowrap" onClick={() => { insertMoralityPairsBlock(lastFocusedCellRef, contentsRef, pushAndSend); mountReactPlaceholders(props.editable); }}>Morality Pairs</button>
         </BlockEditorButton>

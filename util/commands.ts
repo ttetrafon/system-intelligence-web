@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import type { EditorCommand } from '@app-types/editor';
-import type { Block, ContentBlock, BlockDocument, InlineNode } from '@app-types/game';
-import type { AnyDocumentCommand, documentCommand, documentCommandType } from '@app-types/requests';
+import type { Block, ContentBlock, BlockDocument, DataLink, InlineNode } from '@app-types/game';
+import type { AnyDocumentCommand, documentCommand } from '@app-types/requests';
 import { addBlockToDocument, removeBlockFromDocument, reorderBlocksInDocument, updateBlockInDocument } from './data';
 
 export function useCommandHistory() {
@@ -58,6 +58,12 @@ function extractInlineNodes(node: Node, bold = false, italic = false): InlineNod
       const text = child.textContent ?? '';
       if (text) nodes.push({ text, ...(bold && { bold }), ...(italic && { italic }) });
     } else if (child instanceof HTMLElement) {
+      if (child.dataset.reactComponent === 'inline-data-link' && child.dataset.link) {
+        const dataLink: DataLink = JSON.parse(child.dataset.link);
+        const text = child.dataset.givenLabel ?? dataLink.label;
+        nodes.push({ text, dataLink, ...(bold && { bold }), ...(italic && { italic }) });
+        continue;
+      }
       const isBold = bold || child.tagName === 'STRONG';
       const isItalic = italic || child.tagName === 'EM';
       nodes.push(...extractInlineNodes(child, isBold, isItalic));

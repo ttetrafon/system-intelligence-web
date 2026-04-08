@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react';
 import { useGameSystem } from '~/context/GameSystemContext';
 import { Modal } from './Modal';
+import type { DataLink } from '@app-types/game';
 
 interface GameLinkModalInsertProps {
   isOpen: boolean;
-  onOk: () => void;
+  onOk: (link: DataLink, givenLabel?: string) => void;
   onCancel: () => void;
 }
 
@@ -64,11 +65,20 @@ export function GameLinkModalInsert({ isOpen, onOk, onCancel }: GameLinkModalIns
     setSelectedId(null);
   };
 
-  const handleOk = () => { reset(); onOk(); };
+  const handleOk = () => {
+    const link = allLinks.find(l => l.id === selectedId);
+    if (!link) return;
+    const trimmed = display.trim();
+    const givenLabel = trimmed !== '' && trimmed !== link.label ? trimmed : undefined;
+    reset();
+    onOk(link, givenLabel);
+  };
   const handleCancel = () => { reset(); onCancel(); };
 
   return (
+    // TODO: if a link is selected, call handleOk on 'Enter'
     <Modal isOpen={isOpen} onClose={handleCancel}>
+      {/* TODO: maybe change this to a form from section? */}
       <section className='flex flex-col flex-nowrap gap-2 max-w-150' onKeyDown={handleFilterKeyDown}>
         <h6>Data Link</h6>
         {/* data */}
