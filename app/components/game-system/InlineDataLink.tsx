@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
 import type { BlockDocument, DataLink, GameSystemData } from '@app-types/game';
 import { InlineButton } from '../generic/InlineButton';
 import { Modal } from '../generic/Modal';
+import { MoralityPairs } from './MoralityPairs';
 import { buildHtml } from '../../../util/blockEditorScripts';
 
 export interface InlineDataLinkProps {
@@ -53,19 +55,42 @@ function extractSection(doc: BlockDocument, titleId: string): BlockDocument | un
   return { order: sectionOrder, blocks: sectionBlocks };
 }
 
-function DocumentDetails({ document }: { document: BlockDocument }) {
+function DocumentDetails({ document, gameData }: { document: BlockDocument; gameData: GameSystemData | null }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const reactRootsRef = useRef<Root[]>([]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+
+    for (const root of reactRootsRef.current) root.unmount();
+    reactRootsRef.current = [];
     container.innerHTML = '';
+
     buildHtml(document).then(fragment => {
       container.appendChild(fragment);
-    });
-  }, [document]);
 
-  return <div ref={containerRef} />;
+      for (const el of container.querySelectorAll<HTMLElement>('[data-react-component]')) {
+        switch (el.dataset.reactComponent) {
+          case 'morality-pairs': {
+            const root = createRoot(el);
+            root.render(<MoralityPairs editing={false} gameData={gameData} />);
+            reactRootsRef.current.push(root);
+            break;
+          }
+        }
+      }
+    });
+
+    return () => {
+      const roots = reactRootsRef.current;
+      reactRootsRef.current = [];
+      // Defer unmount to avoid calling root.unmount() during React's commit phase
+      setTimeout(() => { for (const root of roots) root.unmount(); }, 0);
+    };
+  }, [document, gameData]);
+
+  return <div ref={containerRef} contentEditable="false" suppressContentEditableWarning />;
 }
 
 export function InlineDataLink({ link, givenLabel, editable, gameData }: InlineDataLinkProps) {
@@ -76,7 +101,7 @@ export function InlineDataLink({ link, givenLabel, editable, gameData }: InlineD
       case 'document': {
         const doc = gameData ? resolveByPath(gameData, link.address) as BlockDocument | undefined : undefined;
         if (!doc) return <p>Document not found: {link.address}</p>;
-        return <DocumentDetails document={doc} />;
+        return <DocumentDetails document={doc} gameData={gameData} />;
       }
       case 'section': {
         const [docPath, titleId] = link.address.split('#');
@@ -85,7 +110,7 @@ export function InlineDataLink({ link, givenLabel, editable, gameData }: InlineD
         if (!doc) return <p>Document not found: {docPath}</p>;
         const section = extractSection(doc, titleId);
         if (!section) return <p>Section not found: {titleId}</p>;
-        return <DocumentDetails document={section} />;
+        return <DocumentDetails document={section} gameData={gameData} />;
       }
       case 'entity': return <p>Entity: {link.label}</p>;
       default: return null;

@@ -19,26 +19,30 @@ export function MoralityPairs({ editing, gameData, onAddPair, onDeletePair, onUp
       <table>
         <tbody>
           {order.map((id) => items[id]).filter(Boolean).map((pair) => (
-            <tr key={pair.id}>
-              <td className="p-0"><input
-                className='shadow-none border-none text-right px-2'
-                type='text'
-                defaultValue={pair.first}
-                onBlur={(e) => {
-                  if (e.target.value !== pair.first)
-                    onUpdatePair?.(pair.id, 'first', e.target.value);
-                }} />
+            <tr key={pair.id} className=" text-typography">
+              <td className={editing ? "p-0" : "px-2 text-right"}>
+                {editing && <input
+                  className='shadow-none border-none text-right px-2'
+                  type='text'
+                  defaultValue={pair.first}
+                  onBlur={(e) => {
+                    if (e.target.value !== pair.first)
+                      onUpdatePair?.(pair.id, 'first', e.target.value);
+                  }} />}
+                {!editing && <>{pair.first}</>}
               </td>
-              <td className="p-0"><input
-                className='shadow-none border-none text-left px-2'
-                type='text'
-                defaultValue={pair.second}
-                onBlur={(e) => {
-                  if (e.target.value !== pair.second)
-                    onUpdatePair?.(pair.id, 'second', e.target.value);
-                }} />
+              <td className={editing ? "p-0" : "px-2 text-left"}>
+                {editing && <input
+                  className='shadow-none border-none text-left px-2'
+                  type='text'
+                  defaultValue={pair.second}
+                  onBlur={(e) => {
+                    if (e.target.value !== pair.second)
+                      onUpdatePair?.(pair.id, 'second', e.target.value);
+                  }} />}
+                {!editing && <>{pair.second}</>}
               </td>
-              <td className="p-0"><BlockEditorButton text="Delete Morality Pair" icon="delete" onClick={() => onDeletePair?.(pair.id)} /></td>
+              {editing && <td className="p-0"><BlockEditorButton text="Delete Morality Pair" icon="delete" onClick={() => onDeletePair?.(pair.id)} /></td>}
             </tr>
           ))}
         </tbody>

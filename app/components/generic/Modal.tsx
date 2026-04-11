@@ -25,6 +25,8 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
       className="items-stretch m-auto p-6 bg-basis rounded-lg shadow-xl backdrop:bg-background/50"
       onCancel={onClose}
       onClick={(e) => { if (e.target === dialogRef.current) onClose(); }}
+      contentEditable='false'
+      suppressContentEditableWarning
     >
       {children}
     </dialog>
