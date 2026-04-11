@@ -7,9 +7,10 @@ export interface BlockEditorButtonProps {
   onClick?: () => void;
   children?: ReactNode;
   disabled?: boolean;
+  size?: string;
 }
 
-export function BlockEditorButton({ text, icon, onClick, children, disabled }: BlockEditorButtonProps) {
+export function BlockEditorButton({ text, icon, onClick, children, disabled, size = 'size-8' }: BlockEditorButtonProps) {
   const [sub, setSub] = useState<boolean>(false);
 
   return (
@@ -17,7 +18,7 @@ export function BlockEditorButton({ text, icon, onClick, children, disabled }: B
       <button
         title={text}
         disabled={disabled}
-        className='p-1 size-8 aspect-square cursor-pointer border border-action rounded-sm'
+        className={`p-1 ${size} aspect-square cursor-pointer border border-action rounded-sm`}
         onClick={() => {
           onClick?.();
         }}>

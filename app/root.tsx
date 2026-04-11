@@ -62,7 +62,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   toggleContents={toggleContents}
                 />
                 <section className="flex flex-col flex-nowrap justify-stretch items-stretch flex-1 p-2 overflow-hidden">{children}</section>
-                <Side />
+                {/* <Side /> */}
               </main>
               <Footer />
               <ScrollRestoration />

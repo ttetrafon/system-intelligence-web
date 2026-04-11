@@ -25,7 +25,14 @@ function walkStructure(obj: Record<string, unknown>, pathParts: string[], links:
   for (const key of Object.keys(obj)) {
     const value = obj[key];
     const currentPath = [...pathParts, key];
-    // console.log(`---> walking the structure: ${JSON.stringify(currentPath)}`);
+    // console.log(`---> walking the structure: ${currentPath.join(".")}::${JSON.stringify(currentPath)}`);
+
+    // Skip specific paths for documents/entities we do not wish to make links for.
+    if ([
+      'characters.morality.pairs'
+    ].includes(currentPath.join("."))) {
+      continue;
+    }
 
     if (key === 'document' && isBlockDocument(value)) {
       // Document link

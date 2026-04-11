@@ -9,7 +9,7 @@ export interface MoralityPairsProps {
   onUpdatePair?: (id: string, field: 'first' | 'second', value: string) => void,
 }
 
-export default function MoralityPairs({ editing, gameData, onAddPair, onDeletePair, onUpdatePair }: MoralityPairsProps) {
+export function MoralityPairs({ editing, gameData, onAddPair, onDeletePair, onUpdatePair }: MoralityPairsProps) {
   const moralityPairs = gameData?.characters.morality.pairs;
   const order = moralityPairs?.order ?? [];
   const items = moralityPairs?.items ?? {};

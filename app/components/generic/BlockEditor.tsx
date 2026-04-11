@@ -7,8 +7,8 @@ import { BlockEditorToolbarSeparator } from "./BlockEditorToolbarSeparator";
 import { GameLinkModalInsert } from "./GameLinkModalInsert";
 import { buildHtml, changeBlockType, insertTable, handleKeyDown, handleKeyUp, insertMoralityPairsBlock, wrapBlock, getBlockFromWrapper, renumberGutters } from "util/blockEditorScripts";
 import { buildSingleCommand, useCommandHistory } from "util/commands";
-import MoralityPairs from "~/components/game-system/MoralityPairs";
 import { InlineDataLink } from "~/components/game-system/InlineDataLink";
+import { MoralityPairs } from "~/components/game-system/MoralityPairs";
 import { useGameSystem } from "~/context/GameSystemContext";
 import { useWebSocket } from "~/context/WebSocketContext";
 
@@ -81,7 +81,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
 
     // Mount a React root immediately (bypasses the next mountReactPlaceholders pass)
     const root = createRoot(span);
-    root.render(<InlineDataLink link={link} {...(givenLabel !== undefined && { givenLabel })} />);
+    root.render(<InlineDataLink link={link} editable={props.editable} gameData={props.gameData} {...(givenLabel !== undefined && { givenLabel })} />);
     reactRootsRef.current.set(span.id, root);
 
     // Re-focus the contenteditable block (lost when the modal opened) before restoring the selection,
@@ -178,7 +178,13 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
         const link: DataLink = JSON.parse(rawLink);
         const givenLabel = el.dataset.givenLabel;
         const root = createRoot(el);
-        root.render(<InlineDataLink link={link} {...(givenLabel !== undefined && { givenLabel })} />);
+        root.render(
+          <InlineDataLink
+            link={link}
+            editable={props.editable}
+            gameData={props.gameData}
+            {...(givenLabel !== undefined && { givenLabel })} />
+        );
         reactRootsRef.current.set(el.id, root);
         continue;
       }
@@ -297,6 +303,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
       />
       {/* editor controls */}
       {props.editable && <section className="flex flex-row flex-wrap md:gap-1 justify-center w-full mb-2">
+        {/* TODO: Make the header buttons horizontally scrollable in small screens, so them wrapping do not take too much screen space. */}
         <BlockEditorButton text="Heading 1" icon="h1" onClick={() => changeBlockType(lastFocusedRef, 'h1', pushAndSend)} />
         <BlockEditorButton text="Heading 2" icon="h2" onClick={() => changeBlockType(lastFocusedRef, 'h2', pushAndSend)} />
         <BlockEditorButton text="Heading 3" icon="h3" onClick={() => changeBlockType(lastFocusedRef, 'h3', pushAndSend)} />
