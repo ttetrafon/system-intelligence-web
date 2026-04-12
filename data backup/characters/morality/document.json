@@ -1,0 +1,28 @@
+{
+  "order": [
+    "82034edd-8c8a-435a-8640-4bc1b6b5948b",
+    "4c3b0d0c-0153-4b92-bc45-0b06b980b01c",
+    "508ab6a1-29a4-4a16-a1e4-ea7c1806ae3f"
+  ],
+  "blocks": {
+    "82034edd-8c8a-435a-8640-4bc1b6b5948b": {
+      "id": "82034edd-8c8a-435a-8640-4bc1b6b5948b",
+      "type": "paragraph",
+      "content": [
+        {
+          "text": "Your morality is defined by five pairs of opposing scores."
+        }
+      ]
+    },
+    "508ab6a1-29a4-4a16-a1e4-ea7c1806ae3f": {
+      "id": "508ab6a1-29a4-4a16-a1e4-ea7c1806ae3f",
+      "type": "moralityPairs",
+      "content": []
+    },
+    "4c3b0d0c-0153-4b92-bc45-0b06b980b01c": {
+      "id": "4c3b0d0c-0153-4b92-bc45-0b06b980b01c",
+      "type": "paragraph",
+      "content": []
+    }
+  }
+}

@@ -15,6 +15,7 @@ import { useWebSocket } from "~/context/WebSocketContext";
 export interface BlockEditorProps {
   editable: boolean,
   dataSystem: string,
+  // TODO: remove 'data' and get the appropriate document from 'gameData[dataKey]'
   dataKey: string,
   data: BlockDocument,
   gameData: GameSystemData | null,
@@ -302,8 +303,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
         onCancel={() => setGameLinkModalOpen(false)}
       />
       {/* editor controls */}
-      {props.editable && <section className="flex flex-row flex-wrap md:gap-1 justify-center w-full mb-2">
-        {/* TODO: Make the header buttons horizontally scrollable in small screens, so them wrapping do not take too much screen space. */}
+      {props.editable && <section className="flex flex-row flex-nowrap lg:flex-wrap md:gap-1 justify-center w-full mb-2 overflow-x-auto">
         <BlockEditorButton text="Heading 1" icon="h1" onClick={() => changeBlockType(lastFocusedRef, 'h1', pushAndSend)} />
         <BlockEditorButton text="Heading 2" icon="h2" onClick={() => changeBlockType(lastFocusedRef, 'h2', pushAndSend)} />
         <BlockEditorButton text="Heading 3" icon="h3" onClick={() => changeBlockType(lastFocusedRef, 'h3', pushAndSend)} />

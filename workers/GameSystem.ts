@@ -53,8 +53,9 @@ export async function collectGameSystemData(r2: R2Bucket, useCache: boolean): Pr
   const defaults = defaultGameSystemData();
 
   // Read the three active documents in parallel
-  const [checksDoc, moralityDoc, moralityPairs] = await Promise.all([
+  const [checksDoc, aspectsDoc, moralityDoc, moralityPairs] = await Promise.all([
     readDocument<BlockDocument>(r2, r2Key('si', 'core.checks.document'), defaults.core.checks.document, useCache),
+    readDocument<BlockDocument>(r2, r2Key('si', 'characters.aspects.document'), defaults.characters.aspects.document, useCache),
     readDocument<BlockDocument>(r2, r2Key('si', 'characters.morality.document'), defaults.characters.morality.document, useCache),
     readDocument<MoralityPairs>(r2, r2Key('si', 'characters.morality.pairs'), defaults.characters.morality.pairs, useCache),
   ]);
@@ -67,6 +68,7 @@ export async function collectGameSystemData(r2: R2Bucket, useCache: boolean): Pr
     },
     characters: {
       ...defaults.characters,
+      aspects: { document: aspectsDoc },
       morality: { document: moralityDoc, pairs: moralityPairs },
     },
   };

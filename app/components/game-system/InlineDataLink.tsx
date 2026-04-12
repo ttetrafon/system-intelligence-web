@@ -72,6 +72,16 @@ function DocumentDetails({ document, gameData }: { document: BlockDocument; game
 
       for (const el of container.querySelectorAll<HTMLElement>('[data-react-component]')) {
         switch (el.dataset.reactComponent) {
+          case 'inline-data-link': {
+            const rawLink = el.dataset.link;
+            if (!rawLink) break;
+            const innerLink: DataLink = JSON.parse(rawLink);
+            const innerGivenLabel = el.dataset.givenLabel;
+            const root = createRoot(el);
+            root.render(<InlineDataLink link={innerLink} editable={false} gameData={gameData} {...(innerGivenLabel !== undefined && { givenLabel: innerGivenLabel })} />);
+            reactRootsRef.current.push(root);
+            break;
+          }
           case 'morality-pairs': {
             const root = createRoot(el);
             root.render(<MoralityPairs editing={false} gameData={gameData} />);

@@ -1,0 +1,30 @@
+{
+  "order": [
+    "e44408d4-7c56-492d-b1fb-8832705ba11a",
+    "827dd974-623b-4c25-b947-f37518825a6e",
+    "c27a89b4-4a80-4219-8a10-934082baf294",
+    "7759bc04-5170-45d3-86aa-2c88d53ecf01"
+  ],
+  "items": {
+    "e44408d4-7c56-492d-b1fb-8832705ba11a": {
+      "id": "e44408d4-7c56-492d-b1fb-8832705ba11a",
+      "first": "Self",
+      "second": "Others"
+    },
+    "827dd974-623b-4c25-b947-f37518825a6e": {
+      "id": "827dd974-623b-4c25-b947-f37518825a6e",
+      "first": "Control",
+      "second": "Impulse"
+    },
+    "c27a89b4-4a80-4219-8a10-934082baf294": {
+      "id": "c27a89b4-4a80-4219-8a10-934082baf294",
+      "first": "Aggression",
+      "second": "Harmony"
+    },
+    "7759bc04-5170-45d3-86aa-2c88d53ecf01": {
+      "id": "7759bc04-5170-45d3-86aa-2c88d53ecf01",
+      "first": "Growth",
+      "second": "Stagnation"
+    }
+  }
+}

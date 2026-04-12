@@ -1,0 +1,82 @@
+{
+  "order": [
+    "20dcd7d0-182c-4f67-a306-359f064b20ee",
+    "c9e823a8-39b5-4e84-8ccb-bb9cfb2c81d0",
+    "2aa66aa1-6a69-4e5c-af41-15f2929a2557",
+    "3f55e558-0dbc-43c0-bdaa-7dd8ba33692b"
+  ],
+  "blocks": {
+    "20dcd7d0-182c-4f67-a306-359f064b20ee": {
+      "id": "20dcd7d0-182c-4f67-a306-359f064b20ee",
+      "type": "paragraph",
+      "content": [
+        {
+          "text": "During gameplay you roll 2d12 against a target determined by your situation and your statistics. Actions and tasks are performed by rolling a check and comparing the result with your active score associated with the action or task; rolling under the active score results in a success."
+        }
+      ]
+    },
+    "c9e823a8-39b5-4e84-8ccb-bb9cfb2c81d0": {
+      "id": "c9e823a8-39b5-4e84-8ccb-bb9cfb2c81d0",
+      "type": "blockquote",
+      "content": [
+        {
+          "text": "You are trying to move stealthily to enter the courtyard of a facility without the guards spotting you. Your active score is 17, so you roll 2d12 and if you roll 1 to 17 you have do move stealthily enough to bypass the guards."
+        }
+      ]
+    },
+    "2aa66aa1-6a69-4e5c-af41-15f2929a2557": {
+      "id": "2aa66aa1-6a69-4e5c-af41-15f2929a2557",
+      "type": "h1",
+      "content": [
+        {
+          "text": "Effective Score"
+        }
+      ]
+    },
+    "3f55e558-0dbc-43c0-bdaa-7dd8ba33692b": {
+      "id": "3f55e558-0dbc-43c0-bdaa-7dd8ba33692b",
+      "type": "paragraph",
+      "content": [
+        {
+          "text": "Most actions/task targets are composed of an "
+        },
+        {
+          "text": "adventuring realm",
+          "dataLink": {
+            "id": "4ac51e3d-1d21-450a-a53b-269d29c09ae0",
+            "label": "Adventuring Realm",
+            "type": "section",
+            "address": "characters.aspects.document#4ac51e3d-1d21-450a-a53b-269d29c09ae0"
+          }
+        },
+        {
+          "text": ", an "
+        },
+        {
+          "text": "aspect",
+          "dataLink": {
+            "id": "characters.aspects",
+            "label": "aspects",
+            "type": "document",
+            "address": "characters.aspects.document"
+          }
+        },
+        {
+          "text": ", and a "
+        },
+        {
+          "text": "morality score",
+          "dataLink": {
+            "id": "characters.morality",
+            "label": "morality",
+            "type": "document",
+            "address": "characters.morality.document"
+          }
+        },
+        {
+          "text": "."
+        }
+      ]
+    }
+  }
+}

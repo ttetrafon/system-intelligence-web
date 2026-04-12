@@ -1,0 +1,78 @@
+{
+  "order": [
+    "f90eef8f-753a-4980-9f3e-1ad14eb8dcc1",
+    "be4dee21-9d08-4c14-bbdc-b1c62ca42038",
+    "4ac51e3d-1d21-450a-a53b-269d29c09ae0",
+    "02bad9a9-b431-41fa-9169-9dfa35059620",
+    "e52f3b1e-d070-4660-9535-3876f680dc8e",
+    "992eb2a5-12be-410a-9143-a150292584c9"
+  ],
+  "blocks": {
+    "f90eef8f-753a-4980-9f3e-1ad14eb8dcc1": {
+      "id": "f90eef8f-753a-4980-9f3e-1ad14eb8dcc1",
+      "type": "paragraph",
+      "content": [
+        {
+          "text": "Your aspects define your life experiences and accumulated knowledge."
+        }
+      ]
+    },
+    "be4dee21-9d08-4c14-bbdc-b1c62ca42038": {
+      "id": "be4dee21-9d08-4c14-bbdc-b1c62ca42038",
+      "type": "paragraph",
+      "content": [
+        {
+          "text": "Aspects act as resources and are almost always included in "
+        },
+        {
+          "text": "checks",
+          "dataLink": {
+            "id": "core.checks",
+            "label": "checks",
+            "type": "document",
+            "address": "core.checks.document"
+          }
+        },
+        {
+          "text": "."
+        }
+      ]
+    },
+    "4ac51e3d-1d21-450a-a53b-269d29c09ae0": {
+      "id": "4ac51e3d-1d21-450a-a53b-269d29c09ae0",
+      "type": "h1",
+      "content": [
+        {
+          "text": "Adventuring Realms"
+        }
+      ]
+    },
+    "02bad9a9-b431-41fa-9169-9dfa35059620": {
+      "id": "02bad9a9-b431-41fa-9169-9dfa35059620",
+      "type": "paragraph",
+      "content": [
+        {
+          "text": "..."
+        }
+      ]
+    },
+    "e52f3b1e-d070-4660-9535-3876f680dc8e": {
+      "id": "e52f3b1e-d070-4660-9535-3876f680dc8e",
+      "type": "h1",
+      "content": [
+        {
+          "text": "Aspects"
+        }
+      ]
+    },
+    "992eb2a5-12be-410a-9143-a150292584c9": {
+      "id": "992eb2a5-12be-410a-9143-a150292584c9",
+      "type": "paragraph",
+      "content": [
+        {
+          "text": "..."
+        }
+      ]
+    }
+  }
+}
