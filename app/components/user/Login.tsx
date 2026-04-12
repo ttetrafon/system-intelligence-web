@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFetcher, useNavigate } from 'react-router';
+import { useLoading } from '~/context/AppContext';
 import { useUser, type SessionUser } from '~/context/UserContext';
 
 export default function Login() {
@@ -8,6 +9,7 @@ export default function Login() {
   const fetcher = useFetcher<{ error?: string; user?: SessionUser }>();
   const { setSession } = useUser();
   const navigate = useNavigate();
+  const { setLoading } = useLoading();
 
   const isLoading = fetcher.state !== 'idle';
   const error = fetcher.data?.error;
@@ -17,9 +19,11 @@ export default function Login() {
       setSession(fetcher.data.user);
       navigate('/');
     }
+    setLoading(false);
   }, [fetcher.data, setSession, navigate]);
 
   const handleLogin = (e: { preventDefault: () => void }) => {
+    setLoading(true);
     e.preventDefault();
     fetcher.submit({ email, password }, { method: 'post', action: '/login' });
   };

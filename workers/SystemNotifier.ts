@@ -8,7 +8,7 @@ import type {
   reorderBlocksInDocument as ReorderBlocksCmd,
   updateBlockInDocument as UpdateBlockCmd,
 } from '@app-types/requests';
-import type { WsClientMessage, WsServerMessage, WsServerError } from '@app-types/websocket';
+import type { WsClientMessage, WsServerMessage, WsServerAck, WsServerError } from '@app-types/websocket';
 import {
   addBlockToDocument,
   removeBlockFromDocument,
@@ -70,6 +70,16 @@ export class SystemNotifier {
       console.log('Error processing command:', err);
       this.sendError(ws, 'Failed to process command');
       return;
+    }
+
+    // Ack back to sender so the client can clear its loading state
+    if (parsed.commandId) {
+      const ack: WsServerAck = { type: 'command-ack', commandId: parsed.commandId };
+      try {
+        ws.send(JSON.stringify(ack));
+      } catch {
+        // Socket is dead
+      }
     }
 
     // Broadcast to all connected sockets except the sender (sender applies optimistically)

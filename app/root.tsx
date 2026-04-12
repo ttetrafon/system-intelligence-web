@@ -19,6 +19,8 @@ import Footer from './components/general/Footer';
 import Side from './components/game-system/Side';
 import { GameSystemProvider } from './context/GameSystemContext';
 import { WebSocketProvider } from './context/WebSocketContext';
+import { AppProvider, useLoading } from './context/AppContext';
+import Loader from './components/general/Loader';
 
 export const links: Route.LinksFunction = () => [];
 
@@ -28,12 +30,15 @@ function HeadWrapper({
   toggleContents: () => void;
 }) {
   const { session, setSession } = useUser();
+  const { setLoading } = useLoading();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    setLoading(true);
     await fetch('/api/logout', { method: 'POST' });
     setSession(null);
     navigate('/');
+    setLoading(false);
   };
 
   return <Head toggleContents={toggleContents} session={session} onLogout={handleLogout} />;
@@ -52,24 +57,27 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Meta />
           <Links />
         </head>
-        <WebSocketProvider>
-          <GameSystemProvider>
-            <body className="w-full h-dvh antialiased bg-background text-typography flex flex-col flex-nowrap justify-stretch">
-              <HeadWrapper toggleContents={toggleContents} />
-              <main className="flex-1 flex flex-row flex-nowrap justify-stretch overflow-hidden">
-                <Contents
-                  isContentsVisible={isContentsVisible}
-                  toggleContents={toggleContents}
-                />
-                <section className="flex flex-col flex-nowrap justify-stretch items-stretch flex-1 p-2 overflow-hidden">{children}</section>
-                {/* <Side /> */}
-              </main>
-              <Footer />
-              <ScrollRestoration />
-              <Scripts />
-            </body>
-          </GameSystemProvider>
-        </WebSocketProvider>
+        <AppProvider>
+          <WebSocketProvider>
+            <GameSystemProvider>
+              <body className="w-full h-dvh antialiased bg-background text-typography flex flex-col flex-nowrap justify-stretch">
+                <HeadWrapper toggleContents={toggleContents} />
+                <main className="flex-1 flex flex-row flex-nowrap justify-stretch overflow-hidden">
+                  <Contents
+                    isContentsVisible={isContentsVisible}
+                    toggleContents={toggleContents}
+                  />
+                  <section className="flex flex-col flex-nowrap justify-stretch items-stretch flex-1 p-2 overflow-hidden">{children}</section>
+                  {/* <Side /> */}
+                </main>
+                <Footer />
+                <Loader />
+                <ScrollRestoration />
+                <Scripts />
+              </body>
+            </GameSystemProvider>
+          </WebSocketProvider>
+        </AppProvider>
       </html>
     </UserProvider>
   );

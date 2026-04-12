@@ -6,6 +6,7 @@ export interface WsClientMessage {
   system: string;
   dataKey: string;
   command: AnyDocumentCommand;
+  commandId?: string;
 }
 
 /** Server → Client: broadcast of applied commands */
@@ -16,10 +17,16 @@ export interface WsServerMessage {
   commands: AnyDocumentCommand[];
 }
 
+/** Server → Client: acknowledgement sent back to the original sender */
+export interface WsServerAck {
+  type: 'command-ack';
+  commandId: string;
+}
+
 /** Server → Client: error notification */
 export interface WsServerError {
   type: 'error';
   message: string;
 }
 
-export type WsIncoming = WsServerMessage | WsServerError;
+export type WsIncoming = WsServerMessage | WsServerAck | WsServerError;

@@ -11,6 +11,7 @@ import { InlineDataLink } from "~/components/game-system/InlineDataLink";
 import { MoralityPairs } from "~/components/game-system/MoralityPairs";
 import { useGameSystem } from "~/context/GameSystemContext";
 import { useWebSocket } from "~/context/WebSocketContext";
+import { useLoading } from "~/context/AppContext";
 
 export interface BlockEditorProps {
   editable: boolean,
@@ -23,8 +24,24 @@ export interface BlockEditorProps {
 
 export function BlockEditor({ ...props }: BlockEditorProps) {
   const history = useCommandHistory();
-  const { sendCommand } = useWebSocket();
+  const { sendCommand, subscribe } = useWebSocket();
   const { applyCommand } = useGameSystem();
+  const { addPendingCommand, removePendingCommand } = useLoading();
+
+  const sendTrackedCommand = useCallback((msg: Parameters<typeof sendCommand>[0]) => {
+    const commandId = crypto.randomUUID();
+    addPendingCommand(commandId);
+    sendCommand({ ...msg, commandId });
+  }, [sendCommand, addPendingCommand]);
+
+  // Clear loader when the server acks a command sent by this editor
+  useEffect(() => {
+    return subscribe((msg) => {
+      if (msg.type === 'command-ack') {
+        removePendingCommand(msg.commandId);
+      }
+    });
+  }, [subscribe, removePendingCommand]);
 
   const commandContext = { dataKey: props.dataKey };
 
@@ -38,14 +55,14 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
       // Apply optimistically to local state; server will not echo back to sender
       applyCommand(props.dataKey, docCommand);
       skipNextRebuildRef.current = true;
-      sendCommand({
+      sendTrackedCommand({
         type: 'command',
         system: props.dataSystem,
         dataKey: props.dataKey,
         command: docCommand,
       });
     }
-  }, [sendCommand, applyCommand, props.data, props.dataSystem, props.dataKey]);
+  }, [sendTrackedCommand, applyCommand, props.data, props.dataSystem, props.dataKey]);
   const contentsRef = useRef<HTMLElement>(null);
   const beforeContentRef = useRef<string>('');
   const beforeTypeRef = useRef<string>('');
@@ -103,7 +120,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
   }, []);
 
   const handleAddMoralityPair = useCallback(() => {
-    sendCommand({
+    sendTrackedCommand({
       type: 'command',
       system: props.dataSystem,
       dataKey: 'characters.morality.pairs',
@@ -113,10 +130,10 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
         id: crypto.randomUUID(),
       },
     });
-  }, [sendCommand, props.dataSystem]);
+  }, [sendTrackedCommand, props.dataSystem]);
 
   const handleDeleteMoralityPair = useCallback((id: string) => {
-    sendCommand({
+    sendTrackedCommand({
       type: 'command',
       system: props.dataSystem,
       dataKey: 'characters.morality.pairs',
@@ -126,10 +143,10 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
         id,
       },
     });
-  }, [sendCommand, props.dataSystem]);
+  }, [sendTrackedCommand, props.dataSystem]);
 
   const handleUpdateMoralityPair = useCallback((id: string, field: 'first' | 'second', value: string) => {
-    sendCommand({
+    sendTrackedCommand({
       type: 'command',
       system: props.dataSystem,
       dataKey: 'characters.morality.pairs',
@@ -141,7 +158,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
         value,
       },
     });
-  }, [sendCommand, props.dataSystem]);
+  }, [sendTrackedCommand, props.dataSystem]);
 
   // Map of data-react-component values to their React components
   const reactComponentMap: Record<string, ComponentType<{
@@ -416,7 +433,7 @@ export function BlockEditor({ ...props }: BlockEditorProps) {
               if (docCommand) {
                 applyCommand(props.dataKey, docCommand);
                 skipNextRebuildRef.current = true;
-                sendCommand({
+                sendTrackedCommand({
                   type: 'command',
                   system: props.dataSystem,
                   dataKey: props.dataKey,

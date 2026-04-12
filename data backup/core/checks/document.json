@@ -3,7 +3,9 @@
     "20dcd7d0-182c-4f67-a306-359f064b20ee",
     "c9e823a8-39b5-4e84-8ccb-bb9cfb2c81d0",
     "2aa66aa1-6a69-4e5c-af41-15f2929a2557",
-    "3f55e558-0dbc-43c0-bdaa-7dd8ba33692b"
+    "3f55e558-0dbc-43c0-bdaa-7dd8ba33692b",
+    "10f99344-3fa8-4aa2-a85c-3949e0bbcb63",
+    "c2a80ba5-f211-4519-a31f-ac6c7e4ea63e"
   ],
   "blocks": {
     "20dcd7d0-182c-4f67-a306-359f064b20ee": {
@@ -55,10 +57,10 @@
         {
           "text": "aspect",
           "dataLink": {
-            "id": "characters.aspects",
-            "label": "aspects",
-            "type": "document",
-            "address": "characters.aspects.document"
+            "id": "e52f3b1e-d070-4660-9535-3876f680dc8e",
+            "label": "Aspects",
+            "type": "section",
+            "address": "characters.aspects.document#e52f3b1e-d070-4660-9535-3876f680dc8e"
           }
         },
         {
@@ -74,7 +76,25 @@
           }
         },
         {
-          "text": "."
+          "text": ". Whenever..."
+        }
+      ]
+    },
+    "10f99344-3fa8-4aa2-a85c-3949e0bbcb63": {
+      "id": "10f99344-3fa8-4aa2-a85c-3949e0bbcb63",
+      "type": "blockquote",
+      "content": [
+        {
+          "text": "In the example above, you are using skulduggery 7 (adventuring realm), thievery 8 (aspect), and control 2 (morality score), for a total of 17."
+        }
+      ]
+    },
+    "c2a80ba5-f211-4519-a31f-ac6c7e4ea63e": {
+      "id": "c2a80ba5-f211-4519-a31f-ac6c7e4ea63e",
+      "type": "h1",
+      "content": [
+        {
+          "text": "Difficulty"
         }
       ]
     }

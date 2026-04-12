@@ -21,10 +21,11 @@ interface WebSocketContextType {
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
 
-const MAX_RECONNECT_DELAY = 30_000;
+const MAX_RECONNECT_DELAY = 30000;
 
 export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   const { session } = useUser();
+  const intentionalCloseRef = useRef(false);
   const wsRef = useRef<WebSocket | null>(null);
   const subscribersRef = useRef<Set<WsSubscriber>>(new Set());
   const reconnectDelayRef = useRef(1_000);
@@ -59,10 +60,14 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
     };
 
     ws.onclose = () => {
-      console.log('WebSocket disconnected, reconnecting...');
+      console.log('WebSocket disconnected...');
       wsRef.current = null;
       setStatus('disconnected');
-      scheduleReconnect();
+      if (!intentionalCloseRef.current) {
+        console.log("... reconnecting!");
+        scheduleReconnect();
+      }
+      intentionalCloseRef.current = false;
     };
 
     ws.onerror = () => {
@@ -84,13 +89,8 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   // Connect when session is available, disconnect on unmount or logout
   useEffect(() => {
     if (!session) {
+      intentionalCloseRef.current = true;
       wsRef.current?.close();
-      wsRef.current = null;
-      if (reconnectTimerRef.current) {
-        clearTimeout(reconnectTimerRef.current);
-        reconnectTimerRef.current = null;
-      }
-      setStatus('disconnected');
       return;
     }
 

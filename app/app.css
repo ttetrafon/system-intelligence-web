@@ -89,6 +89,55 @@
 }
 
 @layer components {
+  /* General */
+  #loader-parent {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+  }
+  #loader-parent::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--colour-background);
+    opacity: 0.6;
+  }
+  #loader {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: block;
+    position: relative;
+    background: linear-gradient(0deg, var(--colour-action) 33%, var(--colour-typography) 100%);
+    box-sizing: border-box;
+    animation: loader-rotation 1s linear infinite;
+  }
+  #loader::after {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--colour-background);
+  }
+  @keyframes loader-rotation {
+    0% { transform: rotate(0deg) }
+    100% { transform: rotate(360deg)}
+  }
+
   /* Block editor */
   .block-editor-contents {
     @apply outline-none;

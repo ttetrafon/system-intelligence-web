@@ -130,6 +130,7 @@ function buildInlineNode(node: InlineNode): Node {
     span.dataset.reactComponent = 'inline-data-link';
     span.dataset.link = JSON.stringify(node.dataLink);
     if (node.text) span.dataset.givenLabel = node.text;
+    span.contentEditable = 'false';
     return span;
   }
 
