@@ -126,6 +126,7 @@ function buildInlineNode(node: InlineNode): Node {
   // check for special nodes first
   if (node.dataLink) {
     const span = document.createElement('span');
+    span.id = crypto.randomUUID();
     span.dataset.reactComponent = 'inline-data-link';
     span.dataset.link = JSON.stringify(node.dataLink);
     if (node.text) span.dataset.givenLabel = node.text;

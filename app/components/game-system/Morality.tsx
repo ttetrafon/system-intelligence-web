@@ -13,7 +13,7 @@ export default function Morality() {
     <BlockEditor
       editable={editable}
       dataSystem='si'
-      dataKey="characters.aspects.document"
+      dataKey="characters.morality.document"
       data={characters?.morality.document ?? emptyDocument()}
       gameData={data} >
     </BlockEditor>

@@ -6,7 +6,7 @@ import { applyCommandToDocument } from "../../util/commands";
 import { buildDataLinks } from "../../util/game";
 import { useWebSocket } from "./WebSocketContext";
 
-const LS_KEY_GAME_SYSTEM = 'si:game-system';
+// const LS_KEY_GAME_SYSTEM = 'si:game-system';
 
 interface GameSystemContextType {
   data: GameSystemData | null;
@@ -19,14 +19,15 @@ const GameSystemContext = createContext<GameSystemContextType | undefined>(undef
 export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
   const { subscribe, status } = useWebSocket();
   const [dataLinks, setDataLinks] = useState<DataLinks | null>(null);
-  const [data, setData] = useState<GameSystemData | null>(() => {
-    try {
-      const cached = localStorage.getItem(LS_KEY_GAME_SYSTEM);
-      return cached ? (JSON.parse(cached) as GameSystemData) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [data, setData] = useState<GameSystemData | null>(null);
+  // const [data, setData] = useState<GameSystemData | null>(() => {
+  //   try {
+  //     const cached = localStorage.getItem(LS_KEY_GAME_SYSTEM);
+  //     return cached ? (JSON.parse(cached) as GameSystemData) : null;
+  //   } catch {
+  //     return null;
+  //   }
+  // });
 
   // Apply a command optimistically to local state (used by the sender before the server echoes back)
   const applyCommand = useCallback((dataKey: string, command: AnyDocumentCommand) => {
@@ -62,7 +63,7 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
         node[docKey] = doc;
       }
 
-      localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(updated));
+      // localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(updated));
       return updated;
     });
   }, []);
@@ -87,7 +88,7 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
       .then((fresh) => {
         if (!fresh) return;
         setData(fresh);
-        localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(fresh));
+        // localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(fresh));
       })
       .catch(() => { });
   }, [status]);
