@@ -136,7 +136,7 @@ export function InlineDataLink({ link, givenLabel, editable, gameData }: InlineD
         </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        {renderLinkDetails(link)}
+        {isModalOpen && renderLinkDetails(link)}
       </Modal>
     </>
   );
