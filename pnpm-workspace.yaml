@@ -1,5 +1,4 @@
 # https://pnpm.io/settings
-minimumReleaseAge: 10800
 trustPolicyExclude:
 - 'chokidar@4.0.3'
 - 'semver@6.3.1'
