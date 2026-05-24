@@ -1,4 +1,4 @@
-import type { BlockDocument, MoralityPair } from '@app-types/game';
+import type { MkDocument, MoralityPair } from '@app-types/game';
 import type {
   addBlockToDocumentCommand,
   moralityPairAdded,
@@ -163,24 +163,27 @@ export class SystemNotifier {
 
     // Handle block-document commands
     const object = await this.env.ASSETS.get(key);
-    const doc: BlockDocument = object
-      ? await object.json<BlockDocument>()
+    const doc: MkDocument = object
+      ? await object.json<MkDocument>()
       : { order: [], blocks: {} };
 
     switch (cmd.commandType) {
-      case 'add-block':
+      case 'add-block': {
         const c = cmd as addBlockToDocumentCommand;
-        addBlockToDocument(doc, c.block, c.position);
+        addBlockToDocument(doc, c.blockId, c.block, c.position);
         break;
+      }
       case 'remove-block':
         removeBlockFromDocument(doc, (cmd as RemoveBlockCmd).blockId);
         break;
       case 'reorder-blocks':
         reorderBlocksInDocument(doc, (cmd as ReorderBlocksCmd).updatedOrder);
         break;
-      case 'update-block':
-        updateBlockInDocument(doc, (cmd as UpdateBlockCmd).updatedBlock);
+      case 'update-block': {
+        const c = cmd as UpdateBlockCmd;
+        updateBlockInDocument(doc, c.updatedBlockId, c.updatedBlock);
         break;
+      }
     }
 
     await this.env.ASSETS.put(key, JSON.stringify(doc), {

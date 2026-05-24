@@ -13,7 +13,7 @@ export interface InlineButtonProps {
 export function InlineButton({ text, icon, onClick, disabled, size = 'size-8', bg = 'bg-background' }: InlineButtonProps) {
   return (
     <div
-      className={`block-editor-button relative m-0 rounded-sm ${bg} border border-typography`}
+      className={`editor-button relative m-0 rounded-sm ${bg} border border-typography`}
       contentEditable='false'
       suppressContentEditableWarning>
       <button

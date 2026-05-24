@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import type { EditorCommand } from '@app-types/editor';
-import type { Block, ContentBlock, BlockDocument, DataLink, InlineNode } from '@app-types/game';
+import type { MkDocument } from '@app-types/game';
 import type { AnyDocumentCommand, documentCommand } from '@app-types/requests';
 import { addBlockToDocument, removeBlockFromDocument, reorderBlocksInDocument, updateBlockInDocument } from './data';
 
@@ -40,134 +40,134 @@ export function useCommandHistory() {
   return { push, undo, redo, getApplied, clear };
 }
 
-function tagToBlockType(tag: string, fallback: ContentBlock['type'] = 'listItemUnordered'): ContentBlock['type'] {
-  const map: Record<string, ContentBlock['type']> = {
-    p: 'paragraph',
-    h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6',
-    blockquote: 'blockquote',
-    li: fallback,
-    'morality-pairs': 'moralityPairs',
-  };
-  return map[tag] ?? 'paragraph';
-}
+// function tagToBlockType(tag: string, fallback: ContentBlock['type'] = 'listItemUnordered'): ContentBlock['type'] {
+//   const map: Record<string, ContentBlock['type']> = {
+//     p: 'paragraph',
+//     h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6',
+//     blockquote: 'blockquote',
+//     li: fallback,
+//     'morality-pairs': 'moralityPairs',
+//   };
+//   return map[tag] ?? 'paragraph';
+// }
 
-function extractInlineNodes(node: Node, bold = false, italic = false): InlineNode[] {
-  const nodes: InlineNode[] = [];
-  for (const child of node.childNodes) {
-    if (child.nodeType === Node.TEXT_NODE) {
-      const text = child.textContent ?? '';
-      if (text) nodes.push({ text, ...(bold && { bold }), ...(italic && { italic }) });
-    } else if (child instanceof HTMLElement) {
-      if (child.dataset.reactComponent === 'inline-data-link' && child.dataset.link) {
-        const dataLink: DataLink = JSON.parse(child.dataset.link);
-        const text = child.dataset.givenLabel ?? dataLink.label;
-        nodes.push({ text, dataLink, ...(bold && { bold }), ...(italic && { italic }) });
-        continue;
-      }
-      const isBold = bold || child.tagName === 'STRONG';
-      const isItalic = italic || child.tagName === 'EM';
-      nodes.push(...extractInlineNodes(child, isBold, isItalic));
-    }
-  }
-  return nodes;
-}
+// function extractInlineNodes(node: Node, bold = false, italic = false): InlineNode[] {
+//   const nodes: InlineNode[] = [];
+//   for (const child of node.childNodes) {
+//     if (child.nodeType === Node.TEXT_NODE) {
+//       const text = child.textContent ?? '';
+//       if (text) nodes.push({ text, ...(bold && { bold }), ...(italic && { italic }) });
+//     } else if (child instanceof HTMLElement) {
+//       if (child.dataset.reactComponent === 'inline-data-link' && child.dataset.link) {
+//         const dataLink: DataLink = JSON.parse(child.dataset.link);
+//         const text = child.dataset.givenLabel ?? dataLink.label;
+//         nodes.push({ text, dataLink, ...(bold && { bold }), ...(italic && { italic }) });
+//         continue;
+//       }
+//       const isBold = bold || child.tagName === 'STRONG';
+//       const isItalic = italic || child.tagName === 'EM';
+//       nodes.push(...extractInlineNodes(child, isBold, isItalic));
+//     }
+//   }
+//   return nodes;
+// }
 
-function parseInlineNodes(html: string): InlineNode[] {
-  const el = document.createElement('div');
-  el.innerHTML = html;
-  return extractInlineNodes(el);
-}
+// function parseInlineNodes(html: string): InlineNode[] {
+//   const el = document.createElement('div');
+//   el.innerHTML = html;
+//   return extractInlineNodes(el);
+// }
 
 /**
  * Converts a single EditorCommand into a single AnyDocumentCommand for immediate WebSocket dispatch.
  * Returns null if the command cannot be converted (e.g. table content change).
  */
-export function buildSingleCommand(
-  cmd: EditorCommand,
-  blockDocument: BlockDocument,
-  context: Omit<documentCommand, 'commandType'>,
-): AnyDocumentCommand | null {
-  const workingOrder = [...blockDocument.order];
-  const workingBlocks: Record<string, Block> = { ...blockDocument.blocks };
+// export function buildSingleCommand(
+//   cmd: EditorCommand,
+//   blockDocument: BlockDocument,
+//   context: Omit<documentCommand, 'commandType'>,
+// ): AnyDocumentCommand | null {
+//   const workingOrder = [...blockDocument.order];
+//   const workingBlocks: Record<string, Block> = { ...blockDocument.blocks };
 
-  switch (cmd.type) {
-    case 'element-created': {
-      const afterIndex = cmd.afterId ? workingOrder.indexOf(cmd.afterId) : -1;
-      const position = afterIndex + 1;
-      let block: Block;
-      if (cmd.tag === 'table') {
-        block = {
-          id: cmd.id,
-          type: 'table',
-          rows: Array.from({ length: 3 }, () => ({
-            id: crypto.randomUUID(),
-            cells: Array.from({ length: 3 }, () => ({
-              id: crypto.randomUUID(),
-              content: [],
-            })),
-          })),
-        };
-      } else {
-        const afterBlock = cmd.afterId ? workingBlocks[cmd.afterId] : null;
-        const liType = afterBlock?.type === 'listItemOrdered' ? 'listItemOrdered' : 'listItemUnordered';
-        block = {
-          id: cmd.id,
-          type: tagToBlockType(cmd.tag, liType),
-          content: parseInlineNodes(cmd.content),
-        };
-      }
-      return { ...context, commandType: 'add-block', block, position };
-    }
-    case 'element-deleted': {
-      return { ...context, commandType: 'remove-block', blockId: cmd.id };
-    }
-    case 'element-changed-contents': {
-      const existing = workingBlocks[cmd.id];
-      if (!existing || existing.type === 'table') return null;
-      const updatedBlock: ContentBlock = {
-        id: cmd.id,
-        type: existing.type,
-        content: parseInlineNodes(cmd.after),
-      };
-      return { ...context, commandType: 'update-block', updatedBlock };
-    }
-    case 'element-changed-type': {
-      const existing = workingBlocks[cmd.id];
-      if (!existing || existing.type === 'table') return null;
-      const updatedBlock: ContentBlock = {
-        id: cmd.id,
-        type: tagToBlockType(cmd.after),
-        content: existing.content,
-      };
-      return { ...context, commandType: 'update-block', updatedBlock };
-    }
-    case 'order-changed': {
-      return { ...context, commandType: 'reorder-blocks', updatedOrder: cmd.after };
-    }
-    case 'morality-pair-added': {
-      return { ...context, commandType: 'add-morality-pair', id: crypto.randomUUID() };
-    }
-    case 'morality-pair-deleted': {
-      return { ...context, commandType: 'delete-morality-pair', id: cmd.id }
-    }
-    case 'morality-pair-updated': {
-      return { ...context, commandType: 'update-morality-pair', id: cmd.id, field: cmd.field, value: cmd.value }
-    }
-  }
-}
+//   switch (cmd.type) {
+//     case 'element-created': {
+//       const afterIndex = cmd.afterId ? workingOrder.indexOf(cmd.afterId) : -1;
+//       const position = afterIndex + 1;
+//       let block: Block;
+//       if (cmd.tag === 'table') {
+//         block = {
+//           id: cmd.id,
+//           type: 'table',
+//           rows: Array.from({ length: 3 }, () => ({
+//             id: crypto.randomUUID(),
+//             cells: Array.from({ length: 3 }, () => ({
+//               id: crypto.randomUUID(),
+//               content: [],
+//             })),
+//           })),
+//         };
+//       } else {
+//         const afterBlock = cmd.afterId ? workingBlocks[cmd.afterId] : null;
+//         const liType = afterBlock?.type === 'listItemOrdered' ? 'listItemOrdered' : 'listItemUnordered';
+//         block = {
+//           id: cmd.id,
+//           type: tagToBlockType(cmd.tag, liType),
+//           content: parseInlineNodes(cmd.content),
+//         };
+//       }
+//       return { ...context, commandType: 'add-block', block, position };
+//     }
+//     case 'element-deleted': {
+//       return { ...context, commandType: 'remove-block', blockId: cmd.id };
+//     }
+//     case 'element-changed-contents': {
+//       const existing = workingBlocks[cmd.id];
+//       if (!existing || existing.type === 'table') return null;
+//       const updatedBlock: ContentBlock = {
+//         id: cmd.id,
+//         type: existing.type,
+//         content: parseInlineNodes(cmd.after),
+//       };
+//       return { ...context, commandType: 'update-block', updatedBlock };
+//     }
+//     case 'element-changed-type': {
+//       const existing = workingBlocks[cmd.id];
+//       if (!existing || existing.type === 'table') return null;
+//       const updatedBlock: ContentBlock = {
+//         id: cmd.id,
+//         type: tagToBlockType(cmd.after),
+//         content: existing.content,
+//       };
+//       return { ...context, commandType: 'update-block', updatedBlock };
+//     }
+//     case 'order-changed': {
+//       return { ...context, commandType: 'reorder-blocks', updatedOrder: cmd.after };
+//     }
+//     case 'morality-pair-added': {
+//       return { ...context, commandType: 'add-morality-pair', id: crypto.randomUUID() };
+//     }
+//     case 'morality-pair-deleted': {
+//       return { ...context, commandType: 'delete-morality-pair', id: cmd.id }
+//     }
+//     case 'morality-pair-updated': {
+//       return { ...context, commandType: 'update-morality-pair', id: cmd.id, field: cmd.field, value: cmd.value }
+//     }
+//   }
+// }
 
 /**
  * Applies an AnyDocumentCommand to a BlockDocument in place, keeping a local
  * copy in sync with commands that have been sent but not yet acknowledged.
  */
-export function applyCommandToDocument(doc: BlockDocument, cmd: AnyDocumentCommand): void {
+export function applyCommandToDocument(doc: MkDocument, cmd: AnyDocumentCommand): void {
   if ('block' in cmd && 'position' in cmd) {
-    addBlockToDocument(doc, cmd.block, cmd.position);
+    addBlockToDocument(doc, cmd.blockId, cmd.block, cmd.position);
   } else if ('blockId' in cmd) {
     removeBlockFromDocument(doc, cmd.blockId);
   } else if ('updatedOrder' in cmd) {
     reorderBlocksInDocument(doc, cmd.updatedOrder);
   } else if ('updatedBlock' in cmd) {
-    updateBlockInDocument(doc, cmd.updatedBlock);
+    updateBlockInDocument(doc, cmd.updatedBlockId, cmd.updatedBlock);
   }
 }

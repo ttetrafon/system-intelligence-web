@@ -1,7 +1,7 @@
 import React, { useState, type ReactNode } from 'react';
 import { Svg, type SvgName } from "./Svg";
 
-export interface BlockEditorButtonProps {
+export interface EditorButtonProps {
   text: string;
   icon: SvgName;
   onClick?: () => void;
@@ -10,11 +10,11 @@ export interface BlockEditorButtonProps {
   size?: string;
 }
 
-export function BlockEditorButton({ text, icon, onClick, children, disabled, size = 'size-8' }: BlockEditorButtonProps) {
+export function EditorButton({ text, icon, onClick, children, disabled, size = 'size-8' }: EditorButtonProps) {
   const [sub, setSub] = useState<boolean>(false);
 
   return (
-    <div className='block-editor-button relative' onClick={() => { if (children) setSub(!sub); }} >
+    <div className='editor-button relative' onClick={() => { if (children) setSub(!sub); }} >
       <button
         title={text}
         disabled={disabled}

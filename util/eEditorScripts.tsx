@@ -1,39 +1,39 @@
-import type { Block, TableBlock, BlockDocument, InlineNode } from "@app-types/game";
 import type { EditorCommand } from "@app-types/editor";
+import type { MkDocument } from "@app-types/game";
 
 /// --- DOM --- ///
-export async function buildHtml(blockDocument: BlockDocument): Promise<DocumentFragment> {
-  const fragment = document.createDocumentFragment();
+// export async function buildHtml(document: MkDocument): Promise<DocumentFragment> {
+//   const fragment = document.createDocumentFragment();
 
-  for (const id of blockDocument.order) {
-    const block = blockDocument.blocks[id];
-    if (!block) continue;
-    fragment.appendChild(buildBlock(block));
-  }
+//   for (const id of document.order) {
+//     const block = document.blocks[id];
+//     if (!block) continue;
+//     fragment.appendChild(buildBlock(block));
+//   }
 
-  return fragment;
-}
+//   return fragment;
+// }
 
-function buildBlock(block: Block): HTMLElement {
-  if (block.type === 'table') return buildTable(block);
-  if (block.type === 'moralityPairs') return buildReactPlaceholder(block.id, 'morality-pairs');
+// function buildBlock(block: Block): HTMLElement {
+//   if (block.type === 'table') return buildTable(block);
+//   if (block.type === 'moralityPairs') return buildReactPlaceholder(block.id, 'morality-pairs');
 
-  const tagMap: Record<string, string> = {
-    paragraph: 'p',
-    h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6',
-    listItemOrdered: 'li',
-    listItemUnordered: 'li',
-    blockquote: 'blockquote',
-  };
+//   const tagMap: Record<string, string> = {
+//     paragraph: 'p',
+//     h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6',
+//     listItemOrdered: 'li',
+//     listItemUnordered: 'li',
+//     blockquote: 'blockquote',
+//   };
 
-  const el = document.createElement(tagMap[block.type]);
-  el.id = block.id;
-  for (const node of block.content) {
-    el.appendChild(buildInlineNode(node));
-  }
+//   const el = document.createElement(tagMap[block.type]);
+//   el.id = block.id;
+//   for (const node of block.content) {
+//     el.appendChild(buildInlineNode(node));
+//   }
 
-  return el;
-}
+//   return el;
+// }
 
 function buildReactPlaceholder(id: string, componentName: string): HTMLElement {
   const el = document.createElement('div');
@@ -42,26 +42,26 @@ function buildReactPlaceholder(id: string, componentName: string): HTMLElement {
   return el;
 }
 
-function buildTable(block: TableBlock): HTMLTableElement {
-  const table = document.createElement('table');
-  table.id = block.id;
-  const tbody = document.createElement('tbody');
-  for (const row of block.rows) {
-    const tr = document.createElement('tr');
-    tr.id = row.id;
-    for (const cell of row.cells) {
-      const td = document.createElement('td');
-      td.id = cell.id;
-      for (const node of cell.content) {
-        td.appendChild(buildInlineNode(node));
-      }
-      tr.appendChild(td);
-    }
-    tbody.appendChild(tr);
-  }
-  table.appendChild(tbody);
-  return table;
-}
+// function buildTable(block: TableBlock): HTMLTableElement {
+//   const table = document.createElement('table');
+//   table.id = block.id;
+//   const tbody = document.createElement('tbody');
+//   for (const row of block.rows) {
+//     const tr = document.createElement('tr');
+//     tr.id = row.id;
+//     for (const cell of row.cells) {
+//       const td = document.createElement('td');
+//       td.id = cell.id;
+//       for (const node of cell.content) {
+//         td.appendChild(buildInlineNode(node));
+//       }
+//       tr.appendChild(td);
+//     }
+//     tbody.appendChild(tr);
+//   }
+//   table.appendChild(tbody);
+//   return table;
+// }
 
 function createTableDom(rows: number, cols: number): HTMLTableElement {
   const table = document.createElement('table');
@@ -122,34 +122,34 @@ export function insertTable(
   }
 }
 
-function buildInlineNode(node: InlineNode): Node {
-  // check for special nodes first
-  if (node.dataLink) {
-    const span = document.createElement('span');
-    span.id = crypto.randomUUID();
-    span.dataset.reactComponent = 'inline-data-link';
-    span.dataset.link = JSON.stringify(node.dataLink);
-    if (node.text) span.dataset.givenLabel = node.text;
-    span.contentEditable = 'false';
-    return span;
-  }
+// function buildInlineNode(node: InlineNode): Node {
+//   // check for special nodes first
+//   if (node.dataLink) {
+//     const span = document.createElement('span');
+//     span.id = crypto.randomUUID();
+//     span.dataset.reactComponent = 'inline-data-link';
+//     span.dataset.link = JSON.stringify(node.dataLink);
+//     if (node.text) span.dataset.givenLabel = node.text;
+//     span.contentEditable = 'false';
+//     return span;
+//   }
 
-  // ... then create a basic html inline node
-  const text = document.createTextNode(node.text);
-  if (!node.bold && !node.italic) return text;
+//   // ... then create a basic html inline node
+//   const text = document.createTextNode(node.text);
+//   if (!node.bold && !node.italic) return text;
 
-  let wrapper: HTMLElement | undefined;
-  if (node.bold) {
-    wrapper = document.createElement('strong');
-    wrapper.appendChild(text);
-  }
-  if (node.italic) {
-    const em = document.createElement('em');
-    em.appendChild(wrapper ?? text);
-    wrapper = em;
-  }
-  return wrapper!;
-}
+//   let wrapper: HTMLElement | undefined;
+//   if (node.bold) {
+//     wrapper = document.createElement('strong');
+//     wrapper.appendChild(text);
+//   }
+//   if (node.italic) {
+//     const em = document.createElement('em');
+//     em.appendChild(wrapper ?? text);
+//     wrapper = em;
+//   }
+//   return wrapper!;
+// }
 
 export function changeBlockType(lastFocusedRef: React.RefObject<HTMLElement | null>, newTag: string, dispatch: (cmd: EditorCommand) => void) {
   const el = lastFocusedRef.current;

@@ -1,9 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import type { BlockDocument, DataLinks, GameSystemData, MoralityPair } from "../../types/game";
+import type { MkDocument, DataLinks, GameSystemData, MoralityPair } from "../../types/game";
 import type { AnyDocumentCommand } from "../../types/requests";
 import type { WsIncoming } from "../../types/websocket";
 import { applyCommandToDocument } from "../../util/commands";
-import { buildDataLinks } from "../../util/game";
+// import { buildDataLinks } from "../../util/game";
 import { useWebSocket } from "./WebSocketContext";
 
 // const LS_KEY_GAME_SYSTEM = 'si:game-system';
@@ -57,8 +57,8 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
       }
       // Handle block-document commands
       else {
-        const existing = node[docKey] as BlockDocument;
-        const doc: BlockDocument = { order: [...existing.order], blocks: { ...existing.blocks } };
+        const existing = node[docKey] as MkDocument;
+        const doc: MkDocument = { order: [...existing.order], blocks: { ...existing.blocks } };
         applyCommandToDocument(doc, command);
         node[docKey] = doc;
       }
@@ -95,7 +95,7 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!data) return;
-    buildDataLinks(data).then(setDataLinks).catch(() => { });
+    // FIXME: buildDataLinks(data).then(setDataLinks).catch(() => { });
   }, [data]);
 
   return (

@@ -1,5 +1,3 @@
-import type { Block } from "./game";
-
 export type documentCommandType = 'add-block'
   | 'remove-block'
   | 'reorder-blocks'
@@ -14,7 +12,8 @@ export interface documentCommand {
 }
 
 export interface addBlockToDocumentCommand extends documentCommand {
-  block: Block;
+  block: string;
+  blockId: string;
   position: number;
 }
 
@@ -27,7 +26,8 @@ export interface reorderBlocksInDocument extends documentCommand {
 }
 
 export interface updateBlockInDocument extends documentCommand {
-  updatedBlock: Block;
+  updatedBlockId: string;
+  updatedBlock: string;
 }
 
 export interface moralityPairAdded extends documentCommand {

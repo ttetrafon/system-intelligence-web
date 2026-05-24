@@ -1,5 +1,5 @@
 import { cacheRequestData, invalidateCache } from "util/cache";
-import { defaultGameSystemData, type BlockDocument, type GameSystemData, type MoralityPairs } from "@app-types/game";
+import { defaultGameSystemData, type MkDocument, type GameSystemData, type MoralityPairs } from "@app-types/game";
 
 /** Maps a dataKey (dot-notation) to the R2 object key */
 export function r2Key(system: string, dataKey: string): string {
@@ -54,9 +54,9 @@ export async function collectGameSystemData(r2: R2Bucket, useCache: boolean): Pr
 
   // Read the three active documents in parallel
   const [checksDoc, aspectsDoc, moralityDoc, moralityPairs] = await Promise.all([
-    readDocument<BlockDocument>(r2, r2Key('si', 'core.checks.document'), defaults.core.checks.document, useCache),
-    readDocument<BlockDocument>(r2, r2Key('si', 'characters.aspects.document'), defaults.characters.aspects.document, useCache),
-    readDocument<BlockDocument>(r2, r2Key('si', 'characters.morality.document'), defaults.characters.morality.document, useCache),
+    readDocument<MkDocument>(r2, r2Key('si', 'core.checks.document'), defaults.core.checks.document, useCache),
+    readDocument<MkDocument>(r2, r2Key('si', 'characters.aspects.document'), defaults.characters.aspects.document, useCache),
+    readDocument<MkDocument>(r2, r2Key('si', 'characters.morality.document'), defaults.characters.morality.document, useCache),
     readDocument<MoralityPairs>(r2, r2Key('si', 'characters.morality.pairs'), defaults.characters.morality.pairs, useCache),
   ]);
 

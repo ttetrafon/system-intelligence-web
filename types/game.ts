@@ -1,33 +1,33 @@
 export interface GameSystemData {
   core: {
     checks: {
-      document: BlockDocument
+      document: MkDocument
     };
     resources: {
-      document: BlockDocument
+      document: MkDocument
     };
     skillChallenges: {
-      document: BlockDocument
+      document: MkDocument
     };
     tasks: {
-      document: BlockDocument
+      document: MkDocument
     };
     bonusesPenalties: {
-      document: BlockDocument
+      document: MkDocument
     };
     advantageDisadvantage: {
-      document: BlockDocument
+      document: MkDocument
     };
     tags: {
-      document: BlockDocument
+      document: MkDocument
     };
   };
   characters: {
     aspects: {
-      document: BlockDocument
+      document: MkDocument
     };
     morality: {
-      document: BlockDocument,
+      document: MkDocument,
       pairs: MoralityPairs;
     };
   };
@@ -53,65 +53,63 @@ export interface MoralityPair {
   second: string;
 }
 
-export interface BlockDocument {
-  order: string[],
-  blocks: Record<string, Block>;
+export interface MkDocument {
+  order: string[];
+  blocks: Record<string, string>;
 }
 
-export interface ContentBlock {
-  id: string;
-  type: "paragraph"
-  | "h1"
-  | "h2"
-  | "h3"
-  | "h4"
-  | "h5"
-  | "h6"
-  | "listItemOrdered"
-  | "listItemUnordered"
-  | "blockquote"
-  | "moralityPairs";
-  content: InlineNode[];
-}
+// export interface BlockDocument {
+//   order: string[];
+//   blocks: Record<string, Block>;
+// }
 
-export interface TableCell {
-  id: string;
-  content: InlineNode[];
-}
+// export interface ContentBlock {
+//   id: string;
+//   type: "paragraph"
+//   | "h1"
+//   | "h2"
+//   | "h3"
+//   | "h4"
+//   | "h5"
+//   | "h6"
+//   | "listItemOrdered"
+//   | "listItemUnordered"
+//   | "blockquote"
+//   | "moralityPairs";
+//   content: InlineNode[];
+// }
 
-export interface TableRow {
-  id: string;
-  cells: TableCell[];
-}
+// export interface TableCell {
+//   id: string;
+//   content: InlineNode[];
+// }
 
-export interface TableBlock {
-  id: string;
-  type: "table";
-  rows: TableRow[];
-}
+// export interface TableRow {
+//   id: string;
+//   cells: TableCell[];
+// }
 
-export type Block = ContentBlock | TableBlock;
+// export interface TableBlock {
+//   id: string;
+//   type: "table";
+//   rows: TableRow[];
+// }
 
-export interface InlineNode {
-  text: string;
-  bold?: boolean;
-  italic?: boolean;
-  link?: string;
-  colour?: string;
-  dataLink?: DataLink;
-}
+// export type Block = ContentBlock | TableBlock;
 
-export function emptyDocument(): BlockDocument {
-  const id: string = crypto.randomUUID();
+// export interface InlineNode {
+//   text: string;
+//   bold?: boolean;
+//   italic?: boolean;
+//   link?: string;
+//   colour?: string;
+//   dataLink?: DataLink;
+// }
+
+export function emptyDocument(): MkDocument {
   return {
-    order: [id],
-    blocks: {
-      [id]: {
-        id: id,
-        type: "paragraph",
-        content: [{ text: "..." }]
-      }
-    }
+    order: [],
+    blocks: {},
   }
 };
 

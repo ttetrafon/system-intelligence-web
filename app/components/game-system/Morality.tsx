@@ -1,21 +1,18 @@
 import { useGameSystem } from "~/context/GameSystemContext";
 import { useUser } from "~/context/UserContext";
-import { BlockEditor } from "../generic/BlockEditor";
-import { emptyDocument } from "@app-types/game";
+import { MkEditor } from "../generic/MkEditor";
 
 export default function Morality() {
   const { session } = useUser();
   const { data } = useGameSystem();
-  const characters = data?.characters;
   const editable = session?.system_role === 'admin' || session?.system_role === 'owner';
 
   return (
-    <BlockEditor
+    <MkEditor
       editable={editable}
       dataSystem='si'
       dataKey="characters.morality.document"
-      data={characters?.morality.document ?? emptyDocument()}
       gameData={data} >
-    </BlockEditor>
+    </MkEditor>
   );
 }

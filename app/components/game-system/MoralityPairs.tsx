@@ -1,5 +1,5 @@
 import type { GameSystemData } from "@app-types/game";
-import { BlockEditorButton } from "../generic/BlockEditorButton";
+import { EditorButton } from "../generic/EditorButton";
 
 export interface MoralityPairsProps {
   editing: boolean,
@@ -42,13 +42,13 @@ export function MoralityPairs({ editing, gameData, onAddPair, onDeletePair, onUp
                   }} />}
                 {!editing && <>{pair.second}</>}
               </td>
-              {editing && <td className="p-0"><BlockEditorButton text="Delete Morality Pair" icon="delete" onClick={() => onDeletePair?.(pair.id)} /></td>}
+              {editing && <td className="p-0"><EditorButton text="Delete Morality Pair" icon="delete" onClick={() => onDeletePair?.(pair.id)} /></td>}
             </tr>
           ))}
         </tbody>
       </table>
       {editing && <div className="flex flex-col justify-center">
-        <BlockEditorButton text="Add Morality Pair" icon="add" onClick={() => onAddPair?.()} />
+        <EditorButton text="Add Morality Pair" icon="add" onClick={() => onAddPair?.()} />
       </div>}
     </div>
   );

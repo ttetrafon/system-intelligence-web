@@ -180,7 +180,7 @@
   .block-editor-contents * {
     -webkit-user-drag: none;
   }
-  .block-editor-button button {
+  .editor-button button {
     @apply m-1 border border-typography p-1 rounded-sm;
   }
 
