@@ -1,6 +1,11 @@
 # https://pnpm.io/settings
+minimumReleaseAge: 10080
 trustPolicyExclude:
 - 'chokidar@4.0.3'
 - 'semver@6.3.1'
 trustPolicy: no-downgrade
 blockExoticSubdeps: true
+allowBuilds:
+  esbuild: false
+  sharp: false
+  workerd: false
