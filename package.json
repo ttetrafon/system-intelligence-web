@@ -1,5 +1,5 @@
 {
-  "version": "0.1.18",
+  "version": "0.1.19",
   "name": "system-intelligence-web",
   "private": true,
   "type": "module",
@@ -11,8 +11,8 @@
     "build:production": "react-router build --mode production",
     "cf-typegen": "wrangler types",
     "typecheck": "npm run cf-typegen && react-router typegen && tsc -b",
-    "db:migrate:staging": "wrangler d1 migrations apply system-intelligence-db-staging --remote",
-    "db:migrate:production": "wrangler d1 migrations apply system-intelligence-db-production --remote",
+    "db:migrate:staging": "wrangler d1 migrations/staging apply system-intelligence-db-staging --remote",
+    "db:migrate:production": "wrangler d1 migrations/production apply system-intelligence-db-production --remote",
     "deploy:staging": "pnpm run build:staging && wrangler deploy",
     "deploy:production": "pnpm run build:production && wrangler deploy"
   },
