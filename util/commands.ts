@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import type { EditorCommand } from 'util/lib/react/markdownEditor/EditorTypes';
+import type { EditorCommand } from '@app-types/editor';
 import type { MkDocument } from '@app-types/game';
 import type { AnyDocumentCommand, documentCommand } from '@app-types/requests';
 import { addBlockToDocument, removeBlockFromDocument, reorderBlocksInDocument, updateBlockInDocument } from './data';

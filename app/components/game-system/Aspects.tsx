@@ -1,6 +1,6 @@
 import { useGameSystem } from "~/context/GameSystemContext";
 import { useUser } from "~/context/UserContext";
-import { MkEditor } from "../../../util/lib/react/markdownEditor/MkEditor";
+import { MkEditor } from "../generic/MkEditor";
 
 export default function Aspects() {
   const { session } = useUser();
