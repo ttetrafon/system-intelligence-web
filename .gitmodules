@@ -1,0 +1,3 @@
+[submodule "util/lib"]
+	path = util/lib
+	url = git@github.com:ttetrafon/typescript-lib.git
