@@ -1,6 +1,6 @@
 import { useGameSystem } from "~/context/GameSystemContext";
 import { useUser } from "~/context/UserContext";
-import { MkEditor } from "../generic/MkEditor";
+import { MkEditor } from "../../../util/lib/react/markdownEditor/MkEditor";
 
 export default function Checks() {
   const { session } = useUser();
