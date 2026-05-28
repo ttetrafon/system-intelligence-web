@@ -1,5 +1,6 @@
 import { Activity } from "react";
-import { Svg, type SvgName } from "./Svg";
+import { Svg } from "util/lib-react/components/Svg";
+import type { SvgName } from "util/lib/icons/googleIconSvgs";
 
 interface MenuIconProps {
   imageName: SvgName;

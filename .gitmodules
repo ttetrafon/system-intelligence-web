@@ -1,3 +1,6 @@
 [submodule "util/lib"]
 	path = util/lib
 	url = git@github.com:ttetrafon/typescript-lib.git
+[submodule "util/lib-react"]
+	path = util/lib-react
+	url = git@github.com:ttetrafon/react-lib.git
