@@ -4,15 +4,6 @@ import { getGameSystem } from './GameSystem';
 
 export { SystemNotifier } from './SystemNotifier';
 
-declare module "react-router" {
-  export interface AppLoadContext {
-    cloudflare: {
-      env: Env;
-      ctx: ExecutionContext;
-    };
-  }
-}
-
 const requestHandler = createRequestHandler(
   () => import('virtual:react-router/server-build') as Promise<ServerBuild>,
   import.meta.env.MODE,
@@ -88,8 +79,6 @@ export default {
       return handleApiRequest(url, request, env);
     }
 
-    return requestHandler(request, {
-      cloudflare: { env, ctx },
-    });
+    return requestHandler(request);
   },
 } satisfies ExportedHandler<Env>;

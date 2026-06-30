@@ -1,6 +1,7 @@
 import type { Route } from './+types/login';
 import Login from '~/components/user/Login';
 import { verifyPassword, createJWT, createJWTCookie } from '../../util/security';
+import { env } from 'cloudflare:workers';
 
 interface DBUser {
   id: number;
@@ -12,10 +13,8 @@ interface DBUser {
 }
 
 export async function action({ request, context }: Route.ActionArgs) {
-  const env = context.cloudflare.env as unknown as {
-    DB: D1Database;
-    SESSION_SECRET: string;
-  };
+  const SESSION_SECRET: string = env.SESSION_SECRET;
+  const DB: D1Database = env.DB;
 
   const formData = await request.formData();
   const email = (formData.get('email') as string | null)?.trim();
@@ -25,7 +24,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: 'Email and password are required.' };
   }
 
-  const user = await env.DB.prepare(
+  const user = await DB.prepare(
     'SELECT id, username, display, colour, system_role, password_hash FROM USERS WHERE username = ? AND loginType = ?'
   )
     .bind(email, 'email')
@@ -42,7 +41,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
   const token = await createJWT(
     { sub: user.id, username: user.username, display: user.display, colour: user.colour, system_role: user.system_role },
-    env.SESSION_SECRET
+    SESSION_SECRET
   );
 
   const isSecure = new URL(request.url).protocol === 'https:';

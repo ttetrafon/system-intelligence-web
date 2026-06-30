@@ -1,15 +1,16 @@
 import type { Route } from './+types/api.me';
 import { getJWTFromCookie, verifyJWT } from '../../util/security';
+import { env } from 'cloudflare:workers';
 
 export async function loader({ request, context }: Route.LoaderArgs) {
-  const env = context.cloudflare.env as unknown as { SESSION_SECRET: string };
+  const sessionSecret = env.SESSION_SECRET;
 
   const token = getJWTFromCookie(request.headers.get('Cookie'));
   if (!token) {
     return Response.json({ user: null }, { status: 401 });
   }
 
-  const payload = await verifyJWT(token, env.SESSION_SECRET);
+  const payload = await verifyJWT(token, sessionSecret);
   if (!payload) {
     return Response.json({ user: null }, { status: 401 });
   }

@@ -1,18 +1,40 @@
+import React, { type ReactNode } from "react";
+import ReactDOM from 'react-dom/client';
 import type { EditorCommand } from "@app-types/editor";
 import type { MkDocument } from "@app-types/game";
+import { MkLine } from "~/components/generic/MkLine";
 
 /// --- DOM --- ///
-// export async function buildHtml(document: MkDocument): Promise<DocumentFragment> {
-//   const fragment = document.createDocumentFragment();
+export function createMkLine(id: string, doc: MkDocument, ref: HTMLElement, editing: boolean) {
+  const container = document.createElement('div');
+  container.style.display = 'contents';
 
-//   for (const id of document.order) {
-//     const block = document.blocks[id];
-//     if (!block) continue;
-//     fragment.appendChild(buildBlock(block));
-//   }
+  // Create a root and render the MkLine component
+  const root = ReactDOM.createRoot(container);
+  root.render(<MkLine id={id} doc={doc} editing={false} />);
 
-//   return fragment;
-// }
+  // Append the container to the ref
+  ref.appendChild(container);
+}
+
+export function buildReactNode(contents: string): ReactNode {
+
+  return null;
+}
+
+export async function buildHtml(): Promise<DocumentFragment> {
+  const fragment = document.createDocumentFragment();
+
+
+
+  return fragment;
+
+  //   for (const id of document.order) {
+  //     const block = document.blocks[id];
+  //     if (!block) continue;
+  //     fragment.appendChild(buildBlock(block));
+  //   }
+}
 
 // function buildBlock(block: Block): HTMLElement {
 //   if (block.type === 'table') return buildTable(block);
@@ -35,7 +57,7 @@ import type { MkDocument } from "@app-types/game";
 //   return el;
 // }
 
-function buildReactPlaceholder(id: string, componentName: string): HTMLElement {
+export function buildReactPlaceholder(id: string, componentName: string): HTMLElement {
   const el = document.createElement('div');
   el.id = id;
   el.dataset.reactComponent = componentName;
@@ -213,6 +235,11 @@ export function renumberGutters(container: HTMLElement): void {
 }
 
 /// --- EVENTS --- ///
+export function isLineInDocument(document: MkDocument, lineId: string | undefined): boolean {
+  if (!lineId) return false;
+  return document.blocks[lineId] !== undefined;
+}
+
 export function handleKeyUp(
   e: React.KeyboardEvent<HTMLElement>,
   modifiers: {
