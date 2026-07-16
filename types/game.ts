@@ -107,9 +107,13 @@ export interface MkDocument {
 // }
 
 export function emptyDocument(): MkDocument {
+  const uuid = crypto.randomUUID();
+
   return {
-    order: [],
-    blocks: {},
+    order: [uuid],
+    blocks: {
+      [uuid]: ""
+    },
   }
 };
 

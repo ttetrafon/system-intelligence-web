@@ -5,11 +5,12 @@ import { buildHtml, buildReactNode } from "util/EditorScripts";
 
 export interface MkLineProps {
   id: string,
-  doc: MkDocument,
+  data: string,
   editing: boolean,
+  focused?: boolean,
 }
 
-export function MkLine({ id, doc, editing }: MkLineProps) {
+export function MkLine({ id, data, editing }: MkLineProps) {
   const [outputNode, setOutputNode] = React.useState<ReactNode>(null);
   console.log("MkLine: editing:", editing);
 
@@ -29,7 +30,7 @@ export function MkLine({ id, doc, editing }: MkLineProps) {
 
     // TODO: build the appropriate html
     setOutputNode(buildReactNode(contents));
-  }, [editing, doc]);
+  }, [editing, data]);
 
   return (
     <div className="flex flex-row flex-nowrap items-start" id={id}>

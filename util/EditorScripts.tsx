@@ -5,17 +5,33 @@ import type { MkDocument } from "@app-types/game";
 import { MkLine } from "~/components/generic/MkLine";
 
 /// --- DOM --- ///
-export function createMkLine(id: string, doc: MkDocument, ref: HTMLElement, editing: boolean) {
-  const container = document.createElement('div');
-  container.style.display = 'contents';
+// export function buildDocument(doc: MkDocument, ref: HTMLElement | null, editing: boolean): Record<string, HTMLElement> {
+//   console.log('buildDocument()', doc, ref, editing);
+//   let res: Record<string, HTMLElement> = {};
 
-  // Create a root and render the MkLine component
-  const root = ReactDOM.createRoot(container);
-  root.render(<MkLine id={id} doc={doc} editing={false} />);
+//   if (!ref) return res;
+//   if (doc.order.length === 0) return res;
 
-  // Append the container to the ref
-  ref.appendChild(container);
-}
+//   for (let i = 0; i < doc.order.length; i++) {
+//     let container = createMkLine(doc.order[i], doc, ref, editing);
+
+//   }
+
+//   return res;
+// }
+
+// export function createMkLine(id: string, doc: MkDocument, ref: HTMLElement, editing: boolean): HTMLElement {
+//   const container = document.createElement('div');
+//   container.style.display = 'contents';
+
+//   // Create a root and render the MkLine component
+//   const root = ReactDOM.createRoot(container);
+//   root.render(<MkLine id={id} doc={doc} editing={false} />);
+
+//   // Append the container to the ref
+//   ref.appendChild(container);
+//   return container;
+// }
 
 export function buildReactNode(contents: string): ReactNode {
 

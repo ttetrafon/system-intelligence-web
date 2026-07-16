@@ -1,9 +1,10 @@
 import { emptyDocument, type DataLink, type GameSystemData, type MkDocument } from "@app-types/game";
-import { useGameSystem } from "~/context/GameSystemContext";
+// import { useGameSystem } from "~/context/GameSystemContext";
 import { EditorToolbarSeparator } from "./EditorToolbarSeparator";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { EditorButton } from "./EditorButton";
-import { changeBlockType, createMkLine, isLineInDocument } from "util/EditorScripts";
+import { isLineInDocument } from "util/EditorScripts";
+import { MkLine, type MkLineProps } from "./MkLine";
 
 export interface EditorProps {
   editable: boolean,
@@ -12,34 +13,48 @@ export interface EditorProps {
   gameData: GameSystemData | null,
 }
 
-export function MkEditor({ ...props }: EditorProps) {
-  const { data } = useGameSystem();
-  const keyParts = props.dataKey.split('.');
-  let doc = keyParts.reduce((obj, part) => obj?.[part], props.gameData as any) as MkDocument | undefined;
-  let document = doc ?? emptyDocument();
-
+export function MkEditor({ editable, dataSystem, dataKey, gameData }: EditorProps) {
+  // const { data } = useGameSystem(); // TODO: maybe use data from context instead of
+  const [isPending, startTransition] = useTransition();
+  const [document, setDocument] = useState<MkDocument>(emptyDocument);
+  const [contents, setContents] = useState<MkLineProps[]>([]);
   const [editing, setEditing] = useState(true);
   const contentsRef = useRef<HTMLElement>(null);
 
   // When the game data changes, update the document state.
-  // useEffect(() => {
-  //   document = doc ?? emptyDocument();
-  // }, [props.gameData]);
+  useEffect(() => {
+    const keyParts = dataKey.split('.');
+    let doc: MkDocument | undefined = keyParts.reduce((obj, part) => obj?.[part], gameData as any) as MkDocument | undefined;
+    // TODO: do not update the document if the change is not relevant!
+    // will probably need to know the command that updated the gameData to check relevancy?
+    if (doc) {
+      setDocument(doc);
+    }
+  }, [gameData]);
+  console.log(dataKey, "->", document);
 
-  // Populate the contents with MkLine as needed.
-  const buildContents = () => {
-
-  }
-
-  // Update the contents when the document changes.
-  const updateContents = () => {
-
-  }
+  useEffect(() => {
+    console.log("... useEffect@[gameData, editing]");
+    startTransition(() => {
+      let l: MkLineProps[] = [];
+      for (let i = 0; i < document.order.length; i++) {
+        let id: string = document.order[i];
+        l.push({
+          id,
+          data: document.blocks[id],
+          editing: editing,
+          // focused: false, // TODO: get focused state from currently-editing-line
+        });
+      }
+      console.log("contents:", l);
+      setContents(l);
+    })
+  }, [document, editing]); // TODO: maybe push editing on its own, and just update the elements directly instead of updating the state?
 
   return (
     <>
       {/* editor controls */}
-      {props.editable && <section className="min-h-4 flex flex-row flex-nowrap lg:flex-wrap md:gap-1 justify-center w-full mb-2 overflow-x-auto">
+      {editable && <section className="min-h-4 flex flex-row flex-nowrap lg:flex-wrap md:gap-1 justify-center w-full mb-2 overflow-x-auto">
         {/*
         <EditorButton text="Heading 1" icon="h1" onClick={() => changeBlockType(lastFocusedRef, 'h1', pushAndSend)} />
         <EditorButton text="Heading 2" icon="h2" onClick={() => changeBlockType(lastFocusedRef, 'h2', pushAndSend)} />
@@ -114,10 +129,18 @@ export function MkEditor({ ...props }: EditorProps) {
             }
 
 
-            if (contentsRef.current) createMkLine(crypto.randomUUID(), document, contentsRef.current, editing);
           }
         }}
-      />
+      >
+        {contents.map((line) => (
+          <MkLine
+            key={line.id}
+            id={line.id}
+            data={line.data}
+            editing={editing}
+          />
+        ))}
+      </section>
     </>
   );
 }
