@@ -1,7 +1,6 @@
-import React, { type ReactNode } from "react";
-import ReactDOMServer from "react-dom/server";
-import type { MkDocument } from "@app-types/game";
-import { buildHtml, buildReactNode } from "util/EditorScripts";
+import React, { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
+import { buildReactNode } from "util/EditorScripts";
+import { countOccurrencesInString } from "util/lib/text/details";
 
 export interface MkLineProps {
   id: string,
@@ -11,32 +10,43 @@ export interface MkLineProps {
 }
 
 export function MkLine({ id, data, editing }: MkLineProps) {
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [inputRows, setInputRows] = useState<number>(1);
+  const [textContent, setTextContent] = useState<string>("");
   const [outputNode, setOutputNode] = React.useState<ReactNode>(null);
-  console.log("MkLine: editing:", editing);
+  const [_, startTransition] = useTransition();
 
-  React.useEffect(() => {
+  useEffect(() => {
+    if (!editing || !inputRef.current) return;
+    inputRef.current.value = data;
+    setTextContent(data);
+    setInputRows(countOccurrencesInString(data, "\n", 1));
+  }, [data]);
+
+  useEffect(() => {
+    console.log(`MkLine.useEffect@[editing, textContent]`)
     // Parse the contents from:
-    // - editing: from the textarea contents
-    // - not editing: from the document.blocks[props.id]
-
-    // TODO: get the line's contents
-    const contents = "";
-    if (editing) {
-
-    }
-    else {
-
-    }
-
-    // TODO: build the appropriate html
+    // - editing: from the textarea input
+    // - not editing: from the document data
+    const contents = editing && inputRef.current ? textContent : data;
     setOutputNode(buildReactNode(contents));
-  }, [editing, data]);
+  }, [editing, textContent]);
+
+  function updateOutput() {
+    console.log(`updateOutput():`, inputRef.current);
+    startTransition(() => {
+      setOutputNode(buildReactNode(inputRef.current?.value || ""));
+    });
+  }
 
   return (
-    <div className="flex flex-row flex-nowrap items-start" id={id}>
+    <div className="mk-line" id={id}>
       <span>0</span>
       {/* TODO: switch based on editing! */}
-      <textarea className="flex-1" />
+      <textarea
+        ref={inputRef} rows={inputRows}
+        onChange={updateOutput}
+      />
       {outputNode}
     </div>
   );

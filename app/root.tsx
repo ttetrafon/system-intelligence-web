@@ -8,19 +8,16 @@ import {
   useNavigate,
 } from 'react-router';
 import { useState } from 'react';
-
 import { UserProvider, useUser } from './context/UserContext';
-
 import type { Route } from './+types/root';
 import './app.css';
 import Head from './components/general/Head';
 import Contents from './components/game-system/Contents';
 import Footer from './components/general/Footer';
-import Side from './components/game-system/Side';
+import Loader from './components/general/Loader';
 import { GameSystemProvider } from './context/GameSystemContext';
 import { WebSocketProvider } from './context/WebSocketContext';
 import { AppProvider, useLoading } from './context/AppContext';
-import Loader from './components/general/Loader';
 
 export const links: Route.LinksFunction = () => [];
 

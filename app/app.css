@@ -139,7 +139,20 @@
   }
 
   /* Block editor */
-  .block-editor-contents {
+  .mk-line {
+    @apply  flex flex-row flex-nowrap items-stretch justify-stretch gap-2;
+  }
+  .mk-line > *:nth-child(1) {
+    @apply w-6 text-right;
+  }
+  .mk-line > *:nth-child(2) {
+    @apply w-[33%];
+  }
+  .mk-line > *:nth-child(3) {
+    @apply flex-1;
+  }
+
+  /* .block-editor-contents {
     @apply outline-none;
   }
   .block-editor-contents .block-line {
@@ -182,7 +195,7 @@
   }
   .editor-button button {
     @apply m-1 border border-typography p-1 rounded-sm;
-  }
+  } */
 
   button.generic {
     @apply border border-typography rounded-md px-2 py-1;
