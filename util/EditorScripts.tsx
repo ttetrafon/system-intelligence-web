@@ -48,30 +48,39 @@ export function parseContents(contents: string): ReactNode {
 }
 
 const formatText = (text: string): React.ReactNode => {
-  // Regex matches:
-  //  - **bold**
-  //  - *italic*
-  //  - _italic_
-  const regex = /(\*\*.*?\*\*|\*.*?\*|_.*?_)/g;
-  const parts = text.split(regex);
-  console.log(parts);
+  let isBold = false; // **
+  let isItalic = false; // *, _
 
-  return parts.map((part, index) => {
-    if (!part) return null;
+  // Split the text by these markers, but keep the markers in the result array.
+  const regex = /(\*\*|[*_])/g;
+  const segments = text.split(regex).filter(Boolean);
+  console.log("segments:", segments);
 
-    // bold
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <React.Fragment key={index}><><b>{part.slice(2, -2)}</b></></React.Fragment>;
+  let currentResult: React.ReactNode[] = [];
+
+  segments.forEach((segment) => {
+    if (segment === '**') {
+      isBold = !isBold;
+      return;
     }
 
-    // italic
-    if ((part.startsWith('*') && part.endsWith('*')) || (part.startsWith('_') && part.endsWith('_'))) {
-      return <React.Fragment key={index}><i>{part.slice(1, -1)}</i></React.Fragment>;
+    if (segment === '*' || segment === '_') {
+      isItalic = !isItalic;
+      return;
     }
 
-    // plain
-    return part;
+    let content = segment;
+    if (isBold || isItalic) {
+      const element = isBold && isItalic ? <React.Fragment><b><i>{content}</i></b></React.Fragment> :
+        isBold ? <b>{content}</b> :
+          <i>{content}</i>;
+      currentResult.push(element);
+    } else {
+      currentResult.push(content);
+    }
   });
+
+  return <>{currentResult}</>;
 };
 
 // export function buildDocument(doc: MkDocument, ref: HTMLElement | null, editing: boolean): Record<string, HTMLElement> {
@@ -243,6 +252,12 @@ export function clearFocusedBlock(lastFocusedRef: React.RefObject<HTMLElement | 
     lastFocusedCellRef.current = null;
   }
 };
+
+/// --- COMMANDS --- ///
+export function lineUpdated(dataSystem: string, documentKey: string, lineId: string, lineContents: string): void {
+  console.log(`---> lineUpdated(${dataSystem}, ${documentKey}, ${lineId}, ${lineContents})`);
+  // TODO: ... build the command and return it?
+}
 
 /// --- EVENTS --- ///
 export function isLineInDocument(document: MkDocument, lineId: string | undefined): boolean {

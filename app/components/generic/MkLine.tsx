@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
+import React, { useDeferredValue, useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import { buildReactNode } from "util/EditorScripts";
 import { countOccurrencesInString } from "util/lib/text/details";
 
@@ -7,11 +7,14 @@ export interface MkLineProps {
   data: string,
   editing: boolean,
   focused?: boolean,
+  onContentsUpdated: (id: string, newContents: string) => void,
 }
 
-export function MkLine({ id, data, editing }: MkLineProps) {
+export function MkLine({ id, data, editing, onContentsUpdated }: MkLineProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [inputRows, setInputRows] = useState<number>(1);
+  const [currentInputContents, setCurrentInputContents] = useState<string>("");
+  const deferredCurrentTextContent = useDeferredValue<string>(currentInputContents);
   const [textContent, setTextContent] = useState<string>("");
   const [outputNode, setOutputNode] = React.useState<ReactNode>(null);
   const [_, startTransition] = useTransition();
@@ -34,9 +37,17 @@ export function MkLine({ id, data, editing }: MkLineProps) {
 
   function updateOutput() {
     console.log(`updateOutput():`, inputRef.current);
-    startTransition(() => {
-      setOutputNode(buildReactNode(inputRef.current?.value || ""));
-    });
+    const value = inputRef.current?.value || "";
+    setCurrentInputContents(value);
+  }
+
+  useMemo(() => {
+    setOutputNode(buildReactNode(deferredCurrentTextContent));
+    updatedContents(deferredCurrentTextContent);
+  }, [deferredCurrentTextContent]);
+
+  function updatedContents(contents: string) {
+    onContentsUpdated(id, contents);
   }
 
   return (

@@ -1,11 +1,11 @@
 {
-  "version": "0.1.27",
+  "version": "0.1.28",
   "name": "system-intelligence-web",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=22",
-    "pnpm": ">=10"
+    "pnpm": ">=11"
   },
   "dependencies": {
     "argon2": "0.44.0",

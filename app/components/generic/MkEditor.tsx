@@ -15,7 +15,7 @@ export function MkEditor({ dataKey }: EditorProps) {
   const { session } = useUser();
   const { editing, dataSystem, data } = useGameSystem();
   const editable = session?.system_role === 'admin' || session?.system_role === 'owner';
-  const [isPending, startTransition] = useTransition();
+  const [_, startTransition] = useTransition();
   const [document, setDocument] = useState<MkDocument>(emptyDocument);
   const [contents, setContents] = useState<MkLineProps[]>([]);
   const contentsRef = useRef<HTMLElement>(null);
@@ -43,6 +43,10 @@ export function MkEditor({ dataKey }: EditorProps) {
           data: document.blocks[id],
           editing: editing,
           // focused: false, // TODO: get focused state from currently-editing-line
+          onContentsUpdated: (id: string, newContents: string) => {
+            console.log(`onContentsUpdated(${id}, ${newContents})`);
+            // TODO... send line update contents command
+          }
         });
       }
       console.log("contents:", l);
@@ -137,6 +141,10 @@ export function MkEditor({ dataKey }: EditorProps) {
             id={line.id}
             data={line.data}
             editing={editing}
+            onContentsUpdated={(id: string, newContents: string) => {
+              console.log(`onContentsUpdated(${id}, ${newContents})`)
+              // TODO: ... send line update command
+            }}
           />
         ))}
       </section>
