@@ -9,8 +9,10 @@ import { useWebSocket } from "./WebSocketContext";
 // const LS_KEY_GAME_SYSTEM = 'si:game-system';
 
 interface GameSystemContextType {
+  dataSystem: string;
   data: GameSystemData | null;
   dataLinks: DataLinks | null;
+  editing: boolean;
   applyCommand: (dataKey: string, command: AnyDocumentCommand) => void;
 }
 
@@ -19,7 +21,12 @@ const GameSystemContext = createContext<GameSystemContextType | undefined>(undef
 export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
   const { subscribe, status } = useWebSocket();
   const [dataLinks, setDataLinks] = useState<DataLinks | null>(null);
+  const [dataSystem, setDataSystem] = useState<string>("si");
   const [data, setData] = useState<GameSystemData | null>(null);
+  const [editing, setEditing] = useState<boolean>(true); // TODO: default to 'false' and then switch if allowed!
+  // TODO: will need an editing value for each user role... or apply roles directly in the element
+  // TODO: will also need to check for editing authorisation server-side...
+
   // const [data, setData] = useState<GameSystemData | null>(() => {
   //   try {
   //     const cached = localStorage.getItem(LS_KEY_GAME_SYSTEM);
@@ -99,7 +106,7 @@ export const GameSystemProvider = ({ children }: { children: ReactNode }) => {
   }, [data]);
 
   return (
-    <GameSystemContext.Provider value={{ data, dataLinks, applyCommand }}>
+    <GameSystemContext.Provider value={{ dataSystem, data, dataLinks, editing, applyCommand }}>
       {children}
     </GameSystemContext.Provider>
   );

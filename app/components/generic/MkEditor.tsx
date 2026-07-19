@@ -1,36 +1,35 @@
 import { emptyDocument, type DataLink, type GameSystemData, type MkDocument } from "@app-types/game";
-// import { useGameSystem } from "~/context/GameSystemContext";
+import { useGameSystem } from "~/context/GameSystemContext";
 import { EditorToolbarSeparator } from "./EditorToolbarSeparator";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { EditorButton } from "./EditorButton";
 import { isLineInDocument } from "util/EditorScripts";
 import { MkLine, type MkLineProps } from "./MkLine";
+import { useUser } from "~/context/UserContext";
 
 export interface EditorProps {
-  editable: boolean,
-  dataSystem: string,
   dataKey: string,
-  gameData: GameSystemData | null,
 }
 
-export function MkEditor({ editable, dataSystem, dataKey, gameData }: EditorProps) {
-  // const { data } = useGameSystem(); // TODO: maybe use data from context instead of
+export function MkEditor({ dataKey }: EditorProps) {
+  const { session } = useUser();
+  const { editing, dataSystem, data } = useGameSystem();
+  const editable = session?.system_role === 'admin' || session?.system_role === 'owner';
   const [isPending, startTransition] = useTransition();
   const [document, setDocument] = useState<MkDocument>(emptyDocument);
   const [contents, setContents] = useState<MkLineProps[]>([]);
-  const [editing, setEditing] = useState(true);
   const contentsRef = useRef<HTMLElement>(null);
 
   // When the game data changes, update the document state.
   useEffect(() => {
     const keyParts = dataKey.split('.');
-    let doc: MkDocument | undefined = keyParts.reduce((obj, part) => obj?.[part], gameData as any) as MkDocument | undefined;
+    let doc: MkDocument | undefined = keyParts.reduce((obj, part) => obj?.[part], data as any) as MkDocument | undefined;
     // TODO: do not update the document if the change is not relevant!
     // will probably need to know the command that updated the gameData to check relevancy?
     if (doc) {
       setDocument(doc);
     }
-  }, [gameData]);
+  }, [data]);
   console.log(dataKey, "->", document);
 
   useEffect(() => {

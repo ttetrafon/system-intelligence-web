@@ -2,10 +2,12 @@ import React, { type ReactNode } from "react";
 import ReactDOM from 'react-dom/client';
 import type { EditorCommand } from "@app-types/editor";
 import type { MkDocument } from "@app-types/game";
+import { MoralityPairs } from "~/components/game-system/MoralityPairs";
 
 /// --- DOM --- ///
 export function buildReactNode(contents: string): ReactNode {
   console.log(`buildReactNode(${contents}: string)`);
+  contents = contents.trim();
   if (contents === '') {
     return (<p>...</p>);
   }
@@ -33,6 +35,9 @@ export function buildReactNode(contents: string): ReactNode {
   if (contents.startsWith("#")) {
     contents = contents.slice(1).trim();
     return (<h1>{parseContents(contents)}</h1>);
+  }
+  if (contents.includes("![[morality-pairs]]")) {
+    return (<MoralityPairs />);
   }
 
   return (<p>{parseContents(contents)}</p>);

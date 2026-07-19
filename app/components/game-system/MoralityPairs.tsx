@@ -1,16 +1,15 @@
-import type { GameSystemData } from "@app-types/game";
 import { EditorButton } from "../generic/EditorButton";
+import { useGameSystem } from "~/context/GameSystemContext";
 
 export interface MoralityPairsProps {
-  editing: boolean,
-  gameData: GameSystemData | null,
   onAddPair?: () => void,
   onDeletePair?: (id: string) => void,
   onUpdatePair?: (id: string, field: 'first' | 'second', value: string) => void,
 }
 
-export function MoralityPairs({ editing, gameData, onAddPair, onDeletePair, onUpdatePair }: MoralityPairsProps) {
-  const moralityPairs = gameData?.characters.morality.pairs;
+export function MoralityPairs({ onAddPair, onDeletePair, onUpdatePair }: MoralityPairsProps) {
+  const { editing, data } = useGameSystem();
+  const moralityPairs = data?.characters.morality.pairs;
   const order = moralityPairs?.order ?? [];
   const items = moralityPairs?.items ?? {};
 
