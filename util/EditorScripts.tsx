@@ -47,22 +47,36 @@ export function parseContents(contents: string): ReactNode {
   return (<>{formatText(contents)}</>);
 }
 
-const formatText = (text: string): React.ReactNode => {
+function formatText(text: string): ReactNode {
   let isBold = false; // **
   let isItalic = false; // *, _
-  let underlined = false; // __
-  let strikethrough = false; // --
+  let isUnderlined = false; // __
+  let isStrikethrough = false; // --
 
   // Split the text by these markers, but keep the markers in the result array.
-  const regex = /(\*\*|[*_])/g;
+  const regex = /(\\\*\*|\*\*|\\\_\_|\_\_|\\-\-|\-\-|\\[*_]|[*_])/g;
   const segments = text.split(regex).filter(Boolean);
   console.log("segments:", segments);
 
-  let currentResult: React.ReactNode[] = [];
+  let currentResult: ReactNode[] = [];
+
+  let content = '';
 
   segments.forEach((segment) => {
+    if (["\\**", "\\--", "\\__", "\\_", "\\*"].includes(segment)) {
+      content += segment.substring(1);
+      return
+    };
     if (segment === '**') {
       isBold = !isBold;
+      return;
+    }
+    if (segment === '--') {
+      isStrikethrough = !isStrikethrough;
+      return;
+    }
+    if (segment === '__') {
+      isUnderlined = !isUnderlined;
       return;
     }
     if (segment === '*' || segment === '_') {
@@ -70,19 +84,19 @@ const formatText = (text: string): React.ReactNode => {
       return;
     }
 
-    let content = segment;
-    if (isBold && isItalic) {
-      currentResult.push(<React.Fragment><b><i>{content}</i></b></React.Fragment>);
-    }
-    else if (isBold) {
-      currentResult.push(<React.Fragment><b>{content}</b></React.Fragment>);
-    }
-    else if (isItalic) {
-      currentResult.push(<React.Fragment><i>{content}</i></React.Fragment>);
+    content += segment;
+    if (isBold || isItalic || isUnderlined || isStrikethrough) {
+      const classList: string[] = [];
+      if (isBold) classList.push('mk-bold');
+      if (isItalic) classList.push('mk-italic');
+      if (isUnderlined) classList.push('mk-underline');
+      if (isStrikethrough) classList.push('mk-strike');
+      currentResult.push(<span className={classList.join(" ")}>{content}</span>);
     }
     else {
       currentResult.push(content);
     }
+    content = '';
   });
 
   return <>{currentResult}</>;
