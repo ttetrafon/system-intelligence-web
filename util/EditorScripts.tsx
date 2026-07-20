@@ -50,6 +50,8 @@ export function parseContents(contents: string): ReactNode {
 const formatText = (text: string): React.ReactNode => {
   let isBold = false; // **
   let isItalic = false; // *, _
+  let underlined = false; // __
+  let strikethrough = false; // --
 
   // Split the text by these markers, but keep the markers in the result array.
   const regex = /(\*\*|[*_])/g;
@@ -63,19 +65,22 @@ const formatText = (text: string): React.ReactNode => {
       isBold = !isBold;
       return;
     }
-
     if (segment === '*' || segment === '_') {
       isItalic = !isItalic;
       return;
     }
 
     let content = segment;
-    if (isBold || isItalic) {
-      const element = isBold && isItalic ? <React.Fragment><b><i>{content}</i></b></React.Fragment> :
-        isBold ? <b>{content}</b> :
-          <i>{content}</i>;
-      currentResult.push(element);
-    } else {
+    if (isBold && isItalic) {
+      currentResult.push(<React.Fragment><b><i>{content}</i></b></React.Fragment>);
+    }
+    else if (isBold) {
+      currentResult.push(<React.Fragment><b>{content}</b></React.Fragment>);
+    }
+    else if (isItalic) {
+      currentResult.push(<React.Fragment><i>{content}</i></React.Fragment>);
+    }
+    else {
       currentResult.push(content);
     }
   });
