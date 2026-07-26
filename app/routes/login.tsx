@@ -1,16 +1,8 @@
 import type { Route } from './+types/login';
 import Login from '~/components/user/Login';
-import { verifyPassword, createJWT, createJWTCookie } from '../../util/security';
 import { env } from 'cloudflare:workers';
-
-interface DBUser {
-  id: number;
-  username: string;
-  display: string | null;
-  colour: string;
-  system_role: string;
-  password_hash: string | null;
-}
+import { createJWT, createJWTCookie, verifyPassword } from 'util/lib/security/passwords-sessions';
+import type { DBUser, SiJwtPayload } from '@app-types/user';
 
 export async function action({ request, context }: Route.ActionArgs) {
   const SESSION_SECRET: string = env.SESSION_SECRET;
@@ -39,8 +31,8 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: 'Invalid email or password.' };
   }
 
-  const token = await createJWT(
-    { sub: user.id, username: user.username, display: user.display, colour: user.colour, system_role: user.system_role },
+  const token = await createJWT<SiJwtPayload>(
+    { sub: user.id, username: user.username, display: user.display, colour: user.colour, system_role: user.system_role, loginType: "email" },
     SESSION_SECRET
   );
 

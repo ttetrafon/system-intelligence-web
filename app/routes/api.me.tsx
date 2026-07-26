@@ -1,6 +1,7 @@
+import { getJWTFromCookie, verifyJWT } from 'util/lib/security/passwords-sessions';
 import type { Route } from './+types/api.me';
-import { getJWTFromCookie, verifyJWT } from '../../util/security';
 import { env } from 'cloudflare:workers';
+import type { SiJwtPayload } from '@app-types/user';
 
 export async function loader({ request, context }: Route.LoaderArgs) {
   const sessionSecret = env.SESSION_SECRET;
@@ -10,7 +11,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     return Response.json({ user: null }, { status: 401 });
   }
 
-  const payload = await verifyJWT(token, sessionSecret);
+  const payload = await verifyJWT<SiJwtPayload>(token, sessionSecret);
   if (!payload) {
     return Response.json({ user: null }, { status: 401 });
   }

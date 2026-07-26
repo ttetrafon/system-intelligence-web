@@ -1,3 +1,5 @@
+import type { JWTPayload } from "util/lib/types";
+
 export type SystemRole = 'owner' | 'admin' | 'user';
 export type LoginType = 'email' | 'gmail';
 
@@ -22,3 +24,19 @@ export interface User {
 
   system_role: SystemRole;
 };
+
+export interface DBUser {
+  id: number;
+  username: string;
+  display: string | null;
+  colour: string;
+  system_role: string;
+  password_hash: string | null;
+}
+
+export interface SiJwtPayload extends JWTPayload {
+  display: string | null;
+  loginType: string;
+  system_role: string;
+  colour: string;
+}

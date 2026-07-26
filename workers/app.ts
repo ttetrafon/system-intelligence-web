@@ -1,8 +1,7 @@
 import { createRequestHandler, type ServerBuild } from 'react-router';
-import { getJWTFromCookie, verifyJWT } from '../util/security';
 import { getGameSystem } from './GameSystem';
-
-export { SystemNotifier } from './SystemNotifier';
+import { getJWTFromCookie, verifyJWT } from 'util/lib/security/passwords-sessions';
+import type { SiJwtPayload } from '@app-types/user';
 
 const requestHandler = createRequestHandler(
   () => import('virtual:react-router/server-build') as Promise<ServerBuild>,
@@ -49,7 +48,7 @@ export default {
       const token = getJWTFromCookie(request.headers.get('Cookie'));
       if (!token) return new Response('Unauthorized', { status: 401 });
 
-      const payload = await verifyJWT(token, (env as unknown as { SESSION_SECRET: string }).SESSION_SECRET);
+      const payload = await verifyJWT<SiJwtPayload>(token, (env as unknown as { SESSION_SECRET: string }).SESSION_SECRET);
       if (!payload) return new Response('Unauthorized', { status: 401 });
 
       if (payload.system_role !== 'admin' && payload.system_role !== 'owner') {
@@ -82,3 +81,5 @@ export default {
     return requestHandler(request);
   },
 } satisfies ExportedHandler<Env>;
+
+export { SystemNotifier } from './SystemNotifier';
