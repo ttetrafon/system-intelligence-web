@@ -4,6 +4,13 @@ import { env } from 'cloudflare:workers';
 import { createJWT, createJWTCookie, verifyPassword } from 'util/lib/security/passwords-sessions';
 import type { DBUser, SiJwtPayload } from '@app-types/user';
 
+export function meta({ }: Route.MetaArgs) {
+  return [
+    { title: "System Intelligence: User Login" },
+    { name: "description", content: "System Intelligence: User login page" },
+  ];
+}
+
 export async function action({ request, context }: Route.ActionArgs) {
   const SESSION_SECRET: string = env.SESSION_SECRET;
   const DB: D1Database = env.DB;

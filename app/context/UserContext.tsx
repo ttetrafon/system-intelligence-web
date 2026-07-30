@@ -7,6 +7,7 @@ import {
   useEffect,
 } from 'react';
 
+// TODO: move to types...
 export interface SessionUser {
   id: number;
   username: string;
@@ -31,7 +32,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       .then((data) => {
         if (data?.user) setSession(data.user);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   return (
