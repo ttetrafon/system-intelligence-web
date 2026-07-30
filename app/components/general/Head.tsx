@@ -1,14 +1,25 @@
 import { Link } from 'react-router-dom';
 import MenuIcon from '../generic/MenuIcon';
-import type { SessionUser } from '~/context/UserContext';
+import { useUser } from '~/context/UserContext';
+import { useLoaderData } from 'react-router';
+import type { RootLoaderData } from '@app-types/paths';
+import type { SiJwtPayload } from '@app-types/user';
+import { useEffect } from 'react';
 
 interface HeadProps {
   toggleContents: () => void;
-  session: SessionUser | null;
   onLogout: () => void;
 }
 
-export default function Head({ toggleContents, session, onLogout }: HeadProps) {
+export default function Head({ toggleContents, onLogout }: HeadProps) {
+  const { session, setSession } = useUser();
+  const loaderData = useLoaderData() as RootLoaderData<SiJwtPayload>;
+
+  useEffect(() => {
+    console.log(loaderData, loaderData.payload);
+    setSession(loaderData?.payload);
+  }, [loaderData]);
+
   return (
     <header className="w-full bg-basis p-2 flex justify-center-safe items-center gap-4 border-b border-background">
       <button

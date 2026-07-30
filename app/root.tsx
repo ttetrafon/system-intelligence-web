@@ -5,41 +5,24 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useNavigate,
 } from 'react-router';
 import { useState } from 'react';
-import { UserProvider, useUser } from './context/UserContext';
+import { UserProvider } from './context/UserContext';
 import type { Route } from './+types/root';
 import './app.css';
-import Head from './components/general/Head';
 import Contents from './components/game-system/Contents';
 import Footer from './components/general/Footer';
 import Loader from './components/general/Loader';
 import { GameSystemProvider } from './context/GameSystemContext';
 import { WebSocketProvider } from './context/WebSocketContext';
-import { AppProvider, useLoading } from './context/AppContext';
+import { AppProvider } from './context/AppContext';
+import { HeadWrapper } from './components/general/HeadWrapper';
+import { getJwtPayload } from 'util/lib-react/routes/loaders';
+import type { SiJwtPayload } from '@app-types/user';
+import { env } from 'cloudflare:workers';
+import type { RootLoaderData } from '@app-types/paths';
 
 export const links: Route.LinksFunction = () => [];
-
-function HeadWrapper({
-  toggleContents,
-}: {
-  toggleContents: () => void;
-}) {
-  const { session, setSession } = useUser();
-  const { setLoading } = useLoading();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    setLoading(true);
-    await fetch('/api/logout', { method: 'POST' });
-    setSession(null);
-    navigate('/');
-    setLoading(false);
-  };
-
-  return <Head toggleContents={toggleContents} session={session} onLogout={handleLogout} />;
-}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [isContentsVisible, setIsContentsVisible] = useState(false);
@@ -78,6 +61,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </html>
     </UserProvider>
   );
+}
+
+export async function loader({ request, context }: Route.LoaderArgs): Promise<RootLoaderData<SiJwtPayload>> {
+  let jwtPayload = await getJwtPayload<SiJwtPayload>(request, env.SESSION_SECRET);
+  return { payload: jwtPayload };
 }
 
 export default function App() {

@@ -1,4 +1,4 @@
-import type { SystemRole } from '@app-types/user';
+import type { SessionUser } from '@app-types/user';
 import {
   createContext,
   useContext,
@@ -6,15 +6,6 @@ import {
   type ReactNode,
   useEffect,
 } from 'react';
-
-// TODO: move to types...
-export interface SessionUser {
-  id: number;
-  username: string;
-  display: string | null;
-  colour: string;
-  system_role: SystemRole;
-}
 
 interface UserContextType {
   session: SessionUser | null;

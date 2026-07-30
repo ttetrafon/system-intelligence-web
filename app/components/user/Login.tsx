@@ -1,7 +1,8 @@
+import type { SessionUser } from '@app-types/user';
 import { useState, useEffect } from 'react';
 import { useFetcher, useNavigate } from 'react-router';
 import { useLoading } from '~/context/AppContext';
-import { useUser, type SessionUser } from '~/context/UserContext';
+import { useUser } from '~/context/UserContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');

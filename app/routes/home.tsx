@@ -1,13 +1,13 @@
 import type { Route } from './+types/home';
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: 'System Intelligence' },
     { name: 'description', content: 'System Intelligence' },
   ];
 }
 
-export default function Home({ loaderData }: Route.ComponentProps) {
+export default function Home() {
   return (
     <>
       <h1>System Intelligence</h1>
