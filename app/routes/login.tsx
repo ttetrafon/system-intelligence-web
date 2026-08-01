@@ -2,7 +2,7 @@ import type { Route } from './+types/login';
 import Login from '~/components/user/Login';
 import { env } from 'cloudflare:workers';
 import { createJWT, createJWTCookie, verifyPassword } from 'util/lib/security/passwords-sessions';
-import type { DBUser, SiJwtPayload } from '@app-types/user';
+import type { DBUser, SiJwtPayload, SystemRole } from '@app-types/user';
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -39,7 +39,14 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
 
   const token = await createJWT<SiJwtPayload>(
-    { sub: user.id, username: user.username, display: user.display, colour: user.colour, system_role: user.system_role, loginType: "email" },
+    {
+      sub: user.id,
+      username: user.username,
+      display: user.display,
+      colour: user.colour,
+      system_role: user.system_role as SystemRole,
+      loginType: "email"
+    },
     SESSION_SECRET
   );
 

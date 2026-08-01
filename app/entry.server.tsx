@@ -3,7 +3,6 @@ import { renderToReadableStream } from 'react-dom/server';
 import type { EntryContext } from 'react-router';
 import { ServerRouter } from 'react-router';
 import { getEnv } from './env.server';
-import type { AppLoadContext } from 'react-router-dom';
 
 globalThis.ENV = getEnv();
 
@@ -11,8 +10,7 @@ export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
-  routerContext: EntryContext,
-  _loadContext: AppLoadContext
+  routerContext: EntryContext
 ) {
   let shellRendered = false;
   const userAgent = request.headers.get('user-agent');

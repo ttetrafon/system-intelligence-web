@@ -1,8 +1,8 @@
 import type { Route } from './+types/home';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useUser } from '../context/UserContext';
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: 'System Intelligence - Dashboard' },
     { name: 'description', content: 'System Intelligence: User Dashboard' },

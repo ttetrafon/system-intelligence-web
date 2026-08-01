@@ -1,10 +1,9 @@
-import { Link } from 'react-router-dom';
-import MenuIcon from '../generic/MenuIcon';
-import { useUser } from '~/context/UserContext';
-import { useLoaderData } from 'react-router';
-import type { RootLoaderData } from '@app-types/paths';
-import type { SiJwtPayload } from '@app-types/user';
 import { useEffect } from 'react';
+import { Link, useLoaderData } from 'react-router';
+import type { RootLoaderData } from '@app-types/paths';
+import { useUser } from '~/context/UserContext';
+import MenuIcon from '../generic/MenuIcon';
+import type { SiJwtPayload } from '@app-types/user';
 
 interface HeadProps {
   toggleContents: () => void;

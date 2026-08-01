@@ -104,7 +104,7 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
       wsRef.current?.close();
       wsRef.current = null;
     };
-  }, [session?.id, connect]);
+  }, [session?.sub, connect]);
 
   const sendCommand = useCallback((msg: WsClientMessage) => {
     const ws = wsRef.current;
