@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import type { EditorCommand } from "@app-types/editor";
 import type { MkDocument } from "@app-types/game";
 import { MoralityPairs } from "~/components/game-system/MoralityPairs";
+import { last } from "lodash";
 
 /// --- DOM --- ///
 export function buildReactNode(contents: string): ReactNode {
@@ -282,6 +283,14 @@ export function lineUpdated(dataSystem: string, documentKey: string, lineId: str
 export function isLineInDocument(document: MkDocument, lineId: string | undefined): boolean {
   if (!lineId) return false;
   return document.blocks[lineId] !== undefined;
+}
+
+export function documentHasEmptyLineAtEnd(document: MkDocument): string | null {
+  if (!document.order || document.order.length === 0) return null;
+
+  const lastLineId = document.order[document.order.length - 1];
+  const lastLine: string = document.blocks[lastLineId];
+  return lastLine === '' ? lastLineId : null;
 }
 
 export function handleKeyUp(

@@ -3,7 +3,7 @@ import { useGameSystem } from "~/context/GameSystemContext";
 import { EditorToolbarSeparator } from "./EditorToolbarSeparator";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { EditorButton } from "./EditorButton";
-import { isLineInDocument } from "util/EditorScripts";
+import { documentHasEmptyLineAtEnd, isLineInDocument } from "util/EditorScripts";
 import { MkLine, type MkLineProps } from "./MkLine";
 import { useUser } from "~/context/UserContext";
 
@@ -20,6 +20,8 @@ export function MkEditor({ dataKey }: EditorProps) {
   const [contents, setContents] = useState<MkLineProps[]>([]);
   const contentsRef = useRef<HTMLElement>(null);
 
+  console.log(dataKey, "->", document);
+
   // When the game data changes, update the document state.
   useEffect(() => {
     const keyParts = dataKey.split('.');
@@ -30,7 +32,6 @@ export function MkEditor({ dataKey }: EditorProps) {
       setDocument(doc);
     }
   }, [data]);
-  console.log(dataKey, "->", document);
 
   useEffect(() => {
     console.log("... useEffect@[gameData, editing]");
@@ -112,26 +113,30 @@ export function MkEditor({ dataKey }: EditorProps) {
            * if on one of the lines, focus on that line's input
            * if outside of the lines, create a new line and focus on it
            */
-          const target = e.target as HTMLElement;
-          // console.log("Clicked on editor content:", target);
+          if (!editing) return;
 
-          if (isLineInDocument(document, target.id)) {
-            console.log("Clicked on line with ID:", target.id);
-            // TODO: focus on the line's input
+          const target = e.target as HTMLElement;
+          console.log("Clicked on editor content:", target.parentElement);
+
+          if (isLineInDocument(document, target.parentElement?.id)) {
+            // focus on the line's input
+            (target.parentElement?.childNodes[1] as HTMLTextAreaElement).focus();
           }
           else {
             console.log("Clicked outside of document lines");
-            // TODO: check if there is an empty last line in the document
-            const emptyLastLineExists = false;
-            if (emptyLastLineExists) {
-              // TODO: focus to that line
+            // check if there is an empty last line in the document
+            const emptyLastLineId: string | null = documentHasEmptyLineAtEnd(document);
+            if (emptyLastLineId) {
+              // ... focus to that line
+              const element: HTMLDivElement | null | undefined = contentsRef.current?.querySelector(`[id="${emptyLastLineId}"]`);
+              (element?.childNodes[1] as HTMLTextAreaElement).focus();
             }
             else {
               // TODO: add a new line in the document
               // TODO: focus on the new line's input
             }
 
-
+            // ...
           }
         }}
       >

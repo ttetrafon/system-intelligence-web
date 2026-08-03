@@ -86,6 +86,13 @@
   nav hr {
     @apply mt-2;
   }
+
+  div.menu-icon {
+    @apply cursor-default;
+  }
+  a > div.menu-icon {
+    @apply cursor-pointer;
+  }
 }
 
 @layer components {

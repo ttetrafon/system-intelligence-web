@@ -11,7 +11,7 @@ interface MenuIconProps {
 
 export default function MenuIcon({ imageName, title, alwaysShowText = false, className = '' }: MenuIconProps) {
   return (
-    <div className={`w-full h-6 flex flex-row gap-2 items-center justify-start hover:shadow-md hover:shadow-action ${className}`} title={title}>
+    <div className={`menu-icon w-full h-6 flex flex-row gap-2 items-center justify-start hover:shadow-md hover:shadow-action ${className}`} title={title}>
       {/* FIXME: Svg expanding on flex... */}
       <Svg className="grow-0 shrink-0" name={imageName} fill='var(--color-typography)' />
       <Activity mode={title && title !== '' ? 'visible' : 'hidden'}>
