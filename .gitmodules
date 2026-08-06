@@ -4,3 +4,6 @@
 [submodule "util/lib-react"]
 	path = util/lib-react
 	url = git@github.com:ttetrafon/react-lib.git
+[submodule "util/lib-cf"]
+	path = util/lib-cf
+	url = git@github.com:ttetrafon/cloudflare-ts-lib.git

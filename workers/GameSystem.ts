@@ -1,5 +1,5 @@
-import { cacheRequestData, invalidateCache } from "util/cache";
 import { defaultGameSystemData, type MkDocument, type GameSystemData, type MoralityPairs } from "@app-types/game";
+import { cacheRequestData, invalidateCache } from "util/lib-cf/cache";
 
 /** Maps a dataKey (dot-notation) to the R2 object key */
 export function r2Key(system: string, dataKey: string): string {
