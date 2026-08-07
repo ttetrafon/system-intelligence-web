@@ -49,6 +49,7 @@ export function GameSystemProvider({ children }: { children: ReactNode }) {
     setData(prev => {
       if (!prev) return prev;
 
+      // TODO: this should be extracted in the lib, as it will be used exactly the same server-side (on the System Notifier)
       const keys = command.dataKey.split('.');
       const updated = { ...prev };
       let node: Record<string, unknown> = updated as unknown as Record<string, unknown>;
