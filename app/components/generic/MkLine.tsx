@@ -53,11 +53,10 @@ export function MkLine({ id, data, editing, onContentsUpdated }: MkLineProps) {
   return (
     <div className="mk-line" id={id}>
       <span>0</span>
-      {/* TODO: switch based on editing! */}
-      <textarea
+      {editing && <textarea
         ref={inputRef} rows={inputRows}
         onChange={updateOutput}
-      />
+      />}
       {outputNode}
     </div>
   );

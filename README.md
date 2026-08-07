@@ -1,5 +1,17 @@
 # System Intelligence Web App
 
+## Operations
+
+### Commands
+
+- Any change creates a command (`/types/commands.ts`).
+  - Changes trigger a debounce timer, which holds the command type and the block id (if relevant).
+  - When the debounce triggers, a command is built.
+- The command is then:
+  - (1) added in history
+  - (2) used to update the state
+  - (3) send to server
+
 ## Workflows
 
 ### Adding a new _Document (Page)_

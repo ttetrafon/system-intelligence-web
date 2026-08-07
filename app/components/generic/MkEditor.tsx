@@ -1,11 +1,11 @@
-import { emptyDocument, type DataLink, type GameSystemData, type MkDocument } from "@app-types/game";
+import { emptyDocument, type MkDocument } from "@app-types/game";
 import { useGameSystem } from "~/context/GameSystemContext";
 import { EditorToolbarSeparator } from "./EditorToolbarSeparator";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { EditorButton } from "./EditorButton";
 import { documentHasEmptyLineAtEnd, isLineInDocument } from "util/EditorScripts";
 import { MkLine, type MkLineProps } from "./MkLine";
 import { useUser } from "~/context/UserContext";
+import { UpdateBlockInDocumentCmd, type UpdateBlockInDocument } from "@app-types/commands";
 
 export interface EditorProps {
   dataKey: string,
@@ -13,7 +13,7 @@ export interface EditorProps {
 
 export function MkEditor({ dataKey }: EditorProps) {
   const { session } = useUser();
-  const { editing, dataSystem, data } = useGameSystem();
+  const { editing, data, applyCommand } = useGameSystem();
   const editable = session?.system_role === 'admin' || session?.system_role === 'owner';
   const [_, startTransition] = useTransition();
   const [document, setDocument] = useState<MkDocument>(emptyDocument);
@@ -147,8 +147,12 @@ export function MkEditor({ dataKey }: EditorProps) {
             data={line.data}
             editing={editing}
             onContentsUpdated={(id: string, newContents: string) => {
-              console.log(`onContentsUpdated(${id}, ${newContents})`)
+              console.log(`onContentsUpdated(${id}, ${newContents})`);
               // TODO: ... send line update command
+              const cmd: UpdateBlockInDocument = new UpdateBlockInDocumentCmd(dataKey, id, newContents, document.blocks[id]);
+              startTransition(() => {
+                applyCommand(cmd);
+              });
             }}
           />
         ))}

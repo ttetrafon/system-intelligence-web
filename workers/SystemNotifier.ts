@@ -1,21 +1,4 @@
-import type { MkDocument, MoralityPair } from '@app-types/game';
-import type {
-  addBlockToDocumentCommand,
-  moralityPairAdded,
-  moralityPairDeleted,
-  moralityPairUpdated,
-  removeBlockFromDocument as RemoveBlockCmd,
-  reorderBlocksInDocument as ReorderBlocksCmd,
-  updateBlockInDocument as UpdateBlockCmd,
-} from '@app-types/requests';
 import type { WsClientMessage, WsServerMessage, WsServerAck, WsServerError } from '@app-types/websocket';
-import {
-  addBlockToDocument,
-  removeBlockFromDocument,
-  reorderBlocksInDocument,
-  updateBlockInDocument,
-} from 'util/data';
-import { r2Key, invalidateDocumentCache } from './GameSystem';
 
 export class SystemNotifier {
   constructor(
@@ -72,9 +55,9 @@ export class SystemNotifier {
       return;
     }
 
-    // Ack back to sender so the client can clear its loading state
-    if (parsed.commandId) {
-      const ack: WsServerAck = { type: 'command-ack', commandId: parsed.commandId };
+    // Acknowledge back to sender so the client can clear its loading state
+    if (parsed.command.commandId) {
+      const ack: WsServerAck = { type: 'command-ack', commandId: parsed.command.commandId };
       try {
         ws.send(JSON.stringify(ack));
       } catch {
@@ -86,7 +69,6 @@ export class SystemNotifier {
     const outgoing: WsServerMessage = {
       type: 'game-system-update',
       system: parsed.system,
-      dataKey: parsed.dataKey,
       commands: [parsed.command],
     };
     const payload = JSON.stringify(outgoing);
@@ -118,78 +100,78 @@ export class SystemNotifier {
   }
 
   private async processCommand(msg: WsClientMessage): Promise<void> {
-    const key = r2Key(msg.system, msg.dataKey);
-    const cmd = msg.command;
-    console.log(`--->  processCommand(key=${key})`, cmd);
+    // const key = r2Key(msg.system, msg.dataKey);
+    // const cmd = msg.command;
+    // console.log(`--->  processCommand(key=${key})`, cmd);
 
-    // Handle non-block-document commands
-    switch (cmd.commandType) {
-      case 'add-morality-pair':
-        const objectAMP = await this.env.ASSETS.get(key);
-        const pairsAMP: MoralityPair[] = objectAMP ? await objectAMP.json<MoralityPair[]>() : [];
-        pairsAMP.push({ id: (cmd as moralityPairAdded).id, first: '', second: '' });
-        await this.env.ASSETS.put(key, JSON.stringify(pairsAMP), {
-          httpMetadata: { contentType: 'application/json' },
-        });
-        await invalidateDocumentCache(msg.system, msg.dataKey);
-        return;
-      case 'delete-morality-pair':
-        const c = cmd as moralityPairDeleted;
-        const objectDMP = await this.env.ASSETS.get(key);
-        let pairsDMP: MoralityPair[] = objectDMP ? await objectDMP.json<MoralityPair[]>() : [];
-        const indexDMP = pairsDMP.findIndex(p => p.id === c.id);
-        if (indexDMP >= 0) {
-          pairsDMP.splice(indexDMP, 1);
-          await this.env.ASSETS.put(key, JSON.stringify(pairsDMP), {
-            httpMetadata: { contentType: 'application/json' },
-          });
-          await invalidateDocumentCache(msg.system, msg.dataKey);
-        }
-        return;
-      case 'update-morality-pair':
-        const u = cmd as moralityPairUpdated;
-        const objectUMP = await this.env.ASSETS.get(key);
-        const pairsUMP: MoralityPair[] = objectUMP ? await objectUMP.json<MoralityPair[]>() : [];
-        const target = pairsUMP.find(p => p.id === u.id);
-        if (target) {
-          target[u.field] = u.value;
-          await this.env.ASSETS.put(key, JSON.stringify(pairsUMP), {
-            httpMetadata: { contentType: 'application/json' },
-          });
-          await invalidateDocumentCache(msg.system, msg.dataKey);
-        }
-        return;
-    }
+    // // Handle non-block-document commands
+    // switch (cmd.commandType) {
+    //   case 'add-morality-pair':
+    //     const objectAMP = await this.env.ASSETS.get(key);
+    //     const pairsAMP: MoralityPair[] = objectAMP ? await objectAMP.json<MoralityPair[]>() : [];
+    //     pairsAMP.push({ id: (cmd as moralityPairAdded).id, first: '', second: '' });
+    //     await this.env.ASSETS.put(key, JSON.stringify(pairsAMP), {
+    //       httpMetadata: { contentType: 'application/json' },
+    //     });
+    //     await invalidateDocumentCache(msg.system, msg.dataKey);
+    //     return;
+    //   case 'delete-morality-pair':
+    //     const c = cmd as moralityPairDeleted;
+    //     const objectDMP = await this.env.ASSETS.get(key);
+    //     let pairsDMP: MoralityPair[] = objectDMP ? await objectDMP.json<MoralityPair[]>() : [];
+    //     const indexDMP = pairsDMP.findIndex(p => p.id === c.id);
+    //     if (indexDMP >= 0) {
+    //       pairsDMP.splice(indexDMP, 1);
+    //       await this.env.ASSETS.put(key, JSON.stringify(pairsDMP), {
+    //         httpMetadata: { contentType: 'application/json' },
+    //       });
+    //       await invalidateDocumentCache(msg.system, msg.dataKey);
+    //     }
+    //     return;
+    //   case 'update-morality-pair':
+    //     const u = cmd as moralityPairUpdated;
+    //     const objectUMP = await this.env.ASSETS.get(key);
+    //     const pairsUMP: MoralityPair[] = objectUMP ? await objectUMP.json<MoralityPair[]>() : [];
+    //     const target = pairsUMP.find(p => p.id === u.id);
+    //     if (target) {
+    //       target[u.field] = u.value;
+    //       await this.env.ASSETS.put(key, JSON.stringify(pairsUMP), {
+    //         httpMetadata: { contentType: 'application/json' },
+    //       });
+    //       await invalidateDocumentCache(msg.system, msg.dataKey);
+    //     }
+    //     return;
+    // }
 
-    // Handle block-document commands
-    const object = await this.env.ASSETS.get(key);
-    const doc: MkDocument = object
-      ? await object.json<MkDocument>()
-      : { order: [], blocks: {} };
+    // // Handle block-document commands
+    // const object = await this.env.ASSETS.get(key);
+    // const doc: MkDocument = object
+    //   ? await object.json<MkDocument>()
+    //   : { order: [], blocks: {} };
 
-    switch (cmd.commandType) {
-      case 'add-block': {
-        const c = cmd as addBlockToDocumentCommand;
-        addBlockToDocument(doc, c.blockId, c.block, c.position);
-        break;
-      }
-      case 'remove-block':
-        removeBlockFromDocument(doc, (cmd as RemoveBlockCmd).blockId);
-        break;
-      case 'reorder-blocks':
-        reorderBlocksInDocument(doc, (cmd as ReorderBlocksCmd).updatedOrder);
-        break;
-      case 'update-block': {
-        const c = cmd as UpdateBlockCmd;
-        updateBlockInDocument(doc, c.updatedBlockId, c.updatedBlock);
-        break;
-      }
-    }
+    // switch (cmd.commandType) {
+    //   case 'add-block': {
+    //     const c = cmd as addBlockToDocumentCommand;
+    //     addBlockToDocument(doc, c.blockId, c.block, c.position);
+    //     break;
+    //   }
+    //   case 'remove-block':
+    //     removeBlockFromDocument(doc, (cmd as RemoveBlockCmd).blockId);
+    //     break;
+    //   case 'reorder-blocks':
+    //     reorderBlocksInDocument(doc, (cmd as ReorderBlocksCmd).updatedOrder);
+    //     break;
+    //   case 'update-block': {
+    //     const c = cmd as UpdateBlockCmd;
+    //     updateBlockInDocument(doc, c.updatedBlockId, c.updatedBlock);
+    //     break;
+    //   }
+    // }
 
-    await this.env.ASSETS.put(key, JSON.stringify(doc), {
-      httpMetadata: { contentType: 'application/json' },
-    });
+    // await this.env.ASSETS.put(key, JSON.stringify(doc), {
+    //   httpMetadata: { contentType: 'application/json' },
+    // });
 
-    await invalidateDocumentCache(msg.system, msg.dataKey);
+    // await invalidateDocumentCache(msg.system, msg.dataKey);
   }
 }

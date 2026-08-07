@@ -1,9 +1,7 @@
 import React, { type ReactNode } from "react";
-import ReactDOM from 'react-dom/client';
-import type { EditorCommand } from "@app-types/editor";
 import type { MkDocument } from "@app-types/game";
 import { MoralityPairs } from "~/components/game-system/MoralityPairs";
-import { last } from "lodash";
+import type { DocumentCommand } from "@app-types/commands";
 
 /// --- DOM --- ///
 export function buildReactNode(contents: string): ReactNode {
@@ -247,19 +245,19 @@ export function buildReactPlaceholder(id: string, componentName: string): HTMLEl
 //   return wrapper!;
 // }
 
-export function changeBlockType(lastFocusedRef: React.RefObject<HTMLElement | null>, newTag: string, dispatch: (cmd: EditorCommand) => void) {
-  const el = lastFocusedRef.current;
-  if (!el) return;
-  const beforeTag = el.tagName.toLowerCase();
-  if (beforeTag === newTag) return;
-  const newEl = document.createElement(newTag);
-  newEl.id = el.id;
-  newEl.contentEditable = el.contentEditable;
-  newEl.className = el.className;
-  newEl.innerHTML = el.innerHTML;
-  el.replaceWith(newEl);
-  lastFocusedRef.current = newEl;
-  dispatch({ type: 'element-changed-type', id: newEl.id, before: beforeTag, after: newTag });
+export function changeBlockType(lastFocusedRef: React.RefObject<HTMLElement | null>, newTag: string, dispatch: (cmd: DocumentCommand) => void) {
+  // const el = lastFocusedRef.current;
+  // if (!el) return;
+  // const beforeTag = el.tagName.toLowerCase();
+  // if (beforeTag === newTag) return;
+  // const newEl = document.createElement(newTag);
+  // newEl.id = el.id;
+  // newEl.contentEditable = el.contentEditable;
+  // newEl.className = el.className;
+  // newEl.innerHTML = el.innerHTML;
+  // el.replaceWith(newEl);
+  // lastFocusedRef.current = newEl;
+  // dispatch({ commandType: 'element-changed-type', id: newEl.id, before: beforeTag, after: newTag });
 };
 
 export function clearFocusedBlock(lastFocusedRef: React.RefObject<HTMLElement | null>, lastFocusedCellRef?: React.RefObject<HTMLElement | null>) {
@@ -337,7 +335,7 @@ export function handleKeyDown(
     ctrl: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
     shift: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   },
-  dispatch: (cmd: EditorCommand) => void
+  dispatch: (cmd: DocumentCommand) => void
 ) {
   // console.log(`---> handleKeyDown(${e.key})`);
   // const target = e.target as HTMLElement;

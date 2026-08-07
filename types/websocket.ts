@@ -1,19 +1,16 @@
-import type { AnyDocumentCommand } from './requests';
+import type { AnyDocumentCommand } from './commands';
 
 /** Client → Server: a single command to apply */
 export interface WsClientMessage {
   type: 'command';
   system: string;
-  dataKey: string;
   command: AnyDocumentCommand;
-  commandId?: string;
 }
 
 /** Server → Client: broadcast of applied commands */
 export interface WsServerMessage {
   type: 'game-system-update';
   system: string;
-  dataKey: string;
   commands: AnyDocumentCommand[];
 }
 
