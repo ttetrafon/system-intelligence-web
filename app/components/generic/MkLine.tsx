@@ -1,5 +1,6 @@
 import React, { useDeferredValue, useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import { buildReactNode } from "util/EditorScripts";
+import useDebounce from "util/lib-react/hooks/useDebounce";
 import { countOccurrencesInString } from "util/lib/text/details";
 
 export interface MkLineProps {
@@ -14,7 +15,7 @@ export function MkLine({ id, data, editing, onContentsUpdated }: MkLineProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [inputRows, setInputRows] = useState<number>(1);
   const [currentInputContents, setCurrentInputContents] = useState<string>("");
-  const deferredCurrentTextContent = useDeferredValue<string>(currentInputContents);
+  const debouncedCurrentTextContent = useDebounce(updatedContents, 5000, [currentInputContents]);
   const [textContent, setTextContent] = useState<string>("");
   const [outputNode, setOutputNode] = React.useState<ReactNode>(null);
   const [_, startTransition] = useTransition();
@@ -41,13 +42,8 @@ export function MkLine({ id, data, editing, onContentsUpdated }: MkLineProps) {
     setCurrentInputContents(value);
   }
 
-  useMemo(() => {
-    setOutputNode(buildReactNode(deferredCurrentTextContent));
-    updatedContents(deferredCurrentTextContent);
-  }, [deferredCurrentTextContent]);
-
-  function updatedContents(contents: string) {
-    onContentsUpdated(id, contents);
+  function updatedContents() {
+    onContentsUpdated(id, currentInputContents);
   }
 
   return (

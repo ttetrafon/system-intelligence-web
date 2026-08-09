@@ -11,7 +11,7 @@ export interface DocumentCommand {
   commandTimestamp: number;
   commandType: DocumentCommandType;
   dataKey: string;
-  acknowledged: boolean;
+  acknowledged: boolean; // set to `true` when the command has been received and processed server-side
 }
 
 export interface AddBlockToDocument extends DocumentCommand {
@@ -180,7 +180,6 @@ export class MoralityPairUpdatedCmd implements MoralityPairUpdated {
     this.previousValue = previousValue;
   }
 }
-
 export type AnyDocumentCommand =
   | AddBlockToDocument
   | RemoveBlockFromDocument

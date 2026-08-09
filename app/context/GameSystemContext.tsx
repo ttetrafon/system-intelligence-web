@@ -1,10 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import type { MkDocument, DataLinks, GameSystemData, MoralityPair } from "../../types/game";
-import type { AddBlockToDocument, AnyDocumentCommand, RemoveBlockFromDocument, ReorderBlocksInDocument, UpdateBlockInDocument } from "../../types/commands";
-import type { WsIncoming } from "../../types/websocket";
+import type { MkDocument, DataLinks, GameSystemData } from "../../types/game";
+import type { AnyDocumentCommand } from "../../types/commands";
+import type { WsIncoming, WsServerAck } from "../../types/websocket";
 import { useCommandHistory } from "../../util/commands";
 import { useWebSocket } from "./WebSocketContext";
-import { addBlockToDocument, removeBlockFromDocument, reorderBlocksInDocument, updateBlockInDocument } from "util/data";
+import { updateMarkdownDocument } from "util/data";
 
 // const LS_KEY_GAME_SYSTEM = 'si:game-system';
 
@@ -19,8 +19,8 @@ interface GameSystemContextType {
 const GameSystemContext = createContext<GameSystemContextType | undefined>(undefined);
 
 export function GameSystemProvider({ children }: { children: ReactNode }) {
-  const { subscribe, status } = useWebSocket();
-  const { pushCmd, undoCmd, redoCmd, getAppliedCmd, clearCmd } = useCommandHistory();
+  const { sendCommand, subscribe, status } = useWebSocket();
+  const { pushCmd, cmdExists } = useCommandHistory();
   const [dataLinks, setDataLinks] = useState<DataLinks | null>(null);
   const [dataSystem, setDataSystem] = useState<string>("si");
   const [data, setData] = useState<GameSystemData | null>(null);
@@ -43,69 +43,65 @@ export function GameSystemProvider({ children }: { children: ReactNode }) {
 
   // Apply a command optimistically to local state (used by the sender before the server echoes back)
   const applyCommand = useCallback((command: AnyDocumentCommand) => {
+    if (cmdExists(command)) return;
+
     // add the command to history
     pushCmd(command);
 
-    setData(prev => {
+    // send the command to server
+    if (!command.acknowledged) {
+      sendCommand({
+        type: 'command',
+        system: dataSystem,
+        command: command
+      });
+    }
+
+    // update the game data locally
+    setData((prev: GameSystemData | null) => {
+      // console.log("... prev", prev);
       if (!prev) return prev;
 
-      // TODO: this should be extracted in the lib, as it will be used exactly the same server-side (on the System Notifier)
       const keys = command.dataKey.split('.');
+      // console.log("... keys", keys);
       const updated = { ...prev };
+      // console.log("... updated", updated);
       let node: Record<string, unknown> = updated as unknown as Record<string, unknown>;
       for (let i = 0; i < keys.length - 1; i++) {
         node[keys[i]] = { ...(node[keys[i]] as Record<string, unknown>) };
         node = node[keys[i]] as Record<string, unknown>;
       }
+      // console.log("... node:", node);
       const docKey = keys[keys.length - 1];
-      let cmd = null;
+      // console.log("... docKey:", docKey);
 
-      // Handle non-block-document commands
-      if (command.commandType === 'add-morality-pair' && 'id' in command) {
-        const existing = (node[docKey] as MoralityPair[]) ?? [];
-        node[docKey] = [...existing, { id: command.id, first: '', second: '' }];
+      if (command.commandType === 'add-block' || command.commandType === 'remove-block' || command.commandType === 'reorder-blocks' || command.commandType === 'update-block') {
+        updateMarkdownDocument(node[docKey] as MkDocument, command);
       }
-      else if (command.commandType === 'delete-morality-pair' && 'id' in command) {
-        const existing = (node[docKey] as MoralityPair[]) ?? [];
-        node[docKey] = existing.filter(p => p.id !== command.id);
-      }
-      else if (command.commandType === 'update-morality-pair' && 'id' in command && 'field' in command && 'value' in command) {
-        const existing = (node[docKey] as MoralityPair[]) ?? [];
-        node[docKey] = existing.map(p => p.id === command.id ? { ...p, [command.field as 'first' | 'second']: command.value as string } : p);
-      }
-      // Handle block-document commands
-      else if (command.commandType === 'add-block') {
-        const existing = node[docKey] as MkDocument;
-        cmd = command as AddBlockToDocument;
-        addBlockToDocument(existing, cmd.blockId, cmd.data, cmd.position);
-      }
-      else if (command.commandType === 'remove-block') {
-        const existing = node[docKey] as MkDocument;
-        cmd = command as RemoveBlockFromDocument;
-        removeBlockFromDocument(existing, cmd.blockId);
-      }
-      else if (command.commandType === 'reorder-blocks') {
-        const existing = node[docKey] as MkDocument;
-        cmd = command as ReorderBlocksInDocument;
-        reorderBlocksInDocument(existing, cmd.updatedOrder);
-      }
-      else if (command.commandType === 'update-block') {
-        const existing = node[docKey] as MkDocument;
-        cmd = command as UpdateBlockInDocument;
-        updateBlockInDocument(existing, cmd.blockId, cmd.data);
+      else if (command.commandType === 'add-morality-pair' || command.commandType === 'delete-morality-pair' || command.commandType === 'update-morality-pair') {
+        // TODO...
       }
 
-      // localStorage.setItem(LS_KEY_GAME_SYSTEM, JSON.stringify(updated));
       return updated;
     });
   }, []);
 
   useEffect(() => {
     const unsub = subscribe((msg: WsIncoming) => {
-      if (msg.type !== 'game-system-update') return;
-      const payload = msg as { commands: AnyDocumentCommand[] };
-      for (const cmd of payload.commands) {
-        applyCommand(cmd);
+      switch (msg.type) {
+        case 'game-system-update':
+          const payload = msg as { commands: AnyDocumentCommand[] };
+          for (const cmd of payload.commands) {
+            applyCommand(cmd);
+          }
+          break;
+        case 'command-ack':
+          // TODO: ...
+          break;
+        case 'error':
+          break;
+        default:
+          console.warn(`Received unknown message type: ${JSON.stringify(msg)}`);
       }
     });
     return unsub;
@@ -125,6 +121,7 @@ export function GameSystemProvider({ children }: { children: ReactNode }) {
       .catch(() => { });
   }, [status]);
 
+  // Update derived data whenever the game-system-data are updated
   useEffect(() => {
     if (!data) return;
     // FIXME: buildDataLinks(data).then(setDataLinks).catch(() => { });

@@ -1,10 +1,12 @@
 import type { AnyDocumentCommand } from './commands';
 
+export type WsMsgType = 'chat' | 'command';
+
 /** Client → Server: a single command to apply */
 export interface WsClientMessage {
-  type: 'command';
+  type: WsMsgType;
   system: string;
-  command: AnyDocumentCommand;
+  command?: AnyDocumentCommand;
 }
 
 /** Server → Client: broadcast of applied commands */

@@ -20,7 +20,7 @@ export function MkEditor({ dataKey }: EditorProps) {
   const [contents, setContents] = useState<MkLineProps[]>([]);
   const contentsRef = useRef<HTMLElement>(null);
 
-  console.log(dataKey, "->", document);
+  console.log("[MkEditor.init()]", dataKey, "->", document);
 
   // When the game data changes, update the document state.
   useEffect(() => {
@@ -53,7 +53,7 @@ export function MkEditor({ dataKey }: EditorProps) {
       console.log("contents:", l);
       setContents(l);
     })
-  }, [document, editing]); // TODO: maybe push editing on its own, and just update the elements directly instead of updating the state?
+  }, [document, editing]); // TODO: maybe push editing on its own and just update the elements directly instead of updating the state?
 
   return (
     <>
@@ -116,14 +116,14 @@ export function MkEditor({ dataKey }: EditorProps) {
           if (!editing) return;
 
           const target = e.target as HTMLElement;
-          console.log("Clicked on editor content:", target.parentElement);
+          // console.log("Clicked on editor content:", target.parentElement);
 
           if (isLineInDocument(document, target.parentElement?.id)) {
             // focus on the line's input
             (target.parentElement?.childNodes[1] as HTMLTextAreaElement).focus();
           }
           else {
-            console.log("Clicked outside of document lines");
+            // console.log("Clicked outside of document lines");
             // check if there is an empty last line in the document
             const emptyLastLineId: string | null = documentHasEmptyLineAtEnd(document);
             if (emptyLastLineId) {
@@ -148,8 +148,11 @@ export function MkEditor({ dataKey }: EditorProps) {
             editing={editing}
             onContentsUpdated={(id: string, newContents: string) => {
               console.log(`onContentsUpdated(${id}, ${newContents})`);
-              // TODO: ... send line update command
-              const cmd: UpdateBlockInDocument = new UpdateBlockInDocumentCmd(dataKey, id, newContents, document.blocks[id]);
+              const previousContents = document.blocks[id];
+              if (newContents.trim() === previousContents.trim()) return;
+
+              // ... send line update command
+              const cmd: UpdateBlockInDocument = new UpdateBlockInDocumentCmd(dataKey, id, newContents.trim(), previousContents);
               startTransition(() => {
                 applyCommand(cmd);
               });

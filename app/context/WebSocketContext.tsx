@@ -107,9 +107,10 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   }, [session?.sub, connect]);
 
   const sendCommand = useCallback((msg: WsClientMessage) => {
+    console.log("[WS] sending msg:", msg);
     const ws = wsRef.current;
     if (!ws || ws.readyState !== WebSocket.OPEN) {
-      console.log('WebSocket: cannot send, not connected');
+      console.log('[WS] cannot send, not connected');
       return;
     }
     ws.send(JSON.stringify(msg));
