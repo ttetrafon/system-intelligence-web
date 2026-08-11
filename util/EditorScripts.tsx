@@ -1,7 +1,7 @@
 import React, { type ReactNode } from "react";
 import type { MkDocument } from "@app-types/game";
 import { MoralityPairs } from "~/components/game-system/MoralityPairs";
-import type { DocumentCommand } from "@app-types/commands";
+import type { AnyDocumentCommand, DocumentCommand } from "@app-types/commands";
 
 /// --- DOM --- ///
 export function buildReactNode(contents: string): ReactNode {
@@ -100,41 +100,6 @@ function formatText(text: string): ReactNode {
 
   return <>{currentResult}</>;
 };
-
-// export function buildDocument(doc: MkDocument, ref: HTMLElement | null, editing: boolean): Record<string, HTMLElement> {
-//   console.log('buildDocument()', doc, ref, editing);
-//   let res: Record<string, HTMLElement> = {};
-
-//   if (!ref) return res;
-//   if (doc.order.length === 0) return res;
-
-//   for (let i = 0; i < doc.order.length; i++) {
-//     let container = createMkLine(doc.order[i], doc, ref, editing);
-
-//   }
-
-//   return res;
-// }
-
-// export function createMkLine(id: string, doc: MkDocument, ref: HTMLElement, editing: boolean): HTMLElement {
-//   const container = document.createElement('div');
-//   container.style.display = 'contents';
-
-//   // Create a root and render the MkLine component
-//   const root = ReactDOM.createRoot(container);
-//   root.render(<MkLine id={id} doc={doc} editing={false} />);
-
-//   // Append the container to the ref
-//   ref.appendChild(container);
-//   return container;
-// }
-
-export function buildReactPlaceholder(id: string, componentName: string): HTMLElement {
-  const el = document.createElement('div');
-  el.id = id;
-  el.dataset.reactComponent = componentName;
-  return el;
-}
 
 // function buildTable(block: TableBlock): HTMLTableElement {
 //   const table = document.createElement('table');
@@ -260,22 +225,16 @@ export function changeBlockType(lastFocusedRef: React.RefObject<HTMLElement | nu
   // dispatch({ commandType: 'element-changed-type', id: newEl.id, before: beforeTag, after: newTag });
 };
 
-export function clearFocusedBlock(lastFocusedRef: React.RefObject<HTMLElement | null>, lastFocusedCellRef?: React.RefObject<HTMLElement | null>) {
-  if (lastFocusedRef.current) {
-    lastFocusedRef.current.classList.remove('be-focused');
-    lastFocusedRef.current = null;
-  }
-  if (lastFocusedCellRef?.current) {
-    lastFocusedCellRef.current.classList.remove('be-focused');
-    lastFocusedCellRef.current = null;
-  }
-};
-
-/// --- COMMANDS --- ///
-export function lineUpdated(dataSystem: string, documentKey: string, lineId: string, lineContents: string): void {
-  console.log(`---> lineUpdated(${dataSystem}, ${documentKey}, ${lineId}, ${lineContents})`);
-  // TODO: ... build the command and return it?
-}
+// export function clearFocusedBlock(lastFocusedRef: React.RefObject<HTMLElement | null>, lastFocusedCellRef?: React.RefObject<HTMLElement | null>) {
+//   if (lastFocusedRef.current) {
+//     lastFocusedRef.current.classList.remove('be-focused');
+//     lastFocusedRef.current = null;
+//   }
+//   if (lastFocusedCellRef?.current) {
+//     lastFocusedCellRef.current.classList.remove('be-focused');
+//     lastFocusedCellRef.current = null;
+//   }
+// };
 
 /// --- EVENTS --- ///
 export function isLineInDocument(document: MkDocument, lineId: string | undefined): boolean {
@@ -297,19 +256,16 @@ export function handleKeyUp(
     alt: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
     ctrl: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
     shift: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
-  }
+  },
+  dispatch: (cmd: AnyDocumentCommand) => void
 ) {
-  // console.log(`---> handleKeyUp(${e.key})`);
+  console.log(`---> handleKeyUp(${e.key})`);
   const target = e.target as HTMLElement;
+  console.log(target);
+
   const [isAlt, setAlt] = modifiers.alt;
   const [isCtrl, setCtrl] = modifiers.ctrl;
   const [isShift, setShift] = modifiers.shift;
-
-  // Skip if the event fired on the section itself rather than a block element
-  if (target === e.currentTarget) return;
-
-  // Let native inputs handle their own keyboard events
-  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) return;
 
   // Capture modifier keys
   if (["Alt", "Ctrl", "Shift"].includes(e.key)) {
@@ -326,6 +282,8 @@ export function handleKeyUp(
     }
     return;
   }
+
+
 }
 
 export function handleKeyDown(
@@ -335,57 +293,31 @@ export function handleKeyDown(
     ctrl: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
     shift: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   },
-  dispatch: (cmd: DocumentCommand) => void
+  dispatch: (cmd: AnyDocumentCommand) => void
 ) {
-  // console.log(`---> handleKeyDown(${e.key})`);
-  // const target = e.target as HTMLElement;
-  // // console.log(target);
-  // const [isAlt, setAlt] = modifiers.alt;
-  // const [isCtrl, setCtrl] = modifiers.ctrl;
-  // const [isShift, setShift] = modifiers.shift;
+  console.log(`---> handleKeyDown(${e.key})`);
+  const target = e.target as HTMLElement;
+  console.log(target);
 
-  // // Skip if the event fired on the section itself rather than a block element
-  // if (target === e.currentTarget) return;
+  const [isAlt, setAlt] = modifiers.alt;
+  const [isCtrl, setCtrl] = modifiers.ctrl;
+  const [isShift, setShift] = modifiers.shift;
 
-  // // Let native inputs handle their own keyboard events
-  // if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) return;
-
-  // // If a printable character is typed while the caret is inside a non-editable inline element
-  // // (e.g. an InlineDataLink span), escape the caret to just after that element first so the
-  // // character is inserted in the surrounding editable block rather than being swallowed.
-  // if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-  //   const sel = window.getSelection();
-  //   if (sel && sel.rangeCount > 0) {
-  //     let node: Node | null = sel.getRangeAt(0).startContainer;
-  //     while (node && node !== e.currentTarget) {
-  //       if (node instanceof HTMLElement && node.contentEditable === 'false') {
-  //         const escaped = document.createRange();
-  //         escaped.setStartAfter(node);
-  //         escaped.collapse(true);
-  //         sel.removeAllRanges();
-  //         sel.addRange(escaped);
-  //         break;
-  //       }
-  //       node = node.parentNode;
-  //     }
-  //   }
-  // }
-
-  // // Capture modifier keys
-  // if (["Alt", "Ctrl", "Shift"].includes(e.key)) {
-  //   switch (e.key) {
-  //     case "Alt":
-  //       setAlt(true);
-  //       break;
-  //     case "Ctrl":
-  //       setCtrl(true);
-  //       break;
-  //     case "Shift":
-  //       setShift(true);
-  //       break;
-  //   }
-  //   return;
-  // }
+  // Capture modifier keys
+  if (["Alt", "Ctrl", "Shift"].includes(e.key)) {
+    switch (e.key) {
+      case "Alt":
+        setAlt(true);
+        break;
+      case "Ctrl":
+        setCtrl(true);
+        break;
+      case "Shift":
+        setShift(true);
+        break;
+    }
+    return;
+  }
 
   // const elementType = target.tagName.toLowerCase();
 

@@ -2,10 +2,10 @@ import { emptyDocument, type MkDocument } from "@app-types/game";
 import { useGameSystem } from "~/context/GameSystemContext";
 import { EditorToolbarSeparator } from "./EditorToolbarSeparator";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { documentHasEmptyLineAtEnd, isLineInDocument } from "util/EditorScripts";
+import { documentHasEmptyLineAtEnd, handleKeyDown, handleKeyUp, isLineInDocument } from "util/EditorScripts";
 import { MkLine, type MkLineProps } from "./MkLine";
 import { useUser } from "~/context/UserContext";
-import { UpdateBlockInDocumentCmd, type UpdateBlockInDocument } from "@app-types/commands";
+import { UpdateBlockInDocumentCmd, type AnyDocumentCommand, type UpdateBlockInDocument } from "@app-types/commands";
 
 export interface EditorProps {
   dataKey: string,
@@ -19,6 +19,10 @@ export function MkEditor({ dataKey }: EditorProps) {
   const [document, setDocument] = useState<MkDocument>(emptyDocument);
   const [contents, setContents] = useState<MkLineProps[]>([]);
   const contentsRef = useRef<HTMLElement>(null);
+
+  const [keyModifierAlt, setKeyModifierAlt] = useState<boolean>(false);
+  const [keyModifierCtrl, setKeyModifierCtrl] = useState<boolean>(false);
+  const [keyModifierShift, setKeyModifierShift] = useState<boolean>(false);
 
   console.log("[MkEditor.init()]", dataKey, "->", document);
 
@@ -139,6 +143,32 @@ export function MkEditor({ dataKey }: EditorProps) {
             // ...
           }
         }}
+        onKeyDown={(e: React.KeyboardEvent<HTMLElement>) => handleKeyDown(
+          e,
+          {
+            alt: [keyModifierAlt, setKeyModifierAlt],
+            ctrl: [keyModifierCtrl, setKeyModifierCtrl],
+            shift: [keyModifierShift, setKeyModifierShift]
+          },
+          (cmd: AnyDocumentCommand) => {
+            startTransition(() => {
+              applyCommand(cmd);
+            });
+          }
+        )}
+        onKeyUp={(e: React.KeyboardEvent<HTMLElement>) => handleKeyUp(
+          e,
+          {
+            alt: [keyModifierAlt, setKeyModifierAlt],
+            ctrl: [keyModifierCtrl, setKeyModifierCtrl],
+            shift: [keyModifierShift, setKeyModifierShift]
+          },
+          (cmd: AnyDocumentCommand) => {
+            startTransition(() => {
+              applyCommand(cmd);
+            });
+          }
+        )}
       >
         {contents.map((line) => (
           <MkLine
