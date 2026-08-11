@@ -1,5 +1,5 @@
 {
-  "version": "0.1.36",
+  "version": "0.1.37",
   "name": "system-intelligence-web",
   "private": true,
   "type": "module",
@@ -28,13 +28,13 @@
     "wrangler": "4.118.0"
   },
   "scripts": {
-    "dev": "react-router dev --host",
+    "dev": "pnpm run typecheck && react-router dev --host",
     "preview": "pnpm run build && vite preview",
-    "postinstall": "npm run typecheck",
+    "postinstall": "pnpm run typecheck",
     "build:staging": "react-router build --mode staging",
     "build:production": "react-router build --mode production",
     "cf-typegen": "wrangler types",
-    "typecheck": "npm run cf-typegen && react-router typegen && tsc -b",
+    "typecheck": "pnpm run cf-typegen && react-router typegen && tsc -b",
     "db:migrate:staging": "wrangler d1 migrations/staging apply system-intelligence-db-staging --remote",
     "db:migrate:production": "wrangler d1 migrations/production apply system-intelligence-db-production --remote",
     "deploy:staging": "pnpm run build:staging && wrangler deploy",
