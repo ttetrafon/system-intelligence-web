@@ -1,3 +1,5 @@
+import { uuidv4 } from "util/lib/security/uuid";
+
 export interface GameSystemData {
   core: {
     checks: {
@@ -107,7 +109,7 @@ export interface MkDocument {
 // }
 
 export function emptyDocument(): MkDocument {
-  const uuid = crypto.randomUUID();
+  const uuid = uuidv4(true);
 
   return {
     order: [uuid],
