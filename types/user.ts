@@ -1,7 +1,8 @@
 import type { JWTPayload } from "util/lib/types";
 
-export type SystemRole = 'owner' | 'admin' | 'user';
 export type LoginType = 'email' | 'google';
+export type GroupRole = 'gm' | 'writer' | 'player' | 'observer';
+export type SystemRole = 'owner' | 'admin' | 'user';
 
 export interface User {
   /**
@@ -15,6 +16,7 @@ export interface User {
    */
   username: string;
 
+  email: string;
   loginType: LoginType;
 
   /**
@@ -28,20 +30,19 @@ export interface User {
 export interface DBUser {
   id: number;
   username: string;
-  display: string | null;
-  colour: string;
-  system_role: string;
+  email: string;
+  login_type: string;
   password_hash: string | null;
+  system_role: string;
+  colour: string;
 }
 
 // TODO: no need to keep `payload` and `session-user` separately, if we encrypt the jwt payload...
 export interface SiJwtPayload extends JWTPayload {
-  sub: number;
-  display: string | null;
+  email: string;
   loginType: string;
-  system_role: SystemRole;
   colour: string;
-}
-
-export interface SessionUser extends SiJwtPayload {
+  system_role: SystemRole;
+  // session_id: string
+  // device_id: string
 }

@@ -1,2 +1,0 @@
-ALTER TABLE `USERS`
-ADD COLUMN `password_hash` TEXT NOT NULL;

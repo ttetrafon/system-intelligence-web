@@ -26,7 +26,7 @@ export default function Dashboard() {
   return (
     <div>
       <p>Welcome to your Dashboard</p>
-      <p>You are signed in as: {session.display ?? session.username} as {session.system_role}</p>
+      <p>You are signed in as: {session.username} as {session.system_role}</p>
       <button className='generic' onClick={handleLogout} >
         Logout
       </button>

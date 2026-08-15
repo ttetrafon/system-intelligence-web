@@ -35,7 +35,7 @@ export default function Head({ toggleContents, onLogout }: HeadProps) {
       <span className="flex-1"></span>
       {session ? (
         <>
-          <Link to="/dashboard" className="text-typography self-center rounded hover:shadow shadow-action">{session.display ?? session.username}</Link>
+          <Link to="/dashboard" className="text-typography self-center rounded hover:shadow shadow-action">{session.username}</Link>
           <button
             type="button"
             className="text-typography rounded hover:shadow shadow-action"

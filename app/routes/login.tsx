@@ -24,7 +24,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
 
   const user = await DB.prepare(
-    'SELECT id, username, display, colour, system_role, password_hash FROM USERS WHERE username = ? AND loginType = ?'
+    'SELECT * FROM USERS WHERE username = ? AND loginType = ?'
   )
     .bind(email, 'email')
     .first<DBUser>();
@@ -42,10 +42,10 @@ export async function action({ request, context }: Route.ActionArgs) {
     {
       sub: user.id,
       username: user.username,
-      display: user.display,
       colour: user.colour,
       system_role: user.system_role as SystemRole,
-      loginType: "email"
+      loginType: user.login_type,
+      email: user.email
     },
     SESSION_SECRET
   );
@@ -54,7 +54,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const cookie = createJWTCookie(token, isSecure);
 
   return Response.json(
-    { user: { id: user.id, username: user.username, display: user.display, colour: user.colour, system_role: user.system_role } },
+    { user: { id: user.id, username: user.username, colour: user.colour, system_role: user.system_role } },
     { headers: { 'Set-Cookie': cookie } }
   );
 }

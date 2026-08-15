@@ -1,4 +1,4 @@
-import type { SessionUser } from '@app-types/user';
+import type { SiJwtPayload } from '@app-types/user';
 import {
   createContext,
   useContext,
@@ -8,18 +8,18 @@ import {
 } from 'react';
 
 interface UserContextType {
-  session: SessionUser | null;
-  setSession: (user: SessionUser | null) => void;
+  session: SiJwtPayload | null;
+  setSession: (user: SiJwtPayload | null) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [session, setSession] = useState<SessionUser | null>(null);
+  const [session, setSession] = useState<SiJwtPayload | null>(null);
 
   useEffect(() => {
     fetch('/api/me')
-      .then((res) => (res.ok ? (res.json() as Promise<{ user: SessionUser }>) : null))
+      .then((res) => (res.ok ? (res.json() as Promise<{ user: SiJwtPayload }>) : null))
       .then((data) => {
         if (data?.user) setSession(data.user);
       })

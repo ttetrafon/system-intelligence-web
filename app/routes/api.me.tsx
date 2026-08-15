@@ -20,7 +20,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     user: {
       id: payload.sub,
       username: payload.username,
-      display: payload.display,
+      email: payload.email,
       colour: payload.colour,
       system_role: payload.system_role,
     },

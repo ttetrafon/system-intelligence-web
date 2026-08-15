@@ -6,7 +6,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "system-intelligence-web",
 	"compatibility_flags": [
-		"nodejs_compat",
+		"nodejs_compat"
 	],
 	"compatibility_date": "2025-07-09",
 	"main": "./workers/app.ts",
@@ -18,7 +18,7 @@
 			"kv_namespaces": [
 				{
 					"binding": "AUTH_KV",
-					"id": "c45a7adfa4d94e7680f941602af79a32",
+					"id": "c45a7adfa4d94e7680f941602af79a32"
 				}
 			],
 			"d1_databases": [
@@ -26,13 +26,14 @@
 					"binding": "DB",
 					"database_name": "system-intelligence-db-staging",
 					"database_id": "2db72910-3263-4be7-be7d-8cd77b3dbe73",
+					"migrations_dir": "./migrations/staging"
 				}
 			],
 			"r2_buckets": [
 				{
 					"bucket_name": "system-intelligence-assets-staging",
 					"binding": "ASSETS",
-					"jurisdiction": "eu",
+					"jurisdiction": "eu"
 				}
 			],
 			"durable_objects": {
@@ -50,7 +51,7 @@
 						"SystemNotifier"
 					]
 				}
-			],
+			]
 		},
 		"production": {
 			"vars": {
@@ -59,21 +60,22 @@
 			"kv_namespaces": [
 				{
 					"binding": "AUTH_KV",
-					"id": "af3d4e4455b74785bf89d4c64c5629a6",
+					"id": "af3d4e4455b74785bf89d4c64c5629a6"
 				}
 			],
 			"d1_databases": [
 				{
 					"binding": "DB",
 					"database_name": "system-intelligence-db-production",
-					"database_id": "f0be761e-6535-4450-bc28-9a0694f8501e"
+					"database_id": "f0be761e-6535-4450-bc28-9a0694f8501e",
+					"migrations_dir": "./migrations/production"
 				}
 			],
 			"r2_buckets": [
 				{
 					"bucket_name": "system-intelligence-assets-production",
 					"binding": "ASSETS",
-					"jurisdiction": "eu",
+					"jurisdiction": "eu"
 				}
 			],
 			"durable_objects": {
@@ -91,7 +93,7 @@
 						"SystemNotifier"
 					]
 				}
-			],
+			]
 		}
 	},
 	"vars": {
@@ -101,7 +103,7 @@
 		{
 			"binding": "AUTH_KV",
 			"id": "c45a7adfa4d94e7680f941602af79a32",
-			"remote": true
+			"remote": false
 		}
 	],
 	"d1_databases": [
@@ -109,15 +111,16 @@
 			"binding": "DB",
 			"database_name": "system-intelligence-db-staging",
 			"database_id": "2db72910-3263-4be7-be7d-8cd77b3dbe73",
-			"remote": true,
+			"migrations_dir": "./migrations/local",
+			"remote": false
 		}
 	],
 	"r2_buckets": [
 		{
 			"bucket_name": "system-intelligence-assets-staging",
 			"binding": "ASSETS",
-			"remote": true,
 			"jurisdiction": "eu",
+			"remote": false
 		}
 	],
 	"durable_objects": {
@@ -138,5 +141,5 @@
 	],
 	"observability": {
 		"enabled": true
-	},
+	}
 }

@@ -1,4 +1,4 @@
-import type { SessionUser } from '@app-types/user';
+import type { SiJwtPayload } from '@app-types/user';
 import { useState, useEffect } from 'react';
 import { useFetcher, useNavigate } from 'react-router';
 import { useLoading } from '~/context/AppContext';
@@ -7,7 +7,7 @@ import { useUser } from '~/context/UserContext';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const fetcher = useFetcher<{ error?: string; user?: SessionUser }>();
+  const fetcher = useFetcher<{ error?: string; user?: SiJwtPayload }>();
   const { setSession } = useUser();
   const navigate = useNavigate();
   const { setLoading } = useLoading();
