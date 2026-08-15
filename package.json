@@ -1,5 +1,5 @@
 {
-  "version": "0.1.37",
+  "version": "0.1.38",
   "name": "system-intelligence-web",
   "private": true,
   "type": "module",
@@ -15,17 +15,17 @@
     "react-router": "8.3.0"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.50.0",
+    "@cloudflare/vite-plugin": "1.51.1",
     "@react-router/dev": "8.3.0",
     "@tailwindcss/vite": "4.3.3",
-    "@types/lodash": "4.17.24",
-    "@types/node": "26.1.2",
+    "@types/lodash": "4.17.25",
+    "@types/node": "26.2.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
-    "vite": "8.2.0",
-    "wrangler": "4.118.0"
+    "vite": "8.2.1",
+    "wrangler": "4.120.0"
   },
   "scripts": {
     "dev": "pnpm run typecheck && react-router dev --host",
