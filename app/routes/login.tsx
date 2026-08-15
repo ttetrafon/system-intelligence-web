@@ -11,7 +11,7 @@ export function meta({ }: Route.MetaArgs) {
   ];
 }
 
-export async function action({ request, context }: Route.ActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const SESSION_SECRET: string = env.SESSION_SECRET;
   const DB: D1Database = env.DB;
 
@@ -23,9 +23,9 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: 'Email and password are required.' };
   }
 
-  const user = await DB.prepare(
-    'SELECT * FROM USERS WHERE username = ? AND loginType = ?'
-  )
+  // TODO: adapt for username
+  const user = await DB
+    .prepare('SELECT * FROM USERS WHERE email = ? AND login_type = ?')
     .bind(email, 'email')
     .first<DBUser>();
 
@@ -44,7 +44,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       username: user.username,
       colour: user.colour,
       system_role: user.system_role as SystemRole,
-      loginType: user.login_type,
+      login_type: user.login_type,
       email: user.email
     },
     SESSION_SECRET
@@ -54,7 +54,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const cookie = createJWTCookie(token, isSecure);
 
   return Response.json(
-    { user: { id: user.id, username: user.username, colour: user.colour, system_role: user.system_role } },
+    { user: { username: user.username, colour: user.colour, system_role: user.system_role } },
     { headers: { 'Set-Cookie': cookie } }
   );
 }

@@ -40,7 +40,7 @@ export interface DBUser {
 // TODO: no need to keep `payload` and `session-user` separately, if we encrypt the jwt payload...
 export interface SiJwtPayload extends JWTPayload {
   email: string;
-  loginType: string;
+  login_type: string;
   colour: string;
   system_role: SystemRole;
   // session_id: string
