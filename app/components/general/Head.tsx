@@ -12,6 +12,7 @@ interface HeadProps {
 
 export default function Head({ toggleContents, onLogout }: HeadProps) {
   const { session, setSession } = useUser();
+  // TODO: adjust loader data, don't need the full payload for the user (use SessionUser instead)...
   const loaderData = useLoaderData() as RootLoaderData<SiJwtPayload>;
 
   useEffect(() => {

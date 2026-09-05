@@ -46,3 +46,9 @@ export interface SiJwtPayload extends JWTPayload {
   // session_id: string
   // device_id: string
 }
+
+export interface SessionUser {
+  username: string;
+  colour: string;
+  system_role: SystemRole;
+}
