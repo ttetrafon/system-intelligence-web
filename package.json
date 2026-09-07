@@ -7,7 +7,5 @@
     "node": ">=22",
     "pnpm": ">=11"
   },
-  "scripts": {
-    "install-dependencies": ""
-  }
+  "scripts": {}
 }

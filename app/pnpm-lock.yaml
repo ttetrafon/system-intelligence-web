@@ -9,17 +9,17 @@ importers:
   .:
     dependencies:
       lodash:
-        specifier: ^4.18.1
+        specifier: 4.18.1
         version: 4.18.1
     devDependencies:
       '@types/lodash':
-        specifier: ^4.17.25
+        specifier: 4.17.25
         version: 4.17.25
       typescript:
-        specifier: ^7.0.2
+        specifier: 7.0.2
         version: 7.0.2
       vite:
-        specifier: ^8.2.2
+        specifier: 8.2.2
         version: 8.2.2
 
 packages:
