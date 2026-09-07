@@ -1,0 +1,32 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "template-cloudflare-hono-api",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-06-19",
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true,
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"env": {
+		"staging": {
+			"vars": {
+				"CORS_ORIGIN": "*"
+			}
+		},
+		"production": {
+			"vars": {
+				"CORS_ORIGIN": "*"
+			}
+		}
+	},
+	"vars": {
+		"CORS_ORIGIN": "*\nlocalhost:5173\nlocalhost:4300"
+	}
+}

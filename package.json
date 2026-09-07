@@ -1,5 +1,5 @@
 {
-  "version": "0.1.40",
+  "version": "0.2.0",
   "name": "system-intelligence-web",
   "private": true,
   "type": "module",
@@ -7,38 +7,7 @@
     "node": ">=22",
     "pnpm": ">=11"
   },
-  "dependencies": {
-    "isbot": "5.2.1",
-    "lodash": "4.18.1",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "react-router": "8.3.0"
-  },
-  "devDependencies": {
-    "@cloudflare/vite-plugin": "1.51.1",
-    "@react-router/dev": "8.3.0",
-    "@tailwindcss/vite": "4.3.3",
-    "@types/lodash": "4.17.25",
-    "@types/node": "26.2.0",
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
-    "tailwindcss": "4.3.3",
-    "typescript": "7.0.2",
-    "vite": "8.2.1",
-    "wrangler": "4.120.0"
-  },
   "scripts": {
-    "dev": "pnpm run typecheck && react-router dev --host",
-    "preview": "pnpm run build && vite preview",
-    "postinstall": "pnpm run typecheck",
-    "build:staging": "react-router build --mode staging",
-    "build:production": "react-router build --mode production",
-    "cf-typegen": "wrangler types",
-    "typecheck": "pnpm run cf-typegen && react-router typegen && tsc -b",
-    "db:migrate:local": "wrangler d1 migrations apply system-intelligence-db-staging --local",
-    "db:migrate:staging": "wrangler d1 migrations apply system-intelligence-db-staging --remote",
-    "db:migrate:production": "wrangler d1 migrations/production apply system-intelligence-db-production --remote",
-    "deploy:staging": "pnpm run build:staging && wrangler deploy",
-    "deploy:production": "pnpm run build:production && wrangler deploy"
+    "install-dependencies": ""
   }
 }

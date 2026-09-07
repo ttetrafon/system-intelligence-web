@@ -1,0 +1,25 @@
+{
+  "name": "system-intelligence-api",
+  "private": true,
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=11"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260902.1",
+    "@types/node": "26.4.1",
+    "wrangler": "4.128.0"
+  },
+  "dependencies": {
+    "chanfana": "3.4.0",
+    "hono": "4.13.5",
+    "lodash": "^4.18.1",
+    "zod": "4.5.4"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "typecheck": "wrangler types",
+    "deploy:staging": "pnpm run typecheck && wrangler deploy --env staging",
+    "deploy:production": "pnpm run typecheck && wrangler deploy --env production"
+  }
+}

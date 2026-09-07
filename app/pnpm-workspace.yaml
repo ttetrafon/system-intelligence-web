@@ -1,0 +1,7 @@
+# https://pnpm.io/settings
+minimumReleaseAge: 5760
+trustPolicy: no-downgrade
+blockExoticSubdeps: true
+allowBuilds:
+  esbuild: false
+  sharp: false

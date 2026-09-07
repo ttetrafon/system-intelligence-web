@@ -1,0 +1,26 @@
+{
+  "name": "system-intelligence-website",
+  "description": "A template for building websites using vite and web-components, html, and css.",
+  "author": "ttetrafon",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=11"
+  },
+  "license": "GNU-3.0",
+  "devDependencies": {
+    "@types/lodash": "4.17.25",
+    "typescript": "7.0.2",
+    "vite": "8.2.2"
+  },
+  "dependencies": {
+    "lodash": "4.18.1"
+  },
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "vite build",
+    "preview": "pnpm run build && vite preview"
+  }
+}
