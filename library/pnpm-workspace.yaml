@@ -1,7 +1,0 @@
-# https://pnpm.io/settings
-minimumReleaseAge: 7200
-trustPolicy: no-downgrade
-blockExoticSubdeps: true
-allowBuilds:
-  esbuild: false
-  workerd: false
