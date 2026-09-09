@@ -25,7 +25,7 @@
 		],
 		"paths": {
 			"lib/*": [
-				"../library/*"
+				"./library/*"
 			]
 		}
 	},
@@ -36,7 +36,7 @@
 	],
 	"include": [
 		"src",
-		"../library",
+		"./library",
 		"worker-configuration.d.ts"
 	]
 }

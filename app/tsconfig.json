@@ -17,12 +17,12 @@
     "strict": true,
     "paths": {
       "lib/*": [
-        "../library/*"
+        "./library/*"
       ]
     }
   },
   "include": [
     "src",
-    "../library"
+    "./library"
   ]
 }
