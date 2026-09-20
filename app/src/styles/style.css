@@ -2,7 +2,9 @@
 
 :root {
   --font-size: 18px;
-  --spacing: 4px;
+  --spacing-normal: 4px;
+  --spacing-wide: calc(var(--spacing-normal) * 2.5);
+  --spacing-narrow: calc(var(--spacing-normal) / 2);
 
   --colour-typography: #F5DAA7;
   --colour-action: #A3485A;
@@ -19,4 +21,18 @@
 html {
   color: var(--colour-typography);
   background-color: var(--colour-background);
+}
+
+body {
+  width: 100%;
+  padding: var(--spacing-normal);
+}
+
+header,
+footer {
+  width: 100%;
+}
+
+a {
+  color: inherit;
 }
