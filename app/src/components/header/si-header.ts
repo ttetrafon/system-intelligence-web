@@ -1,4 +1,4 @@
-import { Logger } from "../../../library/lib/services/logger";
+import { Logger } from "lib/services/logger";
 
 const templateSiHeader: HTMLTemplateElement = document.createElement('template');
 const componentNameSiHeader: string = "si-header";

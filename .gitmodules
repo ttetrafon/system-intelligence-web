@@ -4,3 +4,6 @@
 [submodule "server/library/lib"]
 	path = server/library/lib
 	url = git@github.com:ttetrafon/typescript-lib.git
+[submodule "app/library"]
+	path = app/library
+	url = git@github.com:ttetrafon/typescript-lib.git
