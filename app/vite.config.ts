@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { resolve } from 'path';
 
 export default defineConfig({
   server: {
@@ -12,9 +13,20 @@ export default defineConfig({
       input: {
         // define multiple separate entry points
         // pages will be individual, not requiring the full package to open each one
-        main: './index.html',
-        contact: './contact.html'
+        main: './index.html'
       }
+    }
+  },
+  resolve: {
+    alias: {
+      'lib': resolve(import.meta.dirname, './library')
+    }
+  },
+  // Ensure CSS is handled properly for web components
+  css: {
+    // Disable CSS modules for web components to prevent scoping issues
+    modules: {
+      generateScopedName: '[name]__[local]___[hash:base64:5]',
     }
   }
 });

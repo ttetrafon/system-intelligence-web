@@ -14,10 +14,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "strict": true
+    "strict": true,
+    "paths": {
+      "lib/*": [
+        "./library/lib/*"
+      ]
+    }
   },
   "include": [
     "src",
-    "./library"
+    "library/lib"
   ]
 }
