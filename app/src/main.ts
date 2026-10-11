@@ -5,6 +5,9 @@ import { AppName } from './util/constants';
 import { domainRoot } from './data/config';
 import { aliases, routes } from './data/routes';
 // components
+import 'lib/components/404/script';
+import './components/footer/script';
+import './components/header/script';
 // services
 import { Logger } from 'lib/services/logger';
 import { Navigator } from 'lib/services/navigator';

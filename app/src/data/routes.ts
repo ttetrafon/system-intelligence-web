@@ -2,9 +2,9 @@ import { Route } from "lib/types";
 
 export const routes: Record<string, Route> = {
   'dashboard': {
-    content: 'dashboard',
-    title: "Dashboard",
-    description: "",
+    content: 'si-dashboard',
+    title: "SI: Dashboard",
+    description: "System Intelligence Web-App: user dashboard page",
     pathType: "WebPage",
     navData: {}
   },

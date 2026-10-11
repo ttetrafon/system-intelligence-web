@@ -6,10 +6,15 @@
   --spacing-wide: calc(var(--spacing-normal) * 2.5);
   --spacing-narrow: calc(var(--spacing-normal) / 2);
 
+  --border-thin: 0.5px;
+  --border-normal: 1px;
+  --border-thick: 2px;
+
   --colour-typography: #F5DAA7;
   --colour-action: #A3485A;
   --colour-basis: #842A3B;
   --colour-background: #662222;
+
   --font-sans: system-ui,
     -apple-system,
     BlinkMacSystemFont,
@@ -32,23 +37,43 @@ body:not(.app-loading) {
   transition: opacity 0.25s ease-in-out;
 }
 
+html {
+  height: 100%;
+}
+
 body {
   font-family: var(--font-sans);
   height: 100dvh;
   background-color: var(--colour-background);
   color: var(--colour-typography);
   width: 100%;
+  height: 100%;
+  min-height: 100dvh;
   padding: var(--spacing-normal);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
 
-  @media (prefers-color-scheme: dark) {
-    background-color: var(--colour-typography);
-    color: var(--colour-background);
-  }
+main {
+  /* flex: 1 1 auto; */
+  min-height: 0;
+  overflow: auto;
 }
 
 header,
 footer {
   width: 100%;
+  flex: 0 0 auto;
+}
+
+header {
+  border-bottom: var(--colour-action) solid var(--border-normal);
+  margin-bottom: var(--spacing-narrow);
+}
+
+footer {
+  border-top: var(--colour-action) solid var(--border-normal);
+  margin-top: var(--spacing-narrow);
 }
 
 button {
