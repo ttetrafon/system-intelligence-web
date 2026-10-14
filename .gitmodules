@@ -1,9 +1,12 @@
-[submodule "server/library/lib-cf"]
-	path = server/library/lib-cf
-	url = git@github.com:ttetrafon/cloudflare-ts-lib.git
 [submodule "server/library/lib"]
 	path = server/library/lib
 	url = git@github.com:ttetrafon/typescript-lib.git
-[submodule "app/library"]
-	path = app/library
+[submodule "server/library/lib-cf"]
+	path = server/library/lib-cf
+	url = git@github.com:ttetrafon/cloudflare-ts-lib.git
+[submodule "app/library/lib"]
+	path = app/library/lib
 	url = git@github.com:ttetrafon/typescript-lib.git
+[submodule "app/library/lib-fe"]
+	path = app/library/lib-fe
+	url = git@github.com:ttetrafon/typescript-lib-frontend.git
